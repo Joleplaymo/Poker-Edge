@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Poker Edge">
+<meta name="theme-color" content="#0a1410">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230a1410'/%3E%3Ctext x='90' y='118' font-size='100' text-anchor='middle' fill='%23d4af37'%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
+<title>Poker Edge — Plan & Tracker</title>
+<style>
+:root{
+  --bg:#0a1410;
+  --bg-2:#0f1d18;
+  --bg-3:#152b23;
+  --felt:#1a3a2e;
+  --line:#1f3a30;
+  --line-2:#2a4f42;
+  --gold:#d4af37;
+  --gold-soft:#a88a2c;
+  --txt:#e8e6dc;
+  --txt-dim:#9aa39a;
+  --txt-mute:#6b756e;
+  --red:#c84a3a;
+  --green:#5a9a6a;
+  --blue:#4a7ba8;
+  --shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;font-size:16px;line-height:1.5;overscroll-behavior:none}
+body{padding-top:env(safe-area-inset-top);padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+.serif{font-family:"Georgia","Hoefler Text",serif;letter-spacing:0.01em}
+/* Header */
+header{position:sticky;top:0;background:linear-gradient(180deg,var(--bg) 70%,rgba(10,20,16,0.85));padding:16px 20px 12px;z-index:50;border-bottom:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+header h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-0.01em}
+header h1 .spade{color:var(--gold);margin-right:6px}
+header .sub{font-size:12px;color:var(--txt-mute);margin-top:2px;letter-spacing:0.05em;text-transform:uppercase}
+/* Main */
+main{padding:16px 20px 24px;max-width:720px;margin:0 auto}
+.view{display:none;animation:fadeIn .25s ease}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+/* Nav */
+nav.bottom{position:fixed;bottom:0;left:0;right:0;background:var(--bg-2);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
+nav.bottom button{flex:1;background:none;border:none;color:var(--txt-mute);padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:color .15s}
+nav.bottom button .ico{font-size:22px;line-height:1}
+nav.bottom button.active{color:var(--gold)}
+nav.bottom button:active{transform:scale(0.95)}
+/* Cards */
+.card{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;position:relative}
+.card h2{margin:0 0 8px;font-size:18px;font-weight:600;letter-spacing:-0.01em}
+.card h3{margin:0 0 6px;font-size:15px;font-weight:600}
+.card p{margin:6px 0;color:var(--txt-dim);font-size:14px;line-height:1.5}
+.card .tag{display:inline-block;background:var(--bg-3);color:var(--gold);font-size:10px;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-right:6px;margin-bottom:6px;border:1px solid var(--line-2)}
+.card.felt{background:linear-gradient(160deg,var(--felt) 0%,var(--bg-2) 100%);border-color:var(--line-2)}
+/* Buttons */
+button.btn{background:var(--gold);color:#1a1208;border:none;padding:12px 18px;font-size:15px;font-weight:600;border-radius:10px;cursor:pointer;font-family:inherit;width:100%;letter-spacing:0.01em;transition:transform .1s,opacity .15s}
+button.btn:active{transform:scale(0.98);opacity:0.85}
+button.btn.secondary{background:var(--bg-3);color:var(--txt);border:1px solid var(--line-2)}
+button.btn.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+button.btn.small{padding:8px 12px;font-size:13px;width:auto}
+button.btn.compact{padding:10px 14px;font-size:14px}
+.row{display:flex;gap:8px;margin-top:10px}
+.row > *{flex:1}
+/* Inputs */
+input,select,textarea{background:var(--bg-3);color:var(--txt);border:1px solid var(--line-2);border-radius:8px;padding:10px 12px;font-size:15px;font-family:inherit;width:100%;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.field{margin-bottom:12px}
+/* HOME */
+.hero{padding:24px 0 8px;text-align:center}
+.hero .big{font-size:34px;font-weight:700;letter-spacing:-0.02em;margin:0}
+.hero .big .accent{color:var(--gold);font-style:italic;font-family:"Georgia",serif}
+.hero .quote{margin-top:14px;color:var(--txt-dim);font-style:italic;font-size:14px;font-family:Georgia,serif;line-height:1.5}
+.hero .quote::before{content:"« ";color:var(--gold)}
+.hero .quote::after{content:" »";color:var(--gold)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.stat{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat .v{font-size:22px;font-weight:700;color:var(--gold);font-family:Georgia,serif}
+.stat .l{font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:0.07em;margin-top:2px}
+/* Plan */
+.week{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.week-head{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+.week-head .num{font-family:Georgia,serif;color:var(--gold);font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
+.week-head .title{font-size:16px;font-weight:600;margin-top:2px}
+.week-head .chev{color:var(--txt-mute);font-size:16px;transition:transform .2s}
+.week.open .week-head .chev{transform:rotate(90deg)}
+.week-body{padding:0 16px 16px;display:none;border-top:1px solid var(--line)}
+.week.open .week-body{display:block}
+.week-body h4{margin:14px 0 6px;font-size:13px;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;font-weight:600}
+.week-body ul{margin:6px 0;padding-left:20px;color:var(--txt-dim);font-size:14px;line-height:1.6}
+.week-body ul li{margin-bottom:4px}
+.task{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:none}
+.task input[type=checkbox]{width:20px;height:20px;flex:0 0 auto;margin-top:2px;accent-color:var(--gold)}
+.task label{margin:0;text-transform:none;letter-spacing:normal;color:var(--txt);font-size:14px;font-weight:400}
+.task.done label{text-decoration:line-through;color:var(--txt-mute)}
+.progress{height:6px;background:var(--bg-3);border-radius:3px;margin-top:10px;overflow:hidden}
+.progress > div{height:100%;background:var(--gold);transition:width .3s}
+/* Drills */
+.drill-menu{display:grid;gap:10px}
+.drill-card{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s}
+.drill-card:active{border-color:var(--gold)}
+.drill-card .ic{font-size:28px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--bg-3);border-radius:10px;flex:0 0 auto}
+.drill-card .t{font-size:15px;font-weight:600}
+.drill-card .d{font-size:12px;color:var(--txt-mute);margin-top:2px}
+.quiz{}
+.quiz .scenario{background:linear-gradient(160deg,var(--felt),var(--bg-2));border:1px solid var(--line-2);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.quiz .scenario .meta{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+.quiz .hand{display:flex;justify-content:center;gap:10px;margin:14px 0}
+.pcard{width:60px;height:84px;background:#f5efe0;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;color:#1a1208;box-shadow:0 4px 10px rgba(0,0,0,0.3);position:relative}
+.pcard.red{color:var(--red)}
+.pcard .r{font-size:28px;line-height:1}
+.pcard .s{font-size:20px;line-height:1;margin-top:2px}
+.quiz .info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;font-size:13px}
+.quiz .info > div{background:var(--bg-3);padding:8px 10px;border-radius:8px;border:1px solid var(--line)}
+.quiz .info b{color:var(--gold);display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:2px}
+.quiz .opts{display:grid;gap:8px;margin-top:14px}
+.opt{background:var(--bg-2);border:1px solid var(--line-2);border-radius:10px;padding:14px;cursor:pointer;font-size:15px;font-weight:600;text-align:center;transition:all .15s}
+.opt:active{transform:scale(0.98)}
+.opt.correct{background:rgba(90,154,106,0.2);border-color:var(--green);color:var(--green)}
+.opt.wrong{background:rgba(200,74,58,0.15);border-color:var(--red);color:var(--red)}
+.opt.disabled{pointer-events:none;opacity:0.55}
+.feedback{background:var(--bg-3);border-left:3px solid var(--gold);padding:12px 14px;margin-top:14px;border-radius:8px;font-size:14px;line-height:1.55}
+.feedback b{color:var(--gold)}
+.scoreboard{display:flex;justify-content:space-between;align-items:center;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px}
+.scoreboard .sc{color:var(--gold);font-weight:700;font-size:18px;font-family:Georgia,serif}
+/* Range grid */
+.range-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;margin:14px 0;font-size:10px}
+.range-cell{aspect-ratio:1;background:var(--bg-3);display:flex;align-items:center;justify-content:center;border-radius:2px;font-weight:600;color:var(--txt-dim)}
+.range-cell.push{background:var(--green);color:#0a1410}
+.range-cell.shove{background:var(--gold);color:#1a1208}
+.range-cell.call{background:var(--blue);color:#0a1410}
+.legend{display:flex;gap:12px;margin-top:8px;font-size:11px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend .sw{width:12px;height:12px;border-radius:3px}
+/* Tracker */
+.tournament-list .tourney{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer}
+.tourney .name{font-weight:600;font-size:15px}
+.tourney .meta{font-size:12px;color:var(--txt-mute);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+.tourney .res{margin-top:6px;font-size:13px}
+.tourney .res .profit{color:var(--green);font-weight:600}
+.tourney .res .loss{color:var(--red);font-weight:600}
+.tourney.live{border-color:var(--gold);background:linear-gradient(160deg,rgba(212,175,55,0.08),var(--bg-2))}
+.tourney.live::before{content:"● EN COURS";position:absolute;top:10px;right:12px;color:var(--gold);font-size:10px;letter-spacing:0.1em;font-weight:700}
+.tourney{position:relative}
+.live-panel{background:linear-gradient(160deg,var(--felt),var(--bg-2));border:1px solid var(--line-2);border-radius:14px;padding:16px;margin-bottom:14px}
+.live-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.live-stat{background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center}
+.live-stat .v{font-size:20px;font-weight:700;color:var(--gold);font-family:Georgia,serif;line-height:1}
+.live-stat .l{font-size:10px;color:var(--txt-mute);text-transform:uppercase;margin-top:3px;letter-spacing:0.05em}
+.hand-entry{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+.hand-entry .top{display:flex;justify-content:space-between;font-size:11px;color:var(--txt-mute);margin-bottom:4px;letter-spacing:0.04em}
+.hand-entry .top .tag-mini{color:var(--gold);font-weight:600}
+.hand-entry .body{color:var(--txt-dim);line-height:1.4}
+.hand-entry .result{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-top:4px}
+.hand-entry .result.w{background:rgba(90,154,106,0.2);color:var(--green)}
+.hand-entry .result.l{background:rgba(200,74,58,0.2);color:var(--red)}
+.hand-entry .result.f{background:var(--bg-3);color:var(--txt-mute)}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex;animation:fadeIn .2s}
+.modal{background:var(--bg-2);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal h2{margin:0 0 16px;font-size:20px;font-weight:600}
+.modal .close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--txt-mute);font-size:24px;cursor:pointer}
+/* Resources */
+.res-card{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.res-card .cat{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:6px}
+.res-card .name{font-size:15px;font-weight:600;margin-bottom:2px}
+.res-card .desc{font-size:13px;color:var(--txt-dim)}
+.res-card a{color:var(--gold);text-decoration:none;font-size:12px;display:inline-block;margin-top:6px}
+.section-title{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;font-weight:700;margin:18px 0 10px;font-family:Georgia,serif}
+.empty{text-align:center;padding:40px 20px;color:var(--txt-mute);font-size:14px}
+.empty .big{font-size:48px;color:var(--gold);opacity:0.4;margin-bottom:10px}
+.divider{height:1px;background:var(--line);margin:18px 0}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--bg-3);color:var(--txt);padding:10px 18px;border-radius:20px;border:1px solid var(--line-2);font-size:13px;z-index:300;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+.install-hint{background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(212,175,55,0.04));border:1px solid var(--gold-soft);border-radius:12px;padding:14px;font-size:13px;color:var(--txt-dim);margin-bottom:14px;display:none}
+.install-hint b{color:var(--gold)}
+.install-hint .x{float:right;color:var(--txt-mute);cursor:pointer;font-size:18px;line-height:1}
+.weekTag{display:inline-block;background:var(--bg-3);color:var(--gold);padding:2px 8px;border-radius:10px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;margin-right:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="spade">♠</span>Poker Edge</h1>
+  <div class="sub">Plan d'entraînement & Live tracker</div>
+</header>
+
+<main>
+
+<!-- ============== HOME ============== -->
+<section class="view active" id="view-home">
+  <div class="install-hint" id="installHint">
+    <span class="x" onclick="document.getElementById('installHint').style.display='none'">×</span>
+    <b>Installer l'app</b> — Tape l'icône Partage de Safari puis "Sur l'écran d'accueil" pour utiliser Poker Edge en plein écran, hors ligne.
+  </div>
+
+  <div class="hero">
+    <h1 class="big">Le poker se gagne <span class="accent">entre les mains</span></h1>
+    <div class="quoteContainer"><div class="quote" id="dailyQuote"></div></div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="v" id="statProgress">0%</div><div class="l">Plan complété</div></div>
+    <div class="stat"><div class="v" id="statDrills">0</div><div class="l">Drills réussis</div></div>
+    <div class="stat"><div class="v" id="statTourneys">0</div><div class="l">Tournois joués</div></div>
+    <div class="stat"><div class="v" id="statROI">—</div><div class="l">ROI</div></div>
+  </div>
+
+  <div class="card felt">
+    <div class="tag">Cette semaine</div>
+    <h2 id="currentWeekTitle">Semaine 1 — ICM & Push/Fold</h2>
+    <p id="currentWeekDesc">Concentre-toi sur les ranges de push/fold sous 15bb et la dynamique ICM en bulle.</p>
+    <button class="btn" onclick="switchView('plan')">Voir le plan détaillé</button>
+  </div>
+
+  <div class="card">
+    <h3>Action rapide</h3>
+    <div class="row">
+      <button class="btn secondary compact" onclick="switchView('drills')">Drill 5 min</button>
+      <button class="btn compact" onclick="startNewTournament()">+ Tournoi live</button>
+    </div>
+  </div>
+
+  <div class="section-title">Rappel du jour</div>
+  <div class="card">
+    <p id="dailyTip"></p>
+  </div>
+</section>
+
+<!-- ============== PLAN ============== -->
+<section class="view" id="view-plan">
+  <h2 style="margin:0 0 6px;font-size:24px">Plan 6 semaines</h2>
+  <p style="color:var(--txt-mute);font-size:13px;margin:0 0 16px">~4h/semaine · MTT live · niveau avancé</p>
+
+  <div class="progress"><div id="planProgress" style="width:0%"></div></div>
+  <div style="font-size:12px;color:var(--txt-mute);margin:6px 0 18px" id="planProgressTxt">0/0 tâches</div>
+
+  <div id="weeksContainer"></div>
+</section>
+
+<!-- ============== DRILLS ============== -->
+<section class="view" id="view-drills">
+  <h2 style="margin:0 0 6px;font-size:24px">Drills</h2>
+  <p style="color:var(--txt-mute);font-size:13px;margin:0 0 16px">Exercices interactifs ciblés</p>
+
+  <div class="scoreboard">
+    <div>Session actuelle</div>
+    <div><span class="sc" id="sessionScore">0</span> / <span id="sessionTotal">0</span></div>
+  </div>
+
+  <div class="drill-menu" id="drillMenu">
+    <div class="drill-card" onclick="startDrill('pushfold')">
+      <div class="ic">♠</div>
+      <div><div class="t">Push or Fold &lt;15bb</div><div class="d">Ranges Nash, position, stack</div></div>
+    </div>
+    <div class="drill-card" onclick="startDrill('icm')">
+      <div class="ic">◆</div>
+      <div><div class="t">Décisions ICM</div><div class="d">Bulle, FT, payout pressure</div></div>
+    </div>
+    <div class="drill-card" onclick="startDrill('preflop')">
+      <div class="ic">♣</div>
+      <div><div class="t">Open / 3-bet / Call</div><div class="d">Préflop 25-50bb par position</div></div>
+    </div>
+    <div class="drill-card" onclick="startDrill('postflop')">
+      <div class="ic">♥</div>
+      <div><div class="t">Spots postflop</div><div class="d">C-bet, barrels, bluff-catch</div></div>
+    </div>
+    <div class="drill-card" onclick="showRangeChart()">
+      <div class="ic">⌗</div>
+      <div><div class="t">Charts de référence</div><div class="d">Ranges visuelles 13×13</div></div>
+    </div>
+  </div>
+
+  <div id="drillArea"></div>
+</section>
+
+<!-- ============== TRACKER ============== -->
+<section class="view" id="view-tracker">
+  <h2 style="margin:0 0 6px;font-size:24px">Tracker live</h2>
+  <p style="color:var(--txt-mute);font-size:13px;margin:0 0 14px">Enregistre tes tournois, mains, adversaires</p>
+
+  <button class="btn" onclick="startNewTournament()">+ Nouveau tournoi</button>
+
+  <div style="height:14px"></div>
+
+  <div id="liveTournamentArea"></div>
+
+  <div class="section-title">Historique</div>
+  <div class="tournament-list" id="tournamentList"></div>
+
+  <div class="divider"></div>
+  <div class="row">
+    <button class="btn secondary compact" onclick="exportData()">Exporter JSON</button>
+    <button class="btn secondary compact" onclick="importDataPrompt()">Importer</button>
+  </div>
+  <div style="height:10px"></div>
+  <button class="btn danger small" onclick="confirmReset()">Tout effacer</button>
+</section>
+
+<!-- ============== RESOURCES ============== -->
+<section class="view" id="view-res">
+  <h2 style="margin:0 0 6px;font-size:24px">Ressources</h2>
+  <p style="color:var(--txt-mute);font-size:13px;margin:0 0 16px">Outils, livres, vidéos triés par focus</p>
+
+  <div id="resContainer"></div>
+</section>
+
+</main>
+
+<!-- ============== BOTTOM NAV ============== -->
+<nav class="bottom">
+  <button data-view="home" class="active" onclick="switchView('home')"><span class="ico">♤</span>Accueil</button>
+  <button data-view="plan" onclick="switchView('plan')"><span class="ico">▤</span>Plan</button>
+  <button data-view="drills" onclick="switchView('drills')"><span class="ico">◇</span>Drills</button>
+  <button data-view="tracker" onclick="switchView('tracker')"><span class="ico">◉</span>Tracker</button>
+  <button data-view="res" onclick="switchView('res')"><span class="ico">☰</span>Ressources</button>
+</nav>
+
+<!-- ============== MODALS ============== -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATA: PLAN, DRILLS, RESOURCES
+   ========================================================= */
+
+const PLAN = [
+  {
+    week:1,
+    title:"ICM & Push/Fold sous 15bb",
+    focus:"Fundamentaux endgame",
+    objectives:[
+      "Maîtriser les ranges Nash de push <15bb par position",
+      "Comprendre l'impact ICM en bulle et bulle de paiement",
+      "Identifier les spots de re-shove (10-25bb)"
+    ],
+    sessions:[
+      {label:"Théorie : lire 'Kill Everyone' ch.1-3 + concepts ICM",time:"1h"},
+      {label:"Drill push/fold quotidien (15 min × 5j)",time:"1h15"},
+      {label:"Simulation ICMIZER bulles & FT",time:"45min"},
+      {label:"Review d'une session : 3 spots <15bb",time:"1h"}
+    ],
+    tasks:[
+      "Lire la théorie ICM",
+      "100 drills push/fold sur GTO Wizard / app",
+      "Simuler 5 bulles dans ICMIZER",
+      "Mémoriser ranges de push BTN/SB/BB à 10bb"
+    ]
+  },
+  {
+    week:2,
+    title:"Re-shoves & stack courte avancée",
+    focus:"Polish endgame",
+    objectives:[
+      "Construire des ranges de re-shove vs open",
+      "Détecter les open-shove exploitables",
+      "Adapter ses ranges en fonction du payout jump"
+    ],
+    sessions:[
+      {label:"Théorie : re-shoves dynamics + future game",time:"1h"},
+      {label:"Drills mixtes push + re-shove",time:"1h"},
+      {label:"Solver work : 3 spots ICM",time:"1h"},
+      {label:"Review : 5 mains de bulle",time:"1h"}
+    ],
+    tasks:[
+      "Définir tes ranges de re-shove vs CO/BTN open",
+      "200 drills push/fold mixte",
+      "Étudier 3 hands ICM avec un solver",
+      "Noter 5 leaks endgame identifiés"
+    ]
+  },
+  {
+    week:3,
+    title:"Open ranges & 3-bet 25-50bb",
+    focus:"Mid-stack mastery",
+    objectives:[
+      "Stabiliser les open ranges par position",
+      "Construire des ranges de 3-bet polarisée vs linéaire",
+      "Travailler les défenses BB vs open"
+    ],
+    sessions:[
+      {label:"Théorie : ranges d'open & théorie 3-bet",time:"1h"},
+      {label:"Drill préflop quotidien",time:"1h15"},
+      {label:"Étude : 3-bet polarisé vs merge",time:"45min"},
+      {label:"Review : 5 mains contestées préflop",time:"1h"}
+    ],
+    tasks:[
+      "Imprimer / mémoriser open ranges 6max & 9max",
+      "100 drills préflop par position",
+      "Étudier 3 spots de squeeze",
+      "Réviser défense BB vs SB open"
+    ]
+  },
+  {
+    week:4,
+    title:"C-bet, double barrel, sizings",
+    focus:"Postflop confiance",
+    objectives:[
+      "Adapter le sizing de c-bet selon la texture",
+      "Identifier les bons spots de double/triple barrel",
+      "Travailler les check-raises et donk-bets"
+    ],
+    sessions:[
+      {label:"Théorie : board textures & sizing tree",time:"1h"},
+      {label:"Drill postflop (c-bet decisions)",time:"1h"},
+      {label:"Solver : 3 spots de turn",time:"1h"},
+      {label:"Review : 5 spots postflop perso",time:"1h"}
+    ],
+    tasks:[
+      "Catégoriser 5 textures de flop & leur sizing",
+      "Drill 50 c-bet decisions",
+      "Étudier 3 lignes de double barrel",
+      "Tester 1 check-raise plan en session"
+    ]
+  },
+  {
+    week:5,
+    title:"Lecture live & tells",
+    focus:"Edge spécifique live",
+    objectives:[
+      "Lire les sizing tells, timing tells, comportement",
+      "Gérer son table image",
+      "Adapter contre joueurs récréatifs (cible #1 en club)"
+    ],
+    sessions:[
+      {label:"Lecture : Reading Poker Tells (Elwood) ch.1-5",time:"1h30"},
+      {label:"Vidéos : Solve for Why / Jonathan Little",time:"1h"},
+      {label:"Drill mental : exploit ranges vs fish",time:"45min"},
+      {label:"Session live + notes tells",time:"variable"}
+    ],
+    tasks:[
+      "Lister 10 tells live à surveiller",
+      "Identifier 3 types d'adversaires types",
+      "Tenir un carnet de tells pendant une session",
+      "Définir ta table image idéale"
+    ]
+  },
+  {
+    week:6,
+    title:"Mental, bankroll, intégration",
+    focus:"Performance durable",
+    objectives:[
+      "Gérer le tilt et la concentration sur sessions longues",
+      "Établir une discipline de bankroll",
+      "Construire ta routine pré/post tournoi"
+    ],
+    sessions:[
+      {label:"Lecture : The Mental Game of Poker (Tendler)",time:"1h30"},
+      {label:"Mise en place routine pré-tournoi",time:"30min"},
+      {label:"Review globale du programme",time:"1h"},
+      {label:"Plan de progression mois suivant",time:"1h"}
+    ],
+    tasks:[
+      "Définir 3 triggers de tilt et leur antidote",
+      "Établir règle de bankroll (BI % bankroll)",
+      "Écrire ta routine pré-tournoi (15 min)",
+      "Faire le bilan : 3 forces, 3 leaks restants"
+    ]
+  }
+];
+
+const RESOURCES = [
+  {cat:"Outil", w:[1,2], name:"GTO Wizard", desc:"Drills push/fold + ranges préflop interactifs. La référence.", link:"https://gtowizard.com"},
+  {cat:"Outil", w:[1,2], name:"ICMIZER 3", desc:"Calculs ICM pour bulles et final tables.", link:"https://icmizer.com"},
+  {cat:"Outil", w:[1,2], name:"HoldemResources Calculator", desc:"Alternative à ICMIZER, très complet.", link:"https://www.holdemresources.net"},
+  {cat:"Livre", w:[1,2], name:"Kill Everyone — Lee Nelson", desc:"Bible de la stratégie tournoi short stack et ICM.", link:""},
+  {cat:"Livre", w:[3,4], name:"Modern Poker Theory — Acevedo", desc:"GTO appliqué aux MTT, dense mais essentiel.", link:""},
+  {cat:"Outil", w:[3,4], name:"PokerSnowie / DTO", desc:"Trainers GTO préflop & postflop.", link:"https://www.pokersnowie.com"},
+  {cat:"Vidéo", w:[3,4], name:"Pokercode (Fedor Holz)", desc:"Cours premium MTT signature.", link:"https://pokercode.com"},
+  {cat:"Vidéo", w:[3,4,5], name:"Jonathan Little — YouTube", desc:"Analyses MTT live gratuites de haut niveau.", link:"https://www.youtube.com/@JonathanLittlePoker"},
+  {cat:"Livre", w:[5], name:"Reading Poker Tells — Zachary Elwood", desc:"LA référence sur les tells live.", link:""},
+  {cat:"Livre", w:[5], name:"Verbal Poker Tells — Elwood", desc:"Tells verbaux, complément indispensable.", link:""},
+  {cat:"Vidéo", w:[5], name:"Solve for Why (Matt Berkey)", desc:"Approche live exploitative très fine.", link:"https://solveforwhy.com"},
+  {cat:"Livre", w:[6], name:"The Mental Game of Poker — Tendler", desc:"Gestion du tilt et performance mentale.", link:""},
+  {cat:"Livre", w:[6], name:"Elements of Poker — Tommy Angelo", desc:"Méta-jeu et discipline.", link:""},
+  {cat:"Outil", w:[1,2,3,4,5,6], name:"Poker Tracker / HM3", desc:"Tracker postflop (online uniquement).", link:"https://www.pokertracker.com"},
+  {cat:"Communauté", w:[1,2,3,4,5,6], name:"r/poker, Run It Once forums", desc:"Discussions de mains et théorie.", link:"https://www.reddit.com/r/poker"}
+];
+
+const TIPS = [
+  "En live, 80% de ton edge vient des erreurs de tes adversaires — ouvre l'œil avant d'optimiser ton jeu.",
+  "Avant chaque main : ta position, ton stack effectif, le profil du vilain. Dans cet ordre.",
+  "Le sizing dit souvent plus que les cartes : note les patterns de chaque adversaire dès la première heure.",
+  "À 15bb tu n'as plus de jeu postflop. Push ou fold, et ne te trompe pas de range.",
+  "Sur la bulle, applique de la pression aux stacks moyens — pas aux short stacks désespérés ni aux big stacks.",
+  "Un c-bet trop fréquent sur board mouillé = leak. Pense d'abord équité, puis range advantage.",
+  "Ton plus gros adversaire est ta concentration après 6h. Pause toilettes toutes les 90 min, eau, pas d'alcool.",
+  "Si tu hésites entre call et fold pour 30% de ton stack : c'est fold, sauf raison précise.",
+  "Le tilt vient rarement de la mauvaise main : il vient de l'accumulation. Pause dès le 2e mauvais bad beat.",
+  "Note 2 mains après chaque session, à chaud. Tu construiras ta meilleure base d'étude."
+];
+
+const QUOTES = [
+  "Le poker est un jeu d'incertitude. Maîtrise tes décisions, pas les résultats.",
+  "Joue le joueur, pas tes cartes.",
+  "La patience est une arme. L'agressivité bien placée en est une autre.",
+  "On ne gagne pas un tournoi en début, on évite juste de le perdre.",
+  "Chaque main est une décision, chaque décision est une donnée."
+];
+
+/* Drills data */
+const DRILLS = {
+  pushfold: [
+    {pos:"SB",stack:8,hand:["A","s","5","s"],action:"push",explain:"A5s en SB à 8bb est un shove standard. Range Nash très large depuis SB courte."},
+    {pos:"BTN",stack:12,hand:["K","h","9","d"],action:"push",explain:"K9o au BTN à 12bb est dans la range de push Nash. Fold serait trop nit."},
+    {pos:"UTG",stack:10,hand:["7","s","7","c"],action:"push",explain:"77 UTG à 10bb : shove. À ce stack, on ne raise plus min, on jam."},
+    {pos:"CO",stack:14,hand:["Q","h","5","c"],action:"fold",explain:"Q5o au CO à 14bb : trop faible pour shove, pas assez pour open small. Fold."},
+    {pos:"BB",stack:12,hand:["A","s","8","h"],action:"call",explain:"A8o BB vs BTN min-open à 12bb : call ou shove, certainement pas fold. Call standard."},
+    {pos:"SB",stack:6,hand:["J","d","4","d"],action:"push",explain:"J4s à 6bb en SB : push. À ce stack, tu shoves très large."},
+    {pos:"BTN",stack:20,hand:["2","s","2","c"],action:"push",explain:"22 BTN 20bb : open-shove standard, surtout sans 3-bet potential propre."},
+    {pos:"UTG",stack:15,hand:["A","s","T","c"],action:"push",explain:"ATo UTG 15bb : jam clair. À cette profondeur, raise/fold est un piège."},
+    {pos:"BB",stack:8,hand:["K","h","2","s"],action:"call",explain:"K2o BB vs BTN shove à 8bb : call de défense correct selon Nash."},
+    {pos:"CO",stack:9,hand:["T","s","6","s"],action:"push",explain:"T6s CO 9bb : push. Suited connectors gappés restent bons en jam."}
+  ],
+  icm: [
+    {pos:"BB",stack:18,hand:["A","h","9","c"],context:"Bulle, 10 joueurs, 9 payés. CL push de BTN (35bb).",action:"fold",explain:"En bulle, A9o vs jam CL de BTN = fold ICM. Tu perds plus que l'EV chip ne suggère. Survie d'abord."},
+    {pos:"BTN",stack:25,hand:["K","s","Q","s"],context:"Bulle, short stack à 5bb en BB. Tu open ?",action:"push",explain:"KQs au BTN avec un short en BB en bulle : shove pour mettre la pression sur les stacks moyens en SB."},
+    {pos:"CO",stack:30,hand:["T","h","T","c"],context:"FT 6-handed, payout jump important. UTG (40bb) shove.",action:"fold",explain:"TT vs UTG jam en FT avec payout jump = fold ICM. La range UTG bat TT, et l'ICM punit le call."},
+    {pos:"SB",stack:12,hand:["A","d","J","d"],context:"Bulle, BB a 8bb. BTN open 2.2bb (CL).",action:"push",explain:"AJs SB 12bb vs BTN CL open : 3-bet jam. Tu fold equity élevée, BTN ne peut pas call light vs SB en bulle."},
+    {pos:"BB",stack:10,hand:["K","h","K","s"],context:"FT 4-handed, 1er a 80bb, tu es 3e. CO (60bb) shove.",action:"push",explain:"KK est trop fort pour fold même avec ICM extrême. Call snap (push virtuel)."}
+  ],
+  preflop: [
+    {pos:"UTG",stack:40,hand:["A","s","J","s"],context:"9-handed, table standard.",action:"open",explain:"AJs UTG à 40bb : open standard. Au-delà, la range UTG est solide."},
+    {pos:"BTN",stack:50,hand:["8","h","7","h"],context:"CO fold, action sur toi.",action:"open",explain:"87s au BTN sur fold : open value + jeu postflop. Range très large autorisée."},
+    {pos:"BB",stack:45,hand:["Q","s","T","c"],context:"BTN open 2.2bb, SB fold.",action:"call",explain:"QTo BB vs BTN open : call de défense. 3-bet possible mais call est principal."},
+    {pos:"CO",stack:35,hand:["K","d","J","c"],context:"UTG open 2.5bb.",action:"call",explain:"KJo CO vs UTG open : call ou fold selon profil. Call par défaut vs range UTG resserrée."},
+    {pos:"SB",stack:40,hand:["A","c","Q","d"],context:"BTN open 2.2bb.",action:"3bet",explain:"AQo SB vs BTN open : 3-bet value clair à 9-10bb."},
+    {pos:"BB",stack:50,hand:["7","s","7","d"],context:"CO open 2.3bb, BTN call.",action:"call",explain:"77 BB en squeeze spot vs CO+BTN : call set-mine OK, 3-bet squeeze possible mais marginal."},
+    {pos:"BTN",stack:30,hand:["J","h","J","s"],context:"CO open 2.3bb.",action:"3bet",explain:"JJ BTN vs CO open : 3-bet value standard."}
+  ],
+  postflop:[
+    {pos:"BTN",stack:50,hand:["A","s","K","s"],context:"Open BTN, BB call. Flop K♠ 7♦ 2♣. BB check.",action:"cbet",explain:"Top paire top kicker sur flop sec, range advantage clair : c-bet 33-50% pot."},
+    {pos:"CO",stack:45,hand:["Q","h","Q","c"],context:"Open CO, BB call. Flop A♠ 8♦ 5♣. BB check.",action:"cbet",explain:"Overpair < As sur board avec une carte qui favorise BB en théorie, mais ta range CO contient plus d'As : small c-bet."},
+    {pos:"BTN",stack:60,hand:["8","h","9","h"],context:"Open BTN, BB call. Flop K♣ 7♦ 2♠. BB check.",action:"check",explain:"Air sur board sec ne frappant pas ta range BB : check derrière, économise des jetons."},
+    {pos:"BB",stack:40,hand:["A","s","Q","s"],context:"Defend BB vs BTN open. Flop Q♦ 8♠ 3♣. Tu check, BTN cbet 1/3.",action:"check-raise",explain:"TPTK + range advantage BB sur ce flop favorable : check-raise pour value et protection."},
+    {pos:"CO",stack:50,hand:["J","d","J","s"],context:"Open CO, BTN call. Flop A♠ K♦ 4♣. Tu cbet 1/3, BTN call. Turn 7♥. Tu ?",action:"check",explain:"Board très haut, BTN call flop : sa range contient As, Ks, brokens. Check turn pour controller le pot."},
+    {pos:"BTN",stack:55,hand:["K","s","Q","s"],context:"Open BTN, BB call. Flop J♠ T♠ 4♥. BB check.",action:"cbet",explain:"OESD + flush draw + 2 overs + back door : énorme équité, c-bet polarisé large."}
+  ]
+};
+
+const SUITS = {s:{c:"♠",red:false},h:{c:"♥",red:true},d:{c:"♦",red:true},c:{c:"♣",red:false}};
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let state = {
+  tasks: {}, // {weekIdx_taskIdx: true}
+  drillScore: 0,
+  drillTotal: 0,
+  drillSession: {score:0, total:0},
+  tournaments: [],
+  liveId: null
+};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem("pokerEdge_v1");
+    if(raw){ state = Object.assign(state, JSON.parse(raw)); }
+  }catch(e){console.warn(e)}
+}
+function saveState(){
+  try{ localStorage.setItem("pokerEdge_v1", JSON.stringify(state)); }catch(e){console.warn(e)}
+}
+
+/* =========================================================
+   NAV
+   ========================================================= */
+function switchView(name){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+name).classList.add("active");
+  document.querySelectorAll("nav.bottom button").forEach(b=>{
+    b.classList.toggle("active", b.dataset.view===name);
+  });
+  window.scrollTo(0,0);
+  if(name==="plan") renderPlan();
+  if(name==="tracker") renderTracker();
+  if(name==="res") renderResources();
+  if(name==="home") renderHome();
+  if(name==="drills") resetDrillArea();
+}
+
+/* =========================================================
+   HOME
+   ========================================================= */
+function renderHome(){
+  // Daily quote & tip (rotates by day)
+  const day = Math.floor(Date.now()/86400000);
+  document.getElementById("dailyQuote").textContent = QUOTES[day % QUOTES.length];
+  document.getElementById("dailyTip").textContent = TIPS[day % TIPS.length];
+
+  // Stats
+  let total=0, done=0;
+  PLAN.forEach((w,wi)=>{
+    w.tasks.forEach((_,ti)=>{
+      total++;
+      if(state.tasks[wi+"_"+ti]) done++;
+    });
+  });
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById("statProgress").textContent = pct+"%";
+  document.getElementById("statDrills").textContent = state.drillScore;
+  document.getElementById("statTourneys").textContent = state.tournaments.length;
+
+  const finished = state.tournaments.filter(t=>t.result);
+  if(finished.length){
+    const totalBI = finished.reduce((s,t)=>s+(parseFloat(t.buyin)||0),0);
+    const totalWin = finished.reduce((s,t)=>s+(parseFloat(t.result.payout)||0),0);
+    const roi = totalBI? Math.round((totalWin-totalBI)/totalBI*100):0;
+    document.getElementById("statROI").textContent = (roi>=0?"+":"")+roi+"%";
+  } else {
+    document.getElementById("statROI").textContent = "—";
+  }
+
+  // Current week = first week with incomplete tasks
+  let cw = 0;
+  for(let i=0;i<PLAN.length;i++){
+    const allDone = PLAN[i].tasks.every((_,ti)=>state.tasks[i+"_"+ti]);
+    if(!allDone){ cw = i; break; }
+    if(i===PLAN.length-1) cw = i;
+  }
+  document.getElementById("currentWeekTitle").textContent = `Semaine ${PLAN[cw].week} — ${PLAN[cw].title}`;
+  document.getElementById("currentWeekDesc").textContent = PLAN[cw].objectives[0];
+}
+
+/* =========================================================
+   PLAN
+   ========================================================= */
+function renderPlan(){
+  const c = document.getElementById("weeksContainer");
+  c.innerHTML = "";
+  let total=0, done=0;
+  PLAN.forEach((w,wi)=>{
+    w.tasks.forEach((_,ti)=>{ total++; if(state.tasks[wi+"_"+ti]) done++; });
+  });
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById("planProgress").style.width = pct+"%";
+  document.getElementById("planProgressTxt").textContent = `${done}/${total} tâches · ${pct}%`;
+
+  PLAN.forEach((w,wi)=>{
+    const weekDone = w.tasks.every((_,ti)=>state.tasks[wi+"_"+ti]);
+    const div = document.createElement("div");
+    div.className = "week" + (wi===0 && !weekDone ? " open" : "");
+    div.innerHTML = `
+      <div class="week-head" onclick="this.parentElement.classList.toggle('open')">
+        <div>
+          <div class="num">Semaine ${w.week}${weekDone?" ✓":""}</div>
+          <div class="title">${w.title}</div>
+        </div>
+        <div class="chev">›</div>
+      </div>
+      <div class="week-body">
+        <h4>Focus</h4>
+        <p style="color:var(--txt-dim);font-size:14px;margin:0">${w.focus}</p>
+
+        <h4>Objectifs</h4>
+        <ul>${w.objectives.map(o=>`<li>${o}</li>`).join("")}</ul>
+
+        <h4>Répartition (~4h)</h4>
+        <ul>${w.sessions.map(s=>`<li><b>${s.time}</b> — ${s.label}</li>`).join("")}</ul>
+
+        <h4>Tâches</h4>
+        <div>
+          ${w.tasks.map((t,ti)=>{
+            const id = wi+"_"+ti;
+            const done = state.tasks[id];
+            return `<div class="task ${done?"done":""}">
+              <input type="checkbox" id="t${id}" ${done?"checked":""} onchange="toggleTask('${id}', this.checked)">
+              <label for="t${id}">${t}</label>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>`;
+    c.appendChild(div);
+  });
+}
+
+function toggleTask(id, checked){
+  if(checked) state.tasks[id]=true;
+  else delete state.tasks[id];
+  saveState();
+  renderPlan();
+}
+
+/* =========================================================
+   DRILLS
+   ========================================================= */
+let drillIndex = 0, drillType = null, drillAnswered = false;
+
+function resetDrillArea(){
+  document.getElementById("drillMenu").style.display = "grid";
+  document.getElementById("drillArea").innerHTML = "";
+  document.getElementById("sessionScore").textContent = state.drillSession.score;
+  document.getElementById("sessionTotal").textContent = state.drillSession.total;
+}
+
+function startDrill(type){
+  drillType = type;
+  drillIndex = 0;
+  state.drillSession = {score:0,total:0};
+  document.getElementById("drillMenu").style.display = "none";
+  renderDrill();
+}
+
+function renderDrill(){
+  const drills = DRILLS[drillType];
+  if(!drills){ resetDrillArea(); return; }
+  if(drillIndex >= drills.length){
+    // End of drill set
+    const sc = state.drillSession.score;
+    const tt = state.drillSession.total;
+    document.getElementById("drillArea").innerHTML = `
+      <div class="card felt" style="text-align:center">
+        <h2>Session terminée</h2>
+        <div style="font-size:42px;color:var(--gold);font-family:Georgia,serif;font-weight:700">${sc}/${tt}</div>
+        <p>${sc===tt?"Parfait. Tu maîtrises ce spot.":sc>=tt*0.7?"Solide. Quelques détails à affiner.":"Il faut retravailler ces ranges."}</p>
+        <button class="btn" onclick="startDrill('${drillType}')">Recommencer</button>
+        <div style="height:8px"></div>
+        <button class="btn secondary" onclick="resetDrillArea()">Autre drill</button>
+      </div>`;
+    return;
+  }
+
+  const d = drills[drillIndex];
+  drillAnswered = false;
+  const handHTML = d.hand ? d.hand.length===4 ?
+    `<div class="hand">
+      <div class="pcard ${SUITS[d.hand[1]].red?"red":""}"><div class="r">${d.hand[0]}</div><div class="s">${SUITS[d.hand[1]].c}</div></div>
+      <div class="pcard ${SUITS[d.hand[3]].red?"red":""}"><div class="r">${d.hand[2]}</div><div class="s">${SUITS[d.hand[3]].c}</div></div>
+    </div>` : "" : "";
+
+  const optionSets = {
+    pushfold:[["push","Push (jam)"],["fold","Fold"],["call","Call/Limp"]],
+    icm:[["push","Push / Call"],["fold","Fold"],["3bet","3-bet"]],
+    preflop:[["open","Open raise"],["call","Call / Limp"],["3bet","3-bet"],["fold","Fold"]],
+    postflop:[["cbet","C-bet"],["check","Check"],["check-raise","Check-raise"],["fold","Fold"]]
+  };
+
+  document.getElementById("drillArea").innerHTML = `
+    <div class="scoreboard">
+      <div>Question ${drillIndex+1}/${drills.length}</div>
+      <div><span class="sc">${state.drillSession.score}</span> / ${state.drillSession.total}</div>
+    </div>
+    <div class="quiz">
+      <div class="scenario">
+        <div class="meta">${d.pos} · ${d.stack?d.stack+"bb":""}</div>
+        ${d.context?`<p style="margin:4px 0 8px;font-size:13px;color:var(--txt-dim)">${d.context}</p>`:""}
+        ${handHTML}
+        <div class="info">
+          <div><b>Position</b>${d.pos}</div>
+          <div><b>Stack effectif</b>${d.stack?d.stack+" bb":"—"}</div>
+        </div>
+      </div>
+      <div class="opts" id="optsArea">
+        ${optionSets[drillType].map(([k,v])=>`<div class="opt" data-k="${k}" onclick="answerDrill('${k}')">${v}</div>`).join("")}
+      </div>
+      <div id="feedbackArea"></div>
+    </div>`;
+}
+
+function answerDrill(k){
+  if(drillAnswered) return;
+  drillAnswered = true;
+  const drills = DRILLS[drillType];
+  const d = drills[drillIndex];
+  const correct = k === d.action;
+  state.drillSession.total++;
+  state.drillTotal++;
+  if(correct){ state.drillSession.score++; state.drillScore++; }
+  saveState();
+
+  document.querySelectorAll("#optsArea .opt").forEach(el=>{
+    el.classList.add("disabled");
+    if(el.dataset.k===d.action) el.classList.add("correct");
+    else if(el.dataset.k===k && !correct) el.classList.add("wrong");
+  });
+
+  document.getElementById("feedbackArea").innerHTML = `
+    <div class="feedback">
+      <b>${correct?"✓ Correct.":"✗ La bonne décision : "+d.action.toUpperCase()}.</b><br>${d.explain}
+    </div>
+    <div style="height:10px"></div>
+    <button class="btn" onclick="nextDrill()">${drillIndex+1>=drills.length?"Voir le résultat":"Question suivante"}</button>`;
+}
+
+function nextDrill(){ drillIndex++; renderDrill(); }
+
+function showRangeChart(){
+  // Push range from SB at 10bb (simplified)
+  const ranks = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
+  const pushRange = {
+    "AA":1,"AKs":1,"AKo":1,"AQs":1,"AQo":1,"AJs":1,"AJo":1,"ATs":1,"ATo":1,"A9s":1,"A9o":1,"A8s":1,"A8o":1,"A7s":1,"A7o":1,"A6s":1,"A6o":1,"A5s":1,"A5o":1,"A4s":1,"A4o":1,"A3s":1,"A3o":1,"A2s":1,"A2o":1,
+    "KK":1,"KQs":1,"KQo":1,"KJs":1,"KJo":1,"KTs":1,"KTo":1,"K9s":1,"K9o":1,"K8s":1,"K8o":1,"K7s":1,"K7o":1,"K6s":1,"K5s":1,"K4s":1,"K3s":1,"K2s":1,
+    "QQ":1,"QJs":1,"QJo":1,"QTs":1,"QTo":1,"Q9s":1,"Q9o":1,"Q8s":1,"Q7s":1,"Q6s":1,
+    "JJ":1,"JTs":1,"JTo":1,"J9s":1,"J9o":1,"J8s":1,"J7s":1,
+    "TT":1,"T9s":1,"T9o":1,"T8s":1,"T7s":1,
+    "99":1,"98s":1,"97s":1,
+    "88":1,"87s":1,
+    "77":1,"76s":1,
+    "66":1,"65s":1,
+    "55":1,"54s":1,
+    "44":1,"43s":1,
+    "33":1,
+    "22":1
+  };
+  let grid = "";
+  for(let i=0;i<13;i++){
+    for(let j=0;j<13;j++){
+      const high = i<=j ? ranks[i]:ranks[j];
+      const low = i<=j ? ranks[j]:ranks[i];
+      let label;
+      if(i===j) label = ranks[i]+ranks[j];
+      else if(i<j) label = high+low+"s";
+      else label = high+low+"o";
+      const inRange = pushRange[label];
+      grid += `<div class="range-cell ${inRange?"shove":""}">${label}</div>`;
+    }
+  }
+  document.getElementById("drillMenu").style.display = "none";
+  document.getElementById("drillArea").innerHTML = `
+    <div class="card">
+      <h3>Push range SB · 10bb (référence Nash)</h3>
+      <p style="font-size:12px;color:var(--txt-mute)">Range simplifiée. À 10bb depuis SB, push très large. À 8bb encore plus large.</p>
+      <div class="range-grid">${grid}</div>
+      <div class="legend">
+        <span><div class="sw" style="background:var(--gold)"></div>Push</span>
+        <span><div class="sw" style="background:var(--bg-3)"></div>Fold</span>
+      </div>
+      <div style="height:14px"></div>
+      <p style="font-size:13px;color:var(--txt-dim)"><b style="color:var(--gold)">Note :</b> Plus tu es court, plus tu push large. À 6bb tu jam quasi any 2. Vérifie avec un solver pour chaque profondeur et position.</p>
+      <div style="height:10px"></div>
+      <button class="btn secondary" onclick="resetDrillArea()">Retour</button>
+    </div>`;
+}
+
+/* =========================================================
+   TRACKER
+   ========================================================= */
+function renderTracker(){
+  // Live tournament panel
+  const live = state.tournaments.find(t=>t.id===state.liveId);
+  const liveArea = document.getElementById("liveTournamentArea");
+  if(live && !live.result){
+    liveArea.innerHTML = `
+      <div class="live-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div>
+            <div style="font-size:11px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;font-weight:700">● Tournoi en cours</div>
+            <div style="font-size:17px;font-weight:600;margin-top:2px">${live.name}</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--txt-mute);margin-bottom:14px">Buy-in ${live.buyin}€ · ${live.venue||"—"} · ${formatDate(live.start)}</div>
+
+        <div class="live-stats">
+          <div class="live-stat"><div class="v">${live.stack||"—"}</div><div class="l">Stack</div></div>
+          <div class="live-stat"><div class="v">${live.blinds||"—"}</div><div class="l">Blinds</div></div>
+          <div class="live-stat"><div class="v">${live.players||"—"}</div><div class="l">Joueurs</div></div>
+        </div>
+
+        <button class="btn small compact" onclick="updateLiveStack()">Mettre à jour stack/blinds</button>
+        <div style="height:8px"></div>
+        <div class="row">
+          <button class="btn secondary compact" onclick="addHand()">+ Main jouée</button>
+          <button class="btn secondary compact" onclick="addOpponentNote()">+ Note vilain</button>
+        </div>
+        <div style="height:8px"></div>
+        <button class="btn small compact" onclick="finishTournament()">Terminer le tournoi</button>
+
+        ${live.hands && live.hands.length?`
+          <div class="section-title" style="margin-top:18px">Mains enregistrées (${live.hands.length})</div>
+          ${live.hands.slice().reverse().map((h,i)=>renderHandEntry(h, live.hands.length-1-i)).join("")}
+        `:""}
+
+        ${live.notes && live.notes.length?`
+          <div class="section-title" style="margin-top:18px">Notes adversaires (${live.notes.length})</div>
+          ${live.notes.slice().reverse().map(n=>`
+            <div class="hand-entry">
+              <div class="top"><span class="tag-mini">${n.player||"?"}</span><span>${n.time||""}</span></div>
+              <div class="body">${n.tag?`<span class="weekTag">${n.tag}</span>`:""}${n.text}</div>
+            </div>`).join("")}
+        `:""}
+      </div>`;
+  } else {
+    liveArea.innerHTML = "";
+  }
+
+  // History
+  const list = document.getElementById("tournamentList");
+  const past = state.tournaments.filter(t=>t.id!==state.liveId || t.result);
+  if(past.length===0){
+    list.innerHTML = `<div class="empty"><div class="big">♠</div>Aucun tournoi enregistré.<br>Commence par le bouton ci-dessus.</div>`;
+  } else {
+    list.innerHTML = past.slice().reverse().map(t=>{
+      const r = t.result;
+      const profit = r ? (parseFloat(r.payout)||0) - (parseFloat(t.buyin)||0) : null;
+      return `<div class="tourney" onclick="openTournamentDetail('${t.id}')">
+        <div class="name">${t.name}</div>
+        <div class="meta">
+          <span>${formatDate(t.start)}</span>
+          <span>${t.venue||""}</span>
+          <span>Buy-in ${t.buyin}€</span>
+        </div>
+        ${r?`<div class="res">
+          ${r.position?`Place ${r.position}/${r.totalPlayers||"?"} · `:""}
+          ${profit!==null?`<span class="${profit>=0?"profit":"loss"}">${profit>=0?"+":""}${profit}€</span>`:""}
+        </div>`:""}
+      </div>`;
+    }).join("");
+  }
+}
+
+function renderHandEntry(h, idx){
+  const handCards = h.cards?`<span style="color:var(--gold);font-family:Georgia">${h.cards}</span>`:"";
+  return `<div class="hand-entry" onclick="editHand(${idx})">
+    <div class="top"><span class="tag-mini">${h.position||"?"} · ${h.stack||"?"}bb</span><span>${h.time||""}</span></div>
+    <div class="body">
+      ${handCards} ${h.action?` · ${h.action}`:""}<br>
+      ${h.notes||""}
+    </div>
+    ${h.result?`<span class="result ${h.result==='won'?'w':h.result==='lost'?'l':'f'}">${h.result==='won'?"Gagnée":h.result==='lost'?"Perdue":"Foldée"}</span>`:""}
+  </div>`;
+}
+
+function startNewTournament(){
+  openModal(`
+    <h2>Nouveau tournoi</h2>
+    <div class="field"><label>Nom / Événement</label><input id="tName" placeholder="Ex: Deepstack Casino Enghien"></div>
+    <div class="field"><label>Lieu</label><input id="tVenue" placeholder="Casino, club..."></div>
+    <div class="field"><label>Buy-in (€)</label><input id="tBuyin" type="number" inputmode="decimal" placeholder="100"></div>
+    <div class="field"><label>Stack de départ</label><input id="tStack" type="number" inputmode="numeric" placeholder="30000"></div>
+    <div class="field"><label>Structure / Niveau (info)</label><input id="tStruct" placeholder="Ex: 30 min, deepstack"></div>
+    <button class="btn" onclick="createTournament()">Démarrer</button>
+  `);
+}
+
+function createTournament(){
+  const t = {
+    id: "t_"+Date.now(),
+    name: document.getElementById("tName").value || "Tournoi sans nom",
+    venue: document.getElementById("tVenue").value,
+    buyin: document.getElementById("tBuyin").value || "0",
+    stack: document.getElementById("tStack").value || "",
+    blinds: "",
+    players: "",
+    struct: document.getElementById("tStruct").value,
+    start: Date.now(),
+    hands: [],
+    notes: [],
+    result: null
+  };
+  state.tournaments.push(t);
+  state.liveId = t.id;
+  saveState();
+  closeModal();
+  renderTracker();
+  toast("Tournoi démarré ✓");
+}
+
+function updateLiveStack(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  openModal(`
+    <h2>Mise à jour</h2>
+    <div class="field"><label>Stack actuel (jetons)</label><input id="uStack" type="number" inputmode="numeric" value="${t.stack||""}"></div>
+    <div class="field"><label>Blinds actuelles</label><input id="uBlinds" placeholder="Ex: 500/1000/100" value="${t.blinds||""}"></div>
+    <div class="field"><label>Joueurs restants</label><input id="uPlayers" type="number" inputmode="numeric" value="${t.players||""}"></div>
+    <button class="btn" onclick="saveStackUpdate()">Enregistrer</button>
+  `);
+}
+
+function saveStackUpdate(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  t.stack = document.getElementById("uStack").value;
+  t.blinds = document.getElementById("uBlinds").value;
+  t.players = document.getElementById("uPlayers").value;
+  saveState();
+  closeModal();
+  renderTracker();
+  toast("Mis à jour ✓");
+}
+
+function addHand(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  openModal(`
+    <h2>Nouvelle main</h2>
+    <div class="row">
+      <div class="field"><label>Position</label>
+        <select id="hPos">
+          <option>UTG</option><option>UTG+1</option><option>MP</option><option>HJ</option><option>CO</option><option>BTN</option><option>SB</option><option>BB</option>
+        </select>
+      </div>
+      <div class="field"><label>Stack (bb)</label><input id="hStack" type="number" inputmode="decimal" placeholder="40"></div>
+    </div>
+    <div class="field"><label>Cartes</label><input id="hCards" placeholder="Ex: A♠ K♠"></div>
+    <div class="field"><label>Action / Ligne</label><input id="hAction" placeholder="Open 2.5bb, BB call, flop K72r, c-bet 50%..."></div>
+    <div class="field"><label>Notes / Réflexion</label><textarea id="hNotes" rows="3" placeholder="Ce que je pensais, sizing du vilain, tells..."></textarea></div>
+    <div class="field"><label>Résultat</label>
+      <select id="hResult">
+        <option value="">—</option>
+        <option value="won">Gagnée</option>
+        <option value="lost">Perdue</option>
+        <option value="folded">Foldée</option>
+      </select>
+    </div>
+    <button class="btn" onclick="saveHand()">Enregistrer la main</button>
+  `);
+}
+
+function saveHand(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  t.hands = t.hands || [];
+  t.hands.push({
+    position: document.getElementById("hPos").value,
+    stack: document.getElementById("hStack").value,
+    cards: document.getElementById("hCards").value,
+    action: document.getElementById("hAction").value,
+    notes: document.getElementById("hNotes").value,
+    result: document.getElementById("hResult").value,
+    time: formatTime(Date.now())
+  });
+  saveState();
+  closeModal();
+  renderTracker();
+  toast("Main enregistrée ✓");
+}
+
+function editHand(idx){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t || !t.hands[idx]) return;
+  const h = t.hands[idx];
+  openModal(`
+    <h2>Modifier la main</h2>
+    <div class="row">
+      <div class="field"><label>Position</label>
+        <select id="hPos">
+          ${["UTG","UTG+1","MP","HJ","CO","BTN","SB","BB"].map(p=>`<option ${p===h.position?"selected":""}>${p}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field"><label>Stack (bb)</label><input id="hStack" type="number" inputmode="decimal" value="${h.stack||""}"></div>
+    </div>
+    <div class="field"><label>Cartes</label><input id="hCards" value="${h.cards||""}"></div>
+    <div class="field"><label>Action / Ligne</label><input id="hAction" value="${h.action||""}"></div>
+    <div class="field"><label>Notes / Réflexion</label><textarea id="hNotes" rows="3">${h.notes||""}</textarea></div>
+    <div class="field"><label>Résultat</label>
+      <select id="hResult">
+        <option value="">—</option>
+        <option value="won" ${h.result==='won'?'selected':''}>Gagnée</option>
+        <option value="lost" ${h.result==='lost'?'selected':''}>Perdue</option>
+        <option value="folded" ${h.result==='folded'?'selected':''}>Foldée</option>
+      </select>
+    </div>
+    <button class="btn" onclick="updateHand(${idx})">Enregistrer</button>
+    <div style="height:8px"></div>
+    <button class="btn danger small" onclick="deleteHand(${idx})">Supprimer la main</button>
+  `);
+}
+
+function updateHand(idx){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t || !t.hands[idx]) return;
+  const h = t.hands[idx];
+  h.position = document.getElementById("hPos").value;
+  h.stack = document.getElementById("hStack").value;
+  h.cards = document.getElementById("hCards").value;
+  h.action = document.getElementById("hAction").value;
+  h.notes = document.getElementById("hNotes").value;
+  h.result = document.getElementById("hResult").value;
+  saveState();
+  closeModal();
+  renderTracker();
+  toast("Modifié ✓");
+}
+
+function deleteHand(idx){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  if(!confirm("Supprimer cette main ?")) return;
+  t.hands.splice(idx,1);
+  saveState();
+  closeModal();
+  renderTracker();
+}
+
+function addOpponentNote(){
+  openModal(`
+    <h2>Note adversaire</h2>
+    <div class="field"><label>Joueur (siège, surnom)</label><input id="nPlayer" placeholder="Siège 3, lunettes"></div>
+    <div class="field"><label>Tag rapide</label>
+      <select id="nTag">
+        <option value="">—</option>
+        <option>Fish / Récréatif</option>
+        <option>TAG</option>
+        <option>LAG</option>
+        <option>Nit</option>
+        <option>Maniac</option>
+        <option>Calling station</option>
+      </select>
+    </div>
+    <div class="field"><label>Observation</label><textarea id="nText" rows="4" placeholder="Sizing tells, comportement, ranges supposées..."></textarea></div>
+    <button class="btn" onclick="saveOpponentNote()">Enregistrer</button>
+  `);
+}
+
+function saveOpponentNote(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  t.notes = t.notes || [];
+  t.notes.push({
+    player: document.getElementById("nPlayer").value,
+    tag: document.getElementById("nTag").value,
+    text: document.getElementById("nText").value,
+    time: formatTime(Date.now())
+  });
+  saveState();
+  closeModal();
+  renderTracker();
+  toast("Note ajoutée ✓");
+}
+
+function finishTournament(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  openModal(`
+    <h2>Terminer le tournoi</h2>
+    <div class="row">
+      <div class="field"><label>Place finale</label><input id="rPos" type="number" inputmode="numeric"></div>
+      <div class="field"><label>Joueurs total</label><input id="rTotal" type="number" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label>Gain (€, 0 si non payé)</label><input id="rPayout" type="number" inputmode="decimal" placeholder="0"></div>
+    <div class="field"><label>Note finale / leçons</label><textarea id="rNotes" rows="3" placeholder="Ce qui a marché, leaks à corriger..."></textarea></div>
+    <button class="btn" onclick="saveResult()">Terminer</button>
+  `);
+}
+
+function saveResult(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  t.result = {
+    position: document.getElementById("rPos").value,
+    totalPlayers: document.getElementById("rTotal").value,
+    payout: document.getElementById("rPayout").value || "0",
+    notes: document.getElementById("rNotes").value,
+    end: Date.now()
+  };
+  state.liveId = null;
+  saveState();
+  closeModal();
+  renderTracker();
+  toast("Tournoi clôturé ✓");
+}
+
+function openTournamentDetail(id){
+  const t = state.tournaments.find(x=>x.id===id);
+  if(!t) return;
+  const r = t.result;
+  openModal(`
+    <h2>${t.name}</h2>
+    <p style="color:var(--txt-mute);font-size:13px;margin:-8px 0 14px">${formatDate(t.start)} · ${t.venue||""} · Buy-in ${t.buyin}€</p>
+    ${r?`
+      <div class="card" style="margin:0 0 14px">
+        <h3>Résultat</h3>
+        <p>Place ${r.position||"?"} / ${r.totalPlayers||"?"}</p>
+        <p>Gain : <b>${r.payout||0}€</b> (net ${(parseFloat(r.payout)||0)-(parseFloat(t.buyin)||0)}€)</p>
+        ${r.notes?`<p style="font-style:italic">${r.notes}</p>`:""}
+      </div>
+    `:`<p style="color:var(--gold)">● Tournoi en cours</p>`}
+    ${t.hands && t.hands.length?`
+      <h3 style="margin-top:14px">Mains (${t.hands.length})</h3>
+      ${t.hands.map(h=>renderHandEntry(h)).join("")}
+    `:""}
+    ${t.notes && t.notes.length?`
+      <h3 style="margin-top:14px">Notes adversaires</h3>
+      ${t.notes.map(n=>`<div class="hand-entry"><div class="top"><span class="tag-mini">${n.player||"?"}</span></div><div class="body">${n.tag?`<span class="weekTag">${n.tag}</span>`:""}${n.text}</div></div>`).join("")}
+    `:""}
+    <div style="height:14px"></div>
+    ${!r?`<button class="btn" onclick="state.liveId='${t.id}';closeModal();renderTracker();">Reprendre le suivi</button>
+    <div style="height:8px"></div>`:""}
+    <button class="btn danger small" onclick="deleteTournament('${t.id}')">Supprimer ce tournoi</button>
+  `);
+}
+
+function deleteTournament(id){
+  if(!confirm("Supprimer ce tournoi ? Action irréversible.")) return;
+  state.tournaments = state.tournaments.filter(t=>t.id!==id);
+  if(state.liveId===id) state.liveId = null;
+  saveState();
+  closeModal();
+  renderTracker();
+}
+
+/* =========================================================
+   RESOURCES
+   ========================================================= */
+function renderResources(){
+  const c = document.getElementById("resContainer");
+  const byCat = {};
+  RESOURCES.forEach(r=>{ (byCat[r.cat]=byCat[r.cat]||[]).push(r); });
+  let html = "";
+  const order = ["Outil","Livre","Vidéo","Communauté"];
+  order.forEach(cat=>{
+    if(!byCat[cat]) return;
+    html += `<div class="section-title">${cat}s</div>`;
+    byCat[cat].forEach(r=>{
+      html += `<div class="res-card">
+        <div class="cat">Semaines ${r.w.join(", ")}</div>
+        <div class="name">${r.name}</div>
+        <div class="desc">${r.desc}</div>
+        ${r.link?`<a href="${r.link}" target="_blank" rel="noopener">Ouvrir ↗</a>`:""}
+      </div>`;
+    });
+  });
+  c.innerHTML = html;
+}
+
+/* =========================================================
+   IMPORT / EXPORT / RESET
+   ========================================================= */
+function exportData(){
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "poker-edge-export-"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Export téléchargé ✓");
+}
+
+function importDataPrompt(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json,.json";
+  input.onchange = e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const r = new FileReader();
+    r.onload = ev=>{
+      try{
+        const imported = JSON.parse(ev.target.result);
+        if(!confirm("Remplacer les données actuelles ?")) return;
+        state = imported;
+        saveState();
+        renderTracker();
+        renderHome();
+        toast("Import réussi ✓");
+      }catch(err){ alert("Fichier invalide."); }
+    };
+    r.readAsText(file);
+  };
+  input.click();
+}
+
+function confirmReset(){
+  if(!confirm("Tout effacer ? Cette action est définitive.")) return;
+  if(!confirm("Vraiment ? Tous tournois, mains, et progression seront perdus.")) return;
+  localStorage.removeItem("pokerEdge_v1");
+  state = {tasks:{},drillScore:0,drillTotal:0,drillSession:{score:0,total:0},tournaments:[],liveId:null};
+  renderHome(); renderTracker();
+  toast("Données effacées");
+}
+
+/* =========================================================
+   MODAL & TOAST
+   ========================================================= */
+function openModal(html){
+  document.getElementById("modalContent").innerHTML = html;
+  document.getElementById("modal").classList.add("open");
+}
+function closeModal(){
+  document.getElementById("modal").classList.remove("open");
+}
+document.getElementById("modal").addEventListener("click", e=>{
+  if(e.target.id==="modal") closeModal();
+});
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+/* =========================================================
+   UTILS
+   ========================================================= */
+function formatDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"});
+}
+function formatTime(ts){
+  const d = new Date(ts);
+  return d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+loadState();
+renderHome();
+
+// Show install hint if not in standalone mode (iOS Safari)
+if(!window.navigator.standalone){
+  document.getElementById("installHint").style.display = "block";
+}
+
+// Service worker for offline (inline, no separate file needed for basic caching via App Cache fallback)
+// PWA install works via manifest in real deployment; for local file this is enough.
+
+</script>
+</body>
+</html>
