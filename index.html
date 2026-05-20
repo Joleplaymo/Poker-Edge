@@ -213,7 +213,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 /* Modal */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex;animation:fadeIn .2s}
-.modal{background:var(--bg-2);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease}
+.modal{background:var(--bg-2);width:100%;max-width:720px;max-height:96vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 .modal h2{margin:0 0 16px;font-size:20px;font-weight:600}
 .modal .close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--txt-mute);font-size:24px;cursor:pointer}
@@ -239,6 +239,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .seg-btn.active{background:var(--gold);color:var(--on-gold)}
 .seg-btn:not(.active):active{background:var(--bg-2)}
 .seg.small .seg-btn{padding:6px 8px;font-size:11px}
+.seg-col{flex-direction:column}
 /* Inline unit toggle (live panel) */
 .unit-toggle{background:rgba(212,175,55,0.15);border:1px solid var(--gold-soft);color:var(--gold);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;font-family:inherit;margin-left:6px}
 .unit-toggle:active{transform:scale(0.95)}
@@ -259,6 +260,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .s-btn.red{color:var(--red)}
 .s-btn.active{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
 .s-btn.red.active{color:var(--on-gold)}
+.r-btn:disabled,.s-btn:disabled{opacity:0.22;cursor:not-allowed}
 .picker-clear{background:none;border:none;color:var(--txt-mute);font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:inherit}
 .picker-hint{font-size:11px;color:var(--txt-mute);text-align:center;margin-top:8px;font-style:italic}
 /* Poker table viz */
@@ -293,7 +295,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .street-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .street-head .name{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
 .street-head .toggle{background:none;border:none;color:var(--txt-mute);font-size:18px;cursor:pointer;font-family:inherit;line-height:1;padding:0 4px}
-.street-pot-badge{font-size:10px;color:var(--gold);font-weight:700;font-family:Georgia,serif;letter-spacing:0.04em;background:rgba(212,175,55,0.13);padding:2px 8px;border-radius:10px}
+.street-pot-badge{font-size:14px;color:var(--gold);font-weight:700;font-family:Georgia,serif;letter-spacing:0.04em;background:rgba(212,175,55,0.18);padding:3px 12px;border-radius:10px}
 .street-pot-badge:empty{display:none}
 .act-summary{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
 .act-summary:empty{display:none;margin:0}
@@ -308,6 +310,8 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .pos-btn.active{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
 .pos-btn.hero{border-color:var(--gold-soft)}
 .pos-btn:disabled{opacity:0.3;cursor:default;text-decoration:line-through}
+.pos-picker-lg .pos-btn{padding:4px 10px;font-size:12px;border-radius:6px}
+.input-sm{padding:4px 8px!important;font-size:12px!important;height:auto}
 .street-block .field{margin-bottom:8px}
 .street-block .field:last-child{margin-bottom:0}
 .street-block textarea{min-height:54px}
@@ -397,7 +401,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 
 <header>
   <h1><span class="spade">♠</span>Poker Edge</h1>
-  <div class="sub">Plan d'entraînement & Live tracker</div>
+  <div class="sub">Study & Live tracker</div>
   <button class="palette-toggle" id="paletteToggle" onclick="openAccentPicker()" aria-label="Couleur d'accent" title="Couleur d'accent"><span class="dot"></span></button>
   <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Changer de thème" title="Changer de thème">☼</button>
 </header>
@@ -412,7 +416,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   </div>
 
   <div class="hero">
-    <h1 class="big">Le poker se gagne <span class="accent">entre les mains</span></h1>
+    <h1 class="big">Le poker est <span class="accent">le sport le plus violent</span> que l'on peut faire assis</h1>
     <div class="quoteContainer"><div class="quote" id="dailyQuote"></div></div>
   </div>
 
@@ -737,7 +741,7 @@ const QUOTES = [
   "Le poker est un jeu d'incertitude. Maîtrise tes décisions, pas les résultats.",
   "Joue le joueur, pas tes cartes.",
   "La patience est une arme. L'agressivité bien placée en est une autre.",
-  "On ne gagne pas un tournoi en début, on évite juste de le perdre.",
+  "On ne gagne pas un tournoi, on évite juste de le perdre.",
   "Chaque main est une décision, chaque décision est une donnée."
 ];
 
@@ -2033,8 +2037,7 @@ const POSITIONS_BY_SEATS = {
   9:  ["UTG","UTG+1","MP","MP+1","HJ","CO","BTN","SB","BB"],
   10: ["UTG","UTG+1","UTG+2","MP","MP+1","HJ","CO","BTN","SB","BB"]
 };
-const PRE_ACTIONS  = ["","fold","limp","call","raise","3-bet","4-bet","5-bet","jam","check"];
-const POST_ACTIONS = ["","check","bet","call","raise","check-raise","jam","fold"];
+const HAND_ACTIONS = ["fold","call","check","raise"];
 
 function getPositionsForHand(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
@@ -2102,6 +2105,7 @@ function pkrClear(id){
   afterPickerChange(id);
 }
 function afterPickerChange(id){
+  Object.keys(_pkrs).forEach(pid => { if(pid !== id) pkrRender(pid); });
   if(typeof updateBoardPreviews==="function" && (id==="pkrFlop"||id==="pkrTurn")) updateBoardPreviews();
   if(typeof evaluateShowdown==="function") evaluateShowdown();
 }
@@ -2111,6 +2115,18 @@ function pkrSync(id){
   const v = p.slots.map(c=>c?c.r+suitChar[c.s]:"").filter(Boolean).join(" ");
   const out = document.getElementById(id+"_out");
   if(out) out.value = v;
+}
+function getExcludedCards(excludeId, excludeSlot){
+  const excluded = new Set();
+  Object.keys(_pkrs).forEach(id => {
+    const p = _pkrs[id]; if(!p) return;
+    p.slots.forEach((c, i) => {
+      if(!c) return;
+      if(id === excludeId && i === excludeSlot) return;
+      excluded.add(c.r + c.s);
+    });
+  });
+  return excluded;
 }
 function pkrRender(id){
   const p=_pkrs[id]; if(!p) return;
@@ -2132,7 +2148,15 @@ function pkrRender(id){
   }
   const wrap = document.getElementById(id+"_wrap");
   if(wrap){
-    wrap.querySelectorAll(".r-btn").forEach(b=>b.classList.toggle("active", b.dataset.r===p.pickRank));
+    const excluded = getExcludedCards(id, p.activeSlot);
+    const suits = ["s","h","d","c"];
+    wrap.querySelectorAll(".r-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.r === p.pickRank);
+      b.disabled = suits.every(s => excluded.has(b.dataset.r + s));
+    });
+    wrap.querySelectorAll(".s-btn").forEach(b => {
+      b.disabled = p.pickRank ? excluded.has(p.pickRank + b.dataset.s) : false;
+    });
   }
 }
 function pkrValue(id){ const out=document.getElementById(id+"_out"); return out ? out.value : ""; }
@@ -2143,6 +2167,7 @@ let _heroPos = "BTN";
 let _pendingActions = {preflop:[], flop:[], turn:[], river:[]};
 let _streetCursor = {preflop:0, flop:0, turn:0, river:0};
 let _curActionPos = {preflop:"", flop:"", turn:"", river:""};
+let _pendingRaise = {preflop:false, flop:false, turn:false, river:false};
 let _pendingShowdown = [];
 
 function buildHandForm(h, t, isEdit){
@@ -2151,24 +2176,25 @@ function buildHandForm(h, t, isEdit){
   const positions = getPositionsForHand();
   const hPos = h.position || (positions.includes("BTN") ? "BTN" : positions[positions.length-3]);
   return `
-    <h2>${isEdit?"Modifier la main":"Nouvelle main"}</h2>
+    <h2 style="margin:0 0 12px">${isEdit?"Modifier la main":"Nouvelle main"}</h2>
 
-    <div class="unit-banner">
-      <label>Unité de tous les montants</label>
-      <div class="seg small" id="hUnitSeg">
-        <button type="button" class="seg-btn ${unit==='bb'?'active':''}" data-u="bb" onclick="setHandUnit('bb')">BB</button>
-        <button type="button" class="seg-btn ${unit==='chips'?'active':''}" data-u="chips" onclick="setHandUnit('chips')">Jetons</button>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px">
+      <div style="flex:1;min-width:0">
+        <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Ma position</label>
+        <div class="pos-picker pos-picker-lg" style="margin-top:4px;margin-bottom:0">
+          ${positions.map(p=>`<button type="button" class="pos-btn${p===hPos?' active':''}" onclick="setHeroPos('${p}')">${p}</button>`).join("")}
+        </div>
+        <input type="hidden" id="hPos" value="${hPos}">
       </div>
-    </div>
-
-    <div class="row">
-      <div class="field"><label>Ma position</label>
-        <select id="hPos" onchange="onHeroPositionChange()">
-          ${positions.map(p=>`<option ${p===hPos?"selected":""}>${p}</option>`).join("")}
-        </select>
+      <div style="width:130px;flex-shrink:0">
+        <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Mon stack</label>
+        <input id="hStack" type="number" inputmode="decimal" step="any" placeholder="${unit==='bb'?'40':'30000'}" value="${h.stack||""}" class="input-sm" style="margin-top:4px;width:100%">
       </div>
-      <div class="field"><label>Mon stack</label>
-        <input id="hStack" type="number" inputmode="decimal" step="any" placeholder="${unit==='bb'?'40':'30000'}" value="${h.stack||""}">
+      <div style="flex-shrink:0">
+        <div class="pos-picker-lg" id="hUnitSeg" style="display:flex;gap:3px;margin:0">
+          <button type="button" class="pos-btn seg-btn ${unit==='bb'?'active':''}" data-u="bb" onclick="setHandUnit('bb')">BB</button>
+          <button type="button" class="pos-btn seg-btn ${unit==='chips'?'active':''}" data-u="chips" onclick="setHandUnit('chips')">Jetons</button>
+        </div>
       </div>
     </div>
 
@@ -2249,6 +2275,7 @@ function initHandForm(h, t){
     turn:    (h.turn    && h.turn.actions)    || migrateStreetFromLegacy(h,"turn"),
     river:   (h.river   && h.river.actions)   || migrateStreetFromLegacy(h,"river")
   };
+  _pendingRaise = {preflop:false, flop:false, turn:false, river:false};
   _pendingShowdown = h.showdown || [];
   renderPreflopRows();
   updateBoardPreviews();
@@ -2302,6 +2329,13 @@ function setHandUnit(u){
   if(stackInp) stackInp.placeholder = u==="bb" ? "40" : "30000";
 }
 
+function setHeroPos(p){
+  _heroPos = p;
+  const h = document.getElementById("hPos");
+  if(h) h.value = p;
+  document.querySelectorAll(".pos-picker .pos-btn[onclick^='setHeroPos']").forEach(b=>b.classList.toggle("active", b.textContent===p));
+  renderPreflopRows();
+}
 function onHeroPositionChange(){
   _heroPos = document.getElementById("hPos").value;
   renderPreflopRows();
@@ -2311,18 +2345,53 @@ function foldedInStreet(st){
   return new Set((_pendingActions[st]||[]).filter(a=>a.action==="fold").map(a=>a.position));
 }
 
-function nextActivePos(ordered, foldedSet, afterPos){
-  const idx = ordered.indexOf(afterPos);
-  for(let i=1; i<=ordered.length; i++){
-    const p = ordered[(idx+i) % ordered.length];
-    if(!foldedSet.has(p)) return p;
+function activeForStreet(st){
+  let active = activeAfterPreflop();
+  const streets = ["flop","turn","river"];
+  const stIdx = streets.indexOf(st);
+  for(let i = 0; i < stIdx; i++){
+    (_pendingActions[streets[i]]||[]).forEach(a=>{
+      if(a.action==="fold") active = active.filter(p=>p!==a.position);
+    });
   }
-  return ordered.find(p=>!foldedSet.has(p)) || ordered[0];
+  return active;
+}
+
+function getNextActor(street, ordered, foldedSet){
+  const actions = _pendingActions[street] || [];
+  const active = ordered.filter(p => !foldedSet.has(p));
+  if(active.length <= 1) return null;
+  // Last raise index
+  let lastRaiseIdx = -1;
+  for(let i = actions.length-1; i >= 0; i--){
+    if(["raise","3-bet","4-bet","5-bet","jam"].includes(actions[i].action)){ lastRaiseIdx = i; break; }
+  }
+  // Last action index per position
+  const lastActed = {};
+  actions.forEach((a,i) => { lastActed[a.position] = i; });
+  // Positions still needing to act
+  const needToAct = active.filter(p => {
+    const idx = lastActed[p];
+    if(idx === undefined) return true;   // never acted
+    if(lastRaiseIdx > idx) return true;  // raise happened after their last action
+    return false;
+  });
+  if(!needToAct.length) return null; // street closed
+  // Next in order after last actor
+  const lastActor = actions.length ? actions[actions.length-1].position : null;
+  const lastIdx = lastActor ? ordered.indexOf(lastActor) : -1;
+  for(let i = 1; i <= ordered.length; i++){
+    const p = ordered[(lastIdx+i) % ordered.length];
+    if(needToAct.includes(p)) return p;
+  }
+  return needToAct[0];
 }
 
 function setActionPos(pos, street){
+  _pendingRaise[street] = false;
   _curActionPos[street] = pos;
-  document.querySelectorAll("#"+street+"Rows .pos-btn").forEach(b=>b.classList.toggle("active", b.dataset.pos===pos));
+  if(street === "preflop") renderPreflopRows();
+  else refreshPostflopRows();
 }
 
 function renderPreflopRows(){
@@ -2332,9 +2401,11 @@ function renderPreflopRows(){
   const done = _pendingActions.preflop;
   const folded = foldedInStreet("preflop");
   const active = positions.filter(p=>!folded.has(p));
-  // Init selected position
-  if(!_curActionPos.preflop || folded.has(_curActionPos.preflop))
-    _curActionPos.preflop = active[0] || positions[0];
+  // Init selected position using proper action order
+  if(!_curActionPos.preflop || folded.has(_curActionPos.preflop)){
+    const next = getNextActor("preflop", positions, folded);
+    _curActionPos.preflop = next || active[0] || positions[0];
+  }
   const cur = _curActionPos.preflop;
   const ph = _handUnit==="bb" ? "2.5" : "5000";
   const unitSuf = _handUnit==="chips" ? " j" : "bb";
@@ -2348,10 +2419,11 @@ function renderPreflopRows(){
     return `<button type="button" class="pos-btn${p===cur?" active":""}${isHero?" hero":""}" data-pos="${p}" ${isFolded?"disabled":""} onclick="setActionPos('${p}','preflop')">${p}${isHero?" ★":""}</button>`;
   }).join("")}</div>`;
   const isHero = cur===_heroPos;
-  const btns = PRE_ACTIONS.map(a=>`<button type="button" class="action-btn" data-val="${a}" onclick="setHandAction(this,'preflop')">${a||"—"}</button>`).join("");
+  const raisePending = _pendingRaise.preflop;
+  const btns = HAND_ACTIONS.map(a=>`<button type="button" class="action-btn${a==="raise"&&raisePending?" active":""}" data-val="${a}" onclick="setHandAction(this,'preflop')">${a}</button>`).join("");
   wrap.innerHTML = summary + posPicker + `<div class="pre-row ${isHero?"hero":""}">
     <span class="pos-label">${cur}${isHero?'<span class="hero-tag">moi</span>':""}</span>
-    <input data-pos="${cur}" data-field="amt" type="number" inputmode="decimal" step="any" placeholder="${ph}" value="" oninput="onAmtInput()">
+    <input data-pos="${cur}" data-field="amt" type="number" inputmode="decimal" step="any" placeholder="${ph}" value="" oninput="onAmtInput()" style="${raisePending?'':'display:none'}">
     <div class="action-btns">${btns}</div>
     <input type="hidden" data-pos="${cur}" data-field="action" value="">
   </div>`;
@@ -2372,23 +2444,27 @@ function onAmtInput(){ updatePotChips(); }
 function setHandAction(btn, street){
   const row = btn.closest(".pre-row");
   const hidden = row.querySelector("input[data-field='action']");
-  const amtInput = row.querySelector("input[type='number']");
+  const amtInput = row.querySelector("input[data-field='amt']");
   const pos = hidden ? hidden.dataset.pos : "";
   const action = btn.dataset.val;
-  const amt = amtInput ? amtInput.value : "";
-  _pendingActions[street].push({position: pos, action, amt});
-  // Auto-advance: next non-folded position
-  const folded = foldedInStreet(street);
-  let ordered;
-  if(street === "preflop"){
-    ordered = getPositionsForHand();
+  if(action === "raise"){
+    if(!_pendingRaise[street]){
+      _pendingRaise[street] = true;
+      if(street === "preflop") renderPreflopRows();
+      else refreshPostflopRows();
+      return;
+    }
+    const amt = amtInput ? amtInput.value : "";
+    _pendingActions[street].push({position: pos, action, amt});
+    _pendingRaise[street] = false;
   } else {
-    ordered = orderPostflop(activeAfterPreflop());
+    _pendingActions[street].push({position: pos, action, amt: ""});
+    _pendingRaise[street] = false;
   }
-  const activeOrdered = ordered.filter(p=>!folded.has(p));
-  if(activeOrdered.length > 0){
-    _curActionPos[street] = nextActivePos(activeOrdered, new Set(), pos) || activeOrdered[0];
-  }
+  const folded = foldedInStreet(street);
+  const ordered = street === "preflop" ? getPositionsForHand() : orderPostflop(activeForStreet(street));
+  const next = getNextActor(street, ordered, folded);
+  _curActionPos[street] = next || ordered.find(p=>!folded.has(p)) || "";
   if(street === "preflop") renderPreflopRows();
   else refreshPostflopRows();
 }
@@ -2396,16 +2472,20 @@ function setHandAction(btn, street){
 function jumpToAction(street, idx){
   _pendingActions[street] = _pendingActions[street].slice(0, idx);
   _curActionPos[street] = "";
+  _pendingRaise[street] = false;
   if(street === "preflop"){
     _pendingActions.flop = []; _pendingActions.turn = []; _pendingActions.river = [];
     _curActionPos.flop = ""; _curActionPos.turn = ""; _curActionPos.river = "";
+    _pendingRaise.flop = false; _pendingRaise.turn = false; _pendingRaise.river = false;
     renderPreflopRows();
   } else if(street === "flop"){
     _pendingActions.turn = []; _pendingActions.river = [];
     _curActionPos.turn = ""; _curActionPos.river = "";
+    _pendingRaise.turn = false; _pendingRaise.river = false;
     refreshPostflopRows();
   } else if(street === "turn"){
     _pendingActions.river = []; _curActionPos.river = "";
+    _pendingRaise.river = false;
     refreshPostflopRows();
   } else {
     refreshPostflopRows();
@@ -2442,9 +2522,11 @@ function refreshPostflopRows(){
     const ordered = orderPostflop(active);
     const foldedSt = foldedInStreet(st);
     const activeSt = ordered.filter(p=>!foldedSt.has(p));
-    // Init selected position for this street
-    if(!_curActionPos[st] || (!activeSt.includes(_curActionPos[st]) && activeSt.length))
-      _curActionPos[st] = activeSt[0] || ordered[0];
+    // Init selected position using proper action order
+    if(!_curActionPos[st] || foldedSt.has(_curActionPos[st]) || !ordered.includes(_curActionPos[st])){
+      const next = getNextActor(st, ordered, foldedSt);
+      _curActionPos[st] = next || activeSt[0] || ordered[0];
+    }
     const cur = _curActionPos[st];
     const ph = _handUnit==="bb" ? "2.5" : "5000";
     const unitSuf = _handUnit==="chips" ? " j" : "bb";
@@ -2459,10 +2541,11 @@ function refreshPostflopRows(){
       return `<button type="button" class="pos-btn${p===cur?" active":""}${isHero?" hero":""}" data-pos="${p}" ${isFolded?"disabled":""} onclick="setActionPos('${p}','${st}')">${p}${isHero?" ★":""}</button>`;
     }).join("")}</div>`;
     const isHero = cur===_heroPos;
-    const btns = POST_ACTIONS.map(a=>`<button type="button" class="action-btn" data-val="${a}" onclick="setHandAction(this,'${st}')">${a||"—"}</button>`).join("");
+    const raisePending = _pendingRaise[st];
+    const btns = HAND_ACTIONS.map(a=>`<button type="button" class="action-btn${a==="raise"&&raisePending?" active":""}" data-val="${a}" onclick="setHandAction(this,'${st}')">${a}</button>`).join("");
     wrap.innerHTML = summary + posPicker + `<div class="pre-row ${isHero?"hero":""}">
       <span class="pos-label">${cur}${isHero?'<span class="hero-tag">moi</span>':""}</span>
-      <input data-pos="${cur}" data-field="amt" type="number" inputmode="decimal" step="any" placeholder="${ph}" value="" oninput="onAmtInput()">
+      <input data-pos="${cur}" data-field="amt" type="number" inputmode="decimal" step="any" placeholder="${ph}" value="" oninput="onAmtInput()" style="${raisePending?'':'display:none'}">
       <div class="action-btns">${btns}</div>
       <input type="hidden" data-pos="${cur}" data-field="action" value="">
     </div>`;
