@@ -181,6 +181,34 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .install-hint b{color:var(--gold)}
 .install-hint .x{float:right;color:var(--txt-mute);cursor:pointer;font-size:18px;line-height:1}
 .weekTag{display:inline-block;background:var(--bg-3);color:var(--gold);padding:2px 8px;border-radius:10px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;margin-right:6px}
+/* Segmented toggle */
+.seg{display:flex;background:var(--bg-3);border:1px solid var(--line-2);border-radius:8px;overflow:hidden;width:100%}
+.seg-btn{flex:1;background:none;border:none;color:var(--txt-dim);padding:10px 8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:0.02em;transition:background .1s,color .1s}
+.seg-btn.active{background:var(--gold);color:#1a1208}
+.seg-btn:not(.active):active{background:var(--bg-2)}
+.seg.small .seg-btn{padding:6px 8px;font-size:11px}
+/* Inline unit toggle (live panel) */
+.unit-toggle{background:rgba(212,175,55,0.15);border:1px solid var(--gold-soft);color:var(--gold);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;font-family:inherit;margin-left:6px}
+.unit-toggle:active{transform:scale(0.95)}
+/* Card picker */
+.card-picker{background:var(--bg-3);border:1px solid var(--line-2);border-radius:10px;padding:12px;margin-bottom:12px}
+.card-slots{display:flex;justify-content:center;gap:10px;margin-bottom:12px}
+.card-slot{width:56px;height:78px;background:#f5efe0;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;color:#1a1208;box-shadow:0 4px 10px rgba(0,0,0,0.3);cursor:pointer;border:2px solid transparent;transition:border-color .15s}
+.card-slot.empty{background:transparent;color:var(--txt-mute);border:2px dashed var(--line-2);box-shadow:none;font-size:24px}
+.card-slot.active{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,0.25),0 4px 10px rgba(0,0,0,0.3)}
+.card-slot.red{color:var(--red)}
+.card-slot .r{font-size:22px;line-height:1}
+.card-slot .s{font-size:18px;line-height:1;margin-top:2px}
+.rank-row{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-bottom:8px}
+.r-btn{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);padding:8px 0;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .1s,border-color .1s}
+.r-btn.active{background:var(--gold);color:#1a1208;border-color:var(--gold)}
+.suit-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.s-btn{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);padding:10px 0;border-radius:6px;font-size:18px;cursor:pointer;font-family:inherit;transition:background .1s,border-color .1s}
+.s-btn.red{color:var(--red)}
+.s-btn.active{background:var(--gold);border-color:var(--gold);color:#1a1208}
+.s-btn.red.active{color:#1a1208}
+.picker-clear{background:none;border:none;color:var(--txt-mute);font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:inherit}
+.picker-hint{font-size:11px;color:var(--txt-mute);text-align:center;margin-top:8px;font-style:italic}
 </style>
 </head>
 <body>
@@ -562,8 +590,35 @@ let state = {
   drillTotal: 0,
   drillSession: {score:0, total:0},
   tournaments: [],
-  liveId: null
+  liveId: null,
+  stackUnit: "bb" // "bb" | "chips"
 };
+
+/* BB helpers */
+function getBB(t){
+  if(!t || !t.blinds) return null;
+  const parts = String(t.blinds).split(/[\/\s-]+/).map(s=>parseFloat(s.replace(",","."))).filter(n=>!isNaN(n));
+  if(parts.length>=2) return parts[1];
+  if(parts.length===1) return parts[0]*2;
+  return null;
+}
+function formatStack(t){
+  const chips = parseFloat(t.stack);
+  if(isNaN(chips)) return "—";
+  if(state.stackUnit==="bb"){
+    const bb = getBB(t);
+    if(bb && bb>0){
+      const v = chips/bb;
+      return (v>=10?Math.round(v):v.toFixed(1))+" bb";
+    }
+  }
+  return chips.toLocaleString("fr-FR");
+}
+function toggleStackUnit(){
+  state.stackUnit = state.stackUnit==="bb" ? "chips" : "bb";
+  saveState();
+  renderTracker();
+}
 
 function loadState(){
   try{
@@ -864,7 +919,7 @@ function renderTracker(){
         <div style="font-size:12px;color:var(--txt-mute);margin-bottom:14px">Buy-in ${live.buyin}€ · ${live.venue||"—"} · ${formatDate(live.start)}</div>
 
         <div class="live-stats">
-          <div class="live-stat"><div class="v">${live.stack||"—"}</div><div class="l">Stack</div></div>
+          <div class="live-stat"><div class="v">${formatStack(live)}</div><div class="l">Stack <button class="unit-toggle" onclick="event.stopPropagation();toggleStackUnit()">${state.stackUnit==='bb'?'bb':'jetons'}</button></div></div>
           <div class="live-stat"><div class="v">${live.blinds||"—"}</div><div class="l">Blinds</div></div>
           <div class="live-stat"><div class="v">${live.players||"—"}</div><div class="l">Joueurs</div></div>
         </div>
@@ -923,8 +978,11 @@ function renderTracker(){
 
 function renderHandEntry(h, idx){
   const handCards = h.cards?`<span style="color:var(--gold);font-family:Georgia">${h.cards}</span>`:"";
-  return `<div class="hand-entry" onclick="editHand(${idx})">
-    <div class="top"><span class="tag-mini">${h.position||"?"} · ${h.stack||"?"}bb</span><span>${h.time||""}</span></div>
+  const unit = h.stackUnit==="chips" ? " jetons" : "bb";
+  const stackStr = h.stack ? `${h.stack}${unit}` : "?";
+  const editAttr = idx!==undefined ? `onclick="editHand(${idx})"` : "";
+  return `<div class="hand-entry" ${editAttr}>
+    <div class="top"><span class="tag-mini">${h.position||"?"} · ${stackStr}</span><span>${h.time||""}</span></div>
     <div class="body">
       ${handCards} ${h.action?` · ${h.action}`:""}<br>
       ${h.notes||""}
@@ -971,20 +1029,68 @@ function createTournament(){
 function updateLiveStack(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
+  const bb = getBB(t);
+  const startUnit = bb ? "bb" : "chips";
+  const startVal = (startUnit==="bb" && bb && t.stack) ? (parseFloat(t.stack)/bb).toFixed(1) : (t.stack||"");
   openModal(`
     <h2>Mise à jour</h2>
-    <div class="field"><label>Stack actuel (jetons)</label><input id="uStack" type="number" inputmode="numeric" value="${t.stack||""}"></div>
-    <div class="field"><label>Blinds actuelles</label><input id="uBlinds" placeholder="Ex: 500/1000/100" value="${t.blinds||""}"></div>
+    <div class="field"><label>Blinds actuelles</label><input id="uBlinds" placeholder="Ex: 500/1000/100" value="${t.blinds||""}" oninput="onBlindsChange()"></div>
+    <div class="field">
+      <label>Stack actuel</label>
+      <input id="uStack" type="number" inputmode="decimal" step="any" value="${startVal}">
+      <div style="height:6px"></div>
+      <div class="seg small" id="uStackUnitSeg">
+        <button type="button" class="seg-btn ${startUnit==='bb'?'active':''}" data-u="bb" onclick="setStackInputUnit('bb')">Big blinds</button>
+        <button type="button" class="seg-btn ${startUnit==='chips'?'active':''}" data-u="chips" onclick="setStackInputUnit('chips')">Jetons</button>
+      </div>
+      <div class="picker-hint" id="uStackHint"></div>
+    </div>
     <div class="field"><label>Joueurs restants</label><input id="uPlayers" type="number" inputmode="numeric" value="${t.players||""}"></div>
     <button class="btn" onclick="saveStackUpdate()">Enregistrer</button>
   `);
+  refreshStackHint();
+}
+
+let _stackInputUnit = "bb";
+function setStackInputUnit(u){
+  const inp = document.getElementById("uStack");
+  const cur = parseFloat(inp.value);
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  const bb = getBB({blinds: document.getElementById("uBlinds").value});
+  if(!isNaN(cur) && bb){
+    if(_stackInputUnit==="bb" && u==="chips") inp.value = Math.round(cur*bb);
+    else if(_stackInputUnit==="chips" && u==="bb") inp.value = (cur/bb).toFixed(1);
+  }
+  _stackInputUnit = u;
+  document.querySelectorAll("#uStackUnitSeg .seg-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.u===u);
+  });
+  refreshStackHint();
+}
+function onBlindsChange(){ refreshStackHint(); }
+function refreshStackHint(){
+  const hint = document.getElementById("uStackHint");
+  if(!hint) return;
+  const bb = getBB({blinds: document.getElementById("uBlinds").value});
+  const v = parseFloat(document.getElementById("uStack").value);
+  if(!bb){ hint.textContent = "Blinds inconnues — saisie en jetons uniquement."; return; }
+  if(isNaN(v)){ hint.textContent = `BB = ${bb} jetons.`; return; }
+  if(_stackInputUnit==="bb") hint.textContent = `≈ ${Math.round(v*bb).toLocaleString("fr-FR")} jetons (BB=${bb})`;
+  else hint.textContent = `≈ ${(v/bb).toFixed(1)} bb (BB=${bb})`;
 }
 
 function saveStackUpdate(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
-  t.stack = document.getElementById("uStack").value;
   t.blinds = document.getElementById("uBlinds").value;
+  const raw = parseFloat(document.getElementById("uStack").value);
+  if(!isNaN(raw)){
+    const bb = getBB(t);
+    if(_stackInputUnit==="bb" && bb) t.stack = String(Math.round(raw*bb));
+    else t.stack = String(raw);
+  } else {
+    t.stack = "";
+  }
   t.players = document.getElementById("uPlayers").value;
   saveState();
   closeModal();
@@ -995,40 +1101,242 @@ function saveStackUpdate(){
 function addHand(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
-  openModal(`
-    <h2>Nouvelle main</h2>
+  const bb = getBB(t);
+  openModal(buildHandForm({}, t, false));
+  initHandForm({}, t);
+}
+
+function buildHandForm(h, t, isEdit){
+  const bb = getBB(t);
+  const stackUnit = h.stackUnit || (bb ? "bb" : "chips");
+  const stackVal = h.stack || "";
+  const actionTypes = ["","Open","Limp","Call","Raise","3-bet","4-bet","Jam","Check","Fold","C-bet","Check-raise","Donk","Bet"];
+  return `
+    <h2>${isEdit?"Modifier la main":"Nouvelle main"}</h2>
     <div class="row">
       <div class="field"><label>Position</label>
         <select id="hPos">
-          <option>UTG</option><option>UTG+1</option><option>MP</option><option>HJ</option><option>CO</option><option>BTN</option><option>SB</option><option>BB</option>
+          ${["UTG","UTG+1","MP","HJ","CO","BTN","SB","BB"].map(p=>`<option ${p===h.position?"selected":""}>${p}</option>`).join("")}
         </select>
       </div>
-      <div class="field"><label>Stack (bb)</label><input id="hStack" type="number" inputmode="decimal" placeholder="40"></div>
+      <div class="field"><label>Stack</label>
+        <input id="hStack" type="number" inputmode="decimal" step="any" placeholder="${stackUnit==='bb'?'40':'30000'}" value="${stackVal}">
+        <div style="height:6px"></div>
+        <div class="seg small" id="hStackUnitSeg">
+          <button type="button" class="seg-btn ${stackUnit==='bb'?'active':''}" data-u="bb" onclick="setHandStackUnit('bb')" ${!bb?'disabled style="opacity:0.4"':''}>BB</button>
+          <button type="button" class="seg-btn ${stackUnit==='chips'?'active':''}" data-u="chips" onclick="setHandStackUnit('chips')">Jetons</button>
+        </div>
+      </div>
     </div>
-    <div class="field"><label>Cartes</label><input id="hCards" placeholder="Ex: A♠ K♠"></div>
-    <div class="field"><label>Action / Ligne</label><input id="hAction" placeholder="Open 2.5bb, BB call, flop K72r, c-bet 50%..."></div>
-    <div class="field"><label>Notes / Réflexion</label><textarea id="hNotes" rows="3" placeholder="Ce que je pensais, sizing du vilain, tells..."></textarea></div>
+
+    <div class="field"><label>Cartes</label>
+      <div class="card-picker">
+        <div class="card-slots">
+          <div class="card-slot empty" id="cardSlot0" onclick="selectCardSlot(0)">?</div>
+          <div class="card-slot empty" id="cardSlot1" onclick="selectCardSlot(1)">?</div>
+        </div>
+        <div class="rank-row" id="rankRow">
+          ${["A","K","Q","J","T","9","8","7","6","5","4","3","2"].map(r=>`<button type="button" class="r-btn" data-r="${r}" onclick="pickRank('${r}')">${r}</button>`).join("")}
+        </div>
+        <div class="suit-row" id="suitRow">
+          <button type="button" class="s-btn" data-s="s" onclick="pickSuit('s')">♠</button>
+          <button type="button" class="s-btn red" data-s="h" onclick="pickSuit('h')">♥</button>
+          <button type="button" class="s-btn red" data-s="d" onclick="pickSuit('d')">♦</button>
+          <button type="button" class="s-btn" data-s="c" onclick="pickSuit('c')">♣</button>
+        </div>
+        <div style="text-align:center"><button type="button" class="picker-clear" onclick="clearCards()">Effacer</button></div>
+        <div class="picker-hint" id="pickerHint">Choisis un rang puis une couleur.</div>
+      </div>
+      <input type="hidden" id="hCards" value="${h.cards||""}">
+    </div>
+
+    <div class="field"><label>Action</label>
+      <select id="hActionType">
+        ${actionTypes.map(a=>`<option value="${a}" ${a===(h.actionType||"")?"selected":""}>${a||"— Type d'action —"}</option>`).join("")}
+      </select>
+    </div>
+    <div class="row">
+      <div class="field"><label>Montant</label><input id="hActionAmt" type="number" inputmode="decimal" step="any" placeholder="2.5" value="${h.actionAmt||""}"></div>
+      <div class="field"><label>Unité</label>
+        <div class="seg small" id="hActionUnitSeg">
+          <button type="button" class="seg-btn ${(h.actionUnit||'bb')==='bb'?'active':''}" data-u="bb" onclick="setActionUnit('bb')">BB</button>
+          <button type="button" class="seg-btn ${h.actionUnit==='chips'?'active':''}" data-u="chips" onclick="setActionUnit('chips')">Jetons</button>
+        </div>
+      </div>
+    </div>
+    <div class="field"><label>Détails (optionnel)</label><input id="hActionDetail" placeholder="flop K72r, c-bet 50%..." value="${h.actionDetail||""}"></div>
+
+    <div class="field"><label>Notes / Réflexion</label><textarea id="hNotes" rows="3" placeholder="Ce que je pensais, sizing du vilain, tells...">${h.notes||""}</textarea></div>
     <div class="field"><label>Résultat</label>
       <select id="hResult">
         <option value="">—</option>
-        <option value="won">Gagnée</option>
-        <option value="lost">Perdue</option>
-        <option value="folded">Foldée</option>
+        <option value="won" ${h.result==='won'?'selected':''}>Gagnée</option>
+        <option value="lost" ${h.result==='lost'?'selected':''}>Perdue</option>
+        <option value="folded" ${h.result==='folded'?'selected':''}>Foldée</option>
       </select>
     </div>
-    <button class="btn" onclick="saveHand()">Enregistrer la main</button>
-  `);
+    ${isEdit
+      ? `<button class="btn" onclick="updateHand(${h._idx})">Enregistrer</button>
+         <div style="height:8px"></div>
+         <button class="btn danger small" onclick="deleteHand(${h._idx})">Supprimer la main</button>`
+      : `<button class="btn" onclick="saveHand()">Enregistrer la main</button>`}
+  `;
+}
+
+/* Card picker state */
+let _cardSlots = [null, null]; // {r, s}
+let _activeSlot = 0;
+let _pickRank = null;
+let _handStackUnit = "bb";
+let _actionUnit = "bb";
+
+function initHandForm(h, t){
+  const bb = getBB(t);
+  _handStackUnit = h.stackUnit || (bb ? "bb" : "chips");
+  _actionUnit = h.actionUnit || "bb";
+  _cardSlots = parseCards(h.cards || "");
+  _activeSlot = _cardSlots[0] ? (_cardSlots[1] ? 0 : 1) : 0;
+  _pickRank = null;
+  renderCardSlots();
+}
+
+function parseCards(s){
+  if(!s) return [null,null];
+  const tokens = s.split(/\s+/).filter(Boolean);
+  const out = [null,null];
+  for(let i=0;i<2 && i<tokens.length;i++){
+    const tk = tokens[i];
+    const r = tk[0]?.toUpperCase();
+    const sym = tk.slice(1);
+    const suitMap = {"♠":"s","♥":"h","♦":"d","♣":"c","s":"s","h":"h","d":"d","c":"c"};
+    const su = suitMap[sym] || null;
+    if(r && su) out[i] = {r, s:su};
+  }
+  return out;
+}
+
+function selectCardSlot(idx){
+  _activeSlot = idx;
+  _pickRank = null;
+  renderCardSlots();
+}
+
+function pickRank(r){
+  _pickRank = r;
+  document.querySelectorAll("#rankRow .r-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.r===r);
+  });
+  document.getElementById("pickerHint").textContent = `Rang ${r} sélectionné. Choisis la couleur.`;
+}
+
+function pickSuit(s){
+  if(!_pickRank){
+    document.getElementById("pickerHint").textContent = "Choisis d'abord un rang.";
+    return;
+  }
+  // prevent duplicate
+  const other = _cardSlots[1-_activeSlot];
+  if(other && other.r===_pickRank && other.s===s){
+    document.getElementById("pickerHint").textContent = "Cette carte est déjà sélectionnée.";
+    return;
+  }
+  _cardSlots[_activeSlot] = {r:_pickRank, s};
+  _pickRank = null;
+  // advance to next empty slot
+  if(_activeSlot===0 && !_cardSlots[1]) _activeSlot = 1;
+  else if(_activeSlot===1 && !_cardSlots[0]) _activeSlot = 0;
+  syncCardsField();
+  renderCardSlots();
+}
+
+function clearCards(){
+  _cardSlots = [null,null];
+  _activeSlot = 0;
+  _pickRank = null;
+  syncCardsField();
+  renderCardSlots();
+}
+
+function renderCardSlots(){
+  const suitChar = {s:"♠",h:"♥",d:"♦",c:"♣"};
+  const isRed = s => s==="h"||s==="d";
+  for(let i=0;i<2;i++){
+    const el = document.getElementById("cardSlot"+i);
+    if(!el) continue;
+    const c = _cardSlots[i];
+    el.classList.toggle("active", i===_activeSlot);
+    if(c){
+      el.classList.remove("empty");
+      el.classList.toggle("red", isRed(c.s));
+      el.innerHTML = `<div class="r">${c.r}</div><div class="s">${suitChar[c.s]}</div>`;
+    } else {
+      el.classList.add("empty");
+      el.classList.remove("red");
+      el.innerHTML = "?";
+    }
+  }
+  document.querySelectorAll("#rankRow .r-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.r===_pickRank);
+  });
+  const hint = document.getElementById("pickerHint");
+  if(hint && !_pickRank){
+    if(_cardSlots[0] && _cardSlots[1]) hint.textContent = "Mains complètes. Tape une carte pour la modifier.";
+    else hint.textContent = `Slot ${_activeSlot+1} actif. Choisis un rang puis une couleur.`;
+  }
+}
+
+function syncCardsField(){
+  const suitChar = {s:"♠",h:"♥",d:"♦",c:"♣"};
+  const parts = _cardSlots.map(c => c ? c.r+suitChar[c.s] : "").filter(Boolean);
+  document.getElementById("hCards").value = parts.join(" ");
+}
+
+function setHandStackUnit(u){
+  const inp = document.getElementById("hStack");
+  const cur = parseFloat(inp.value);
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  const bb = getBB(t);
+  if(!isNaN(cur) && bb){
+    if(_handStackUnit==="bb" && u==="chips") inp.value = Math.round(cur*bb);
+    else if(_handStackUnit==="chips" && u==="bb") inp.value = (cur/bb).toFixed(1);
+  }
+  _handStackUnit = u;
+  document.querySelectorAll("#hStackUnitSeg .seg-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.u===u);
+  });
+}
+
+function setActionUnit(u){
+  _actionUnit = u;
+  document.querySelectorAll("#hActionUnitSeg .seg-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.u===u);
+  });
+}
+
+function composeActionStr(type, amt, unit, detail){
+  let s = type || "";
+  if(amt){
+    const u = unit==="bb" ? "bb" : " jetons";
+    s += (s?" ":"") + amt + u;
+  }
+  if(detail) s += (s?" · ":"") + detail;
+  return s.trim();
 }
 
 function saveHand(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
   t.hands = t.hands || [];
+  const actionType = document.getElementById("hActionType").value;
+  const actionAmt = document.getElementById("hActionAmt").value;
+  const actionDetail = document.getElementById("hActionDetail").value;
   t.hands.push({
     position: document.getElementById("hPos").value,
     stack: document.getElementById("hStack").value,
+    stackUnit: _handStackUnit,
     cards: document.getElementById("hCards").value,
-    action: document.getElementById("hAction").value,
+    actionType, actionAmt, actionUnit:_actionUnit, actionDetail,
+    action: composeActionStr(actionType, actionAmt, _actionUnit, actionDetail),
     notes: document.getElementById("hNotes").value,
     result: document.getElementById("hResult").value,
     time: formatTime(Date.now())
@@ -1042,32 +1350,9 @@ function saveHand(){
 function editHand(idx){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t || !t.hands[idx]) return;
-  const h = t.hands[idx];
-  openModal(`
-    <h2>Modifier la main</h2>
-    <div class="row">
-      <div class="field"><label>Position</label>
-        <select id="hPos">
-          ${["UTG","UTG+1","MP","HJ","CO","BTN","SB","BB"].map(p=>`<option ${p===h.position?"selected":""}>${p}</option>`).join("")}
-        </select>
-      </div>
-      <div class="field"><label>Stack (bb)</label><input id="hStack" type="number" inputmode="decimal" value="${h.stack||""}"></div>
-    </div>
-    <div class="field"><label>Cartes</label><input id="hCards" value="${h.cards||""}"></div>
-    <div class="field"><label>Action / Ligne</label><input id="hAction" value="${h.action||""}"></div>
-    <div class="field"><label>Notes / Réflexion</label><textarea id="hNotes" rows="3">${h.notes||""}</textarea></div>
-    <div class="field"><label>Résultat</label>
-      <select id="hResult">
-        <option value="">—</option>
-        <option value="won" ${h.result==='won'?'selected':''}>Gagnée</option>
-        <option value="lost" ${h.result==='lost'?'selected':''}>Perdue</option>
-        <option value="folded" ${h.result==='folded'?'selected':''}>Foldée</option>
-      </select>
-    </div>
-    <button class="btn" onclick="updateHand(${idx})">Enregistrer</button>
-    <div style="height:8px"></div>
-    <button class="btn danger small" onclick="deleteHand(${idx})">Supprimer la main</button>
-  `);
+  const h = Object.assign({_idx: idx}, t.hands[idx]);
+  openModal(buildHandForm(h, t, true));
+  initHandForm(h, t);
 }
 
 function updateHand(idx){
@@ -1076,8 +1361,13 @@ function updateHand(idx){
   const h = t.hands[idx];
   h.position = document.getElementById("hPos").value;
   h.stack = document.getElementById("hStack").value;
+  h.stackUnit = _handStackUnit;
   h.cards = document.getElementById("hCards").value;
-  h.action = document.getElementById("hAction").value;
+  h.actionType = document.getElementById("hActionType").value;
+  h.actionAmt = document.getElementById("hActionAmt").value;
+  h.actionUnit = _actionUnit;
+  h.actionDetail = document.getElementById("hActionDetail").value;
+  h.action = composeActionStr(h.actionType, h.actionAmt, h.actionUnit, h.actionDetail);
   h.notes = document.getElementById("hNotes").value;
   h.result = document.getElementById("hResult").value;
   saveState();
