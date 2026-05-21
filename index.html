@@ -192,8 +192,10 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .tourney.live::before{content:"● EN COURS";position:absolute;top:10px;right:12px;color:var(--gold);font-size:10px;letter-spacing:0.1em;font-weight:700}
 .tourney{position:relative}
 .live-panel{background:linear-gradient(160deg,var(--felt),var(--bg-2));border:1px solid var(--line-2);border-radius:14px;padding:16px;margin-bottom:14px}
-.live-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.live-stat{background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center}
+.live-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.live-stat{background:rgba(0,0,0,0.25);padding:10px 6px;border-radius:8px;text-align:center;cursor:pointer;transition:background .1s}
+.live-stat:hover{background:rgba(212,175,55,0.12)}
+.live-stat input.inline-edit{width:100%;background:transparent;border:none;border-bottom:1.5px solid var(--gold);color:var(--gold);font-size:18px;font-weight:700;font-family:Georgia,serif;text-align:center;padding:0 0 2px;outline:none;line-height:1}
 .live-stat .v{font-size:20px;font-weight:700;color:var(--gold);font-family:Georgia,serif;line-height:1}
 .live-stat .l{font-size:10px;color:var(--txt-mute);text-transform:uppercase;margin-top:3px;letter-spacing:0.05em}
 .hand-entry{background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px}
@@ -264,7 +266,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .picker-clear{background:none;border:none;color:var(--txt-mute);font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:inherit}
 .picker-hint{font-size:11px;color:var(--txt-mute);text-align:center;margin-top:8px;font-style:italic}
 /* Poker table viz */
-.table-wrap{position:relative;width:75%;max-width:500px;aspect-ratio:1.55;margin:14px auto 28px;padding:18px}
+.table-wrap{position:relative;width:100%;max-width:640px;aspect-ratio:2.2;margin:14px auto 28px;padding:18px}
 .table-felt{position:absolute;inset:0;background:radial-gradient(ellipse at center,#235040 0%,#1a3a2e 60%,#0f261f 100%);border:7px solid #3d2814;border-radius:50%/35%;box-shadow:inset 0 0 40px rgba(0,0,0,0.4),0 6px 14px rgba(0,0,0,0.35)}
 .table-felt::after{content:"";position:absolute;inset:14px;border:1px dashed rgba(212,175,55,0.18);border-radius:50%/35%}
 .table-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:rgba(255,255,255,0.45);font-family:Georgia,serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;pointer-events:none;width:60%}
@@ -278,9 +280,9 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .seat.tag-nit{background:#7d8fa1;color:#0e1620;border-color:#7d8fa1}
 .seat.tag-maniac{background:#8e44ad;color:#fff;border-color:#8e44ad}
 .seat.tag-cs{background:#e08a1f;color:#1a0f00;border-color:#e08a1f}
-.seat .seat-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:9px;background:var(--bg-3);color:var(--txt);padding:1px 5px;border-radius:5px;white-space:nowrap;border:1px solid var(--line);font-weight:600;max-width:70px;overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:3}
-.seat .seat-tag{position:absolute;top:-9px;right:-12px;font-size:8px;background:var(--red);color:#fff;border-radius:6px;padding:1px 4px;font-weight:700;letter-spacing:0.04em;pointer-events:none;z-index:3}
-.seat .seat-bb{position:absolute;top:-9px;left:-12px;font-size:8px;background:var(--gold);color:var(--on-gold);border-radius:6px;padding:1px 4px;font-weight:700;letter-spacing:0.02em;pointer-events:none;z-index:3;white-space:nowrap}
+.seat .seat-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;background:var(--bg-3);color:var(--txt);padding:2px 7px;border-radius:6px;white-space:nowrap;border:1px solid var(--line);font-weight:600;max-width:90px;overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:3}
+.seat .seat-tag{position:absolute;top:50%;right:-26px;transform:translateY(-50%);font-size:9px;background:var(--red);color:#fff;border-radius:6px;padding:2px 5px;font-weight:700;letter-spacing:0.04em;pointer-events:none;z-index:3}
+.seat .seat-bb{position:absolute;top:50%;left:-30px;transform:translateY(-50%);font-size:9px;background:var(--gold);color:var(--on-gold);border-radius:6px;padding:2px 5px;font-weight:700;letter-spacing:0.02em;pointer-events:none;z-index:3;white-space:nowrap}
 .seat .seat-num{line-height:1}
 .mini-table{position:relative;width:100%;max-width:340px;aspect-ratio:1.6;margin:6px auto 4px;padding:6px}
 .mini-table .table-felt{position:absolute;inset:0;background:radial-gradient(ellipse at center,#235040 0%,#1a3a2e 60%,#0f261f 100%);border:4px solid #3d2814;border-radius:50%/35%}
@@ -904,6 +906,173 @@ function toggleStackUnit(){
   state.stackUnit = state.stackUnit==="bb" ? "chips" : "bb";
   saveState();
   renderTracker();
+}
+function parseBlinds(s){
+  if(!s) return {sb:null, bb:null, ante:null};
+  const parts = String(s).split(/[\/\s-]+/).map(x=>parseFloat(x.replace(",","."))).filter(n=>!isNaN(n));
+  return {sb: parts[0]||null, bb: parts[1]||null, ante: parts[2]||null};
+}
+function buildBlindsStr(sb, bb, ante){
+  const parts = [];
+  if(sb!=null && !isNaN(sb)) parts.push(sb);
+  if(bb!=null && !isNaN(bb)) parts.push(bb);
+  if(ante!=null && !isNaN(ante)) parts.push(ante);
+  return parts.join("/");
+}
+function formatChips(n){
+  const v = parseFloat(n);
+  if(isNaN(v)) return "—";
+  return Math.round(v).toLocaleString("fr-FR");
+}
+function renderLiveStatsInline(t){
+  const bl = parseBlinds(t.blinds);
+  return `<div class="live-stats">
+    <div class="live-stat" onclick="startInlineEdit(this,'stack')" data-val="${t.stack||""}"><div class="v">${formatChips(t.stack)}</div><div class="l">Stack</div></div>
+    <div class="live-stat" onclick="startInlineEdit(this,'sb')" data-val="${bl.sb||""}"><div class="v">${bl.sb!=null?bl.sb:"—"}</div><div class="l">SB</div></div>
+    <div class="live-stat" onclick="startInlineEdit(this,'bb')" data-val="${bl.bb||""}"><div class="v">${bl.bb!=null?bl.bb:"—"}</div><div class="l">BB</div></div>
+    <div class="live-stat" onclick="startInlineEdit(this,'players')" data-val="${t.players||""}"><div class="v">${t.players||"—"}</div><div class="l">Joueurs</div></div>
+  </div>`;
+}
+function startInlineEdit(cell, field){
+  if(cell.querySelector("input")) return;
+  const cur = cell.dataset.val || "";
+  const vDiv = cell.querySelector(".v");
+  const orig = vDiv.innerHTML;
+  vDiv.innerHTML = `<input class="inline-edit" type="number" inputmode="decimal" step="any" value="${cur}">`;
+  const inp = vDiv.querySelector("input");
+  inp.focus();
+  inp.select();
+  let done = false;
+  const commit = ()=>{
+    if(done) return; done = true;
+    const val = inp.value.trim();
+    saveInlineField(field, val);
+  };
+  const cancel = ()=>{
+    if(done) return; done = true;
+    vDiv.innerHTML = orig;
+  };
+  inp.addEventListener("blur", commit);
+  inp.addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); inp.blur(); }
+    else if(e.key==="Escape"){ inp.removeEventListener("blur", commit); cancel(); }
+  });
+  // prevent click on input from re-triggering parent
+  inp.addEventListener("click", e=>e.stopPropagation());
+}
+let _chartUnit = "chips"; // "chips" | "bb"
+function toggleChartUnit(){
+  _chartUnit = _chartUnit==="chips" ? "bb" : "chips";
+  renderTracker();
+}
+function buildStackSeries(t){
+  // Series of {time, stack(chips), bb} from start + history + now
+  const series = [];
+  const initStack = parseFloat(t.stack);
+  const initBlinds = (t.history && t.history[0]) ? null : t.blinds;
+  // Find first known stack: prefer earliest history entry, else current t.stack
+  const hist = (t.history||[]).slice().sort((a,b)=>a.time-b.time);
+  // Initial point at t.start
+  let firstChips = !isNaN(initStack) ? initStack : (hist[0] ? parseFloat(hist[0].stack) : NaN);
+  let firstBlinds = t.blinds || (hist[0] && hist[0].blinds) || "";
+  if(!isNaN(firstChips)){
+    series.push({time: t.start, chips: firstChips, bb: getBB({blinds:firstBlinds})});
+  }
+  hist.forEach(h=>{
+    const c = parseFloat(h.stack);
+    if(isNaN(c)) return;
+    const bb = getBB({blinds: h.blinds||t.blinds});
+    series.push({time: h.time, chips: c, bb});
+  });
+  // Current point if last history older than now or no history
+  const lastChips = parseFloat(t.stack);
+  if(!isNaN(lastChips)){
+    const lastT = hist.length ? hist[hist.length-1].time : t.start;
+    if(Date.now() - lastT > 1000){
+      series.push({time: Date.now(), chips: lastChips, bb: getBB(t)});
+    }
+  }
+  return series;
+}
+function renderStackChart(t){
+  const series = buildStackSeries(t);
+  if(series.length < 2){
+    return `<div class="card" style="margin-bottom:14px">
+      <div class="stats-head"><h3>Évolution stack</h3></div>
+      <p style="font-size:13px;color:var(--txt-mute);margin:4px 0 0">Pas assez de données. Met à jour le stack pour voir la courbe.</p>
+    </div>`;
+  }
+  const unit = _chartUnit;
+  const pts = series.map(s=>({
+    x: s.time,
+    y: unit==="bb" ? (s.bb && s.bb>0 ? s.chips/s.bb : null) : s.chips
+  })).filter(p=>p.y!=null);
+  if(pts.length < 2){
+    return `<div class="card" style="margin-bottom:14px">
+      <div class="stats-head"><h3>Évolution stack</h3>
+        <button class="btn small compact" onclick="toggleChartUnit()">${unit==="bb"?"BB":"Jetons"}</button>
+      </div>
+      <p style="font-size:13px;color:var(--txt-mute);margin:4px 0 0">${unit==="bb"?"Blinds inconnues — toggle Jetons.":"Pas assez de données."}</p>
+    </div>`;
+  }
+  const xs = pts.map(p=>p.x), ys = pts.map(p=>p.y);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const xR = Math.max(1, xMax - xMin);
+  const yR = Math.max(1, yMax - yMin);
+  const W = 600, H = 180, padL = 48, padR = 12, padT = 14, padB = 26;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const sx = x => padL + ((x - xMin)/xR) * innerW;
+  const sy = y => padT + (1 - (y - yMin)/yR) * innerH;
+  const path = pts.map((p,i)=> (i===0?"M":"L")+sx(p.x).toFixed(1)+","+sy(p.y).toFixed(1)).join(" ");
+  const area = path + ` L ${sx(xs[xs.length-1]).toFixed(1)},${(H-padB).toFixed(1)} L ${sx(xs[0]).toFixed(1)},${(H-padB).toFixed(1)} Z`;
+  const fmtY = v => unit==="bb" ? v.toFixed(1)+"bb" : Math.round(v).toLocaleString("fr-FR");
+  const yTicks = [yMin, (yMin+yMax)/2, yMax];
+  const yTicksHtml = yTicks.map(v=>`
+    <line x1="${padL}" y1="${sy(v)}" x2="${W-padR}" y2="${sy(v)}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3"/>
+    <text x="${padL-6}" y="${sy(v)+3}" text-anchor="end" fill="var(--txt-mute)" font-size="9">${fmtY(v)}</text>`).join("");
+  const fmtTime = ms => { const d = new Date(ms); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+  const xTicks = [xs[0], xs[Math.floor(xs.length/2)], xs[xs.length-1]];
+  const xTicksHtml = xTicks.map(x=>`<text x="${sx(x)}" y="${H-padB+14}" text-anchor="middle" fill="var(--txt-mute)" font-size="9">${fmtTime(x)}</text>`).join("");
+  const ptsHtml = pts.map(p=>`<circle cx="${sx(p.x).toFixed(1)}" cy="${sy(p.y).toFixed(1)}" r="2.5" fill="var(--gold)"/>`).join("");
+  // Trend color
+  const trend = pts[pts.length-1].y - pts[0].y;
+  const trendColor = trend>=0 ? "#3aa757" : "#c0392b";
+  return `<div class="card" style="margin-bottom:14px">
+    <div class="stats-head">
+      <h3>Évolution stack <span style="font-size:11px;color:${trendColor};margin-left:6px">${trend>=0?"▲":"▼"} ${fmtY(Math.abs(trend))}</span></h3>
+      <button class="btn small compact" onclick="toggleChartUnit()">${unit==="bb"?"BB":"Jetons"}</button>
+    </div>
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:180px;display:block;margin-top:6px">
+      ${yTicksHtml}
+      <path d="${area}" fill="rgba(212,175,55,0.12)" stroke="none"/>
+      <path d="${path}" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+      ${ptsHtml}
+      ${xTicksHtml}
+    </svg>
+  </div>`;
+}
+
+function saveInlineField(field, val){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  if(field==="stack"){
+    t.stack = val==="" ? "" : String(parseFloat(val));
+  } else if(field==="players"){
+    t.players = val;
+  } else if(field==="sb" || field==="bb"){
+    const cur = parseBlinds(t.blinds);
+    const num = val==="" ? null : parseFloat(val);
+    if(field==="sb") cur.sb = num;
+    else cur.bb = num;
+    t.blinds = buildBlindsStr(cur.sb, cur.bb, cur.ante);
+  }
+  t.history = t.history || [];
+  t.history.push({time: Date.now(), stack: t.stack||"", blinds: t.blinds||"", players: t.players||"", field});
+  saveState();
+  renderTracker();
+  toast("Mis à jour ✓");
 }
 
 function loadState(){
@@ -1638,21 +1807,14 @@ function renderTracker(){
           </div>` : ""}
 
         <div style="height:14px"></div>
-        <div class="live-stats">
-          <div class="live-stat"><div class="v">${formatStack(live)}</div><div class="l">Stack <button class="unit-toggle" onclick="event.stopPropagation();toggleStackUnit()">${state.stackUnit==='bb'?'bb':'jetons'}</button></div></div>
-          <div class="live-stat"><div class="v">${live.blinds||"—"}</div><div class="l">Blinds</div></div>
-          <div class="live-stat"><div class="v">${live.players||"—"}</div><div class="l">Joueurs</div></div>
-        </div>
-
-        <button class="btn small compact" onclick="updateLiveStack()">Mettre à jour stack/blinds</button>
-        <div style="height:8px"></div>
+        <!-- inline-edit stats -->
+        ${renderLiveStatsInline(live)}
         <div class="row">
           <button class="btn secondary compact" onclick="addHand()">+ Main détaillée</button>
           <button class="btn secondary compact" onclick="quickHand()">+ Main vite</button>
         </div>
         <div style="height:8px"></div>
         <div class="row">
-          <button class="btn secondary compact" onclick="addOpponentNote()">+ Note vilain</button>
           ${dInfo.paused
             ? `<button class="btn small compact" onclick="resumeTournamentDay()">▶ Reprendre Jour ${dInfo.displayDay+1}</button>`
             : `<button class="btn secondary compact" onclick="endTournamentDay()">⏸ Fin Jour ${dInfo.displayDay}</button>`}
@@ -1660,6 +1822,7 @@ function renderTracker(){
         </div>
 
         <div style="height:14px"></div>
+        ${renderStackChart(live)}
         ${renderTourneyStats(live)}
         ${renderAnalysis(analyzeStats(computeTournamentStats(live, _tStatsFilter), {ctx:"tournament", tournament:live}), {btnAction:`openHandsAnalysis('tournament','${live.id}')`})}
 
@@ -1929,7 +2092,7 @@ function createTournament(){
   toast("Tournoi démarré ✓");
 }
 
-function updateLiveStack(){
+function updateLiveStack(focus){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
   const bb = getBB(t);
@@ -1952,6 +2115,11 @@ function updateLiveStack(){
     <button class="btn" onclick="saveStackUpdate()">Enregistrer</button>
   `);
   refreshStackHint();
+  const focusMap = {stack:"uStack", blinds:"uBlinds", players:"uPlayers"};
+  const fid = focusMap[focus];
+  if(fid){
+    setTimeout(()=>{ const el = document.getElementById(fid); if(el){ el.focus(); el.select && el.select(); } }, 50);
+  }
 }
 
 let _stackInputUnit = "bb";
@@ -1995,6 +2163,7 @@ function saveStackUpdate(){
     t.stack = "";
   }
   t.players = document.getElementById("uPlayers").value;
+  state.stackUnit = _stackInputUnit;
   t.history = t.history || [];
   t.history.push({
     time: Date.now(),
@@ -2011,8 +2180,11 @@ function saveStackUpdate(){
 function addHand(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
-  openModal(buildHandForm({}, t, false));
-  initHandForm({}, t);
+  const bb = getBB(t);
+  const unit = bb && bb>0 ? "bb" : "chips";
+  const seed = {unit};
+  openModal(buildHandForm(seed, t, false));
+  initHandForm(seed, t);
 }
 
 let _qPos = "BTN", _qResult = "";
@@ -2053,7 +2225,7 @@ function saveQuickHand(){
   if(!t) return;
   t.hands = t.hands || [];
   const ts = Date.now();
-  t.hands.push({
+  const hand = {
     version: 2,
     position: _qPos,
     stack: "", unit: "bb", cards: "",
@@ -2063,11 +2235,113 @@ function saveQuickHand(){
     result: _qResult,
     quick: true,
     ts, time: formatTime(ts)
-  });
+  };
+  t.hands.push(hand);
+  applyHandStackDelta(t, hand);
   saveState();
   closeModal();
   renderTracker();
   toast("Main comptée ✓");
+}
+
+function applyHandStackDelta(t, h){
+  if(!t || !h) return 0;
+  const bl = parseBlinds(t.blinds);
+  const pos = h.position;
+  const bb = getBB(t);
+  let deltaChips = 0;
+  if(h.quick){
+    // Quick: deduct blind committed if SB/BB, no other movement
+    if(pos==="SB" && bl.sb!=null) deltaChips = -bl.sb;
+    else if(pos==="BB" && bl.bb!=null) deltaChips = -bl.bb;
+    else return 0;
+  } else {
+    if(!h.result) return 0;
+    const unit = h.unit || "bb";
+    const toChips = v => unit==="bb" ? (bb ? v*bb : v) : v;
+    const sbChips = bl.sb!=null ? bl.sb : (bb ? bb*0.5 : 0);
+    const bbChips = bl.bb!=null ? bl.bb : (bb || 0);
+    const anteChips = bl.ante!=null ? bl.ante : 0;
+    // Initial contribs (chips) — blinds
+    const initContrib = {};
+    if(sbChips) initContrib.SB = sbChips;
+    if(bbChips) initContrib.BB = bbChips;
+    // Process all streets, tracking per-position contribution
+    let contrib = Object.assign({}, initContrib);
+    const seats = t.seatCount || 9;
+    let pot = sbChips + bbChips + anteChips * seats;
+    const runStreet = (acts, resetContribOthers) => {
+      if(resetContribOthers){
+        // Postflop: contributions reset per street, but we keep total invested separately
+      }
+      const streetContrib = {};
+      acts.forEach(a=>{
+        const p = a.position;
+        const prev = streetContrib[p] || 0;
+        let newC = prev;
+        const amtN = parseFloat(a.amt);
+        const amtC = !isNaN(amtN) ? toChips(amtN) : NaN;
+        if(a.action==="fold" || a.action==="check" || !a.action){
+          // none
+        } else if(a.action==="limp"){
+          newC = Math.max(prev, bbChips);
+        } else if(!isNaN(amtC) && amtC>0){
+          newC = amtC;
+        } else if(a.action==="call"){
+          const vals = Object.values(streetContrib);
+          newC = vals.length ? Math.max.apply(null, vals) : 0;
+        }
+        if(newC > prev){
+          pot += (newC - prev);
+          streetContrib[p] = newC;
+          contrib[p] = (contrib[p]||0) + (newC - prev);
+        }
+      });
+    };
+    // Preflop: streetContrib starts from blinds
+    const prefActs = (h.preflop && h.preflop.actions) || [];
+    const streetC = Object.assign({}, initContrib);
+    prefActs.forEach(a=>{
+      const p = a.position;
+      const prev = streetC[p] || 0;
+      let newC = prev;
+      const amtN = parseFloat(a.amt);
+      const amtC = !isNaN(amtN) ? toChips(amtN) : NaN;
+      if(a.action==="fold" || a.action==="check" || !a.action){
+      } else if(a.action==="limp"){
+        newC = Math.max(prev, bbChips);
+      } else if(!isNaN(amtC) && amtC>0){
+        newC = amtC;
+      } else if(a.action==="call"){
+        const vals = Object.values(streetC);
+        newC = vals.length ? Math.max.apply(null, vals) : 0;
+      }
+      if(newC > prev){
+        pot += (newC - prev);
+        streetC[p] = newC;
+        contrib[p] = (contrib[p]||0) + (newC - prev);
+      }
+    });
+    ["flop","turn","river"].forEach(st=>{
+      runStreet((h[st] && h[st].actions) || [], true);
+    });
+    const heroInvested = contrib[pos] || 0;
+    if(h.result==="folded" || h.result==="lost"){
+      deltaChips = -heroInvested;
+    } else if(h.result==="won"){
+      deltaChips = pot - heroInvested;
+    } else if(h.result==="split"){
+      deltaChips = (pot/2) - heroInvested;
+    } else {
+      return 0;
+    }
+  }
+  if(deltaChips===0) return 0;
+  const cur = parseFloat(t.stack) || 0;
+  t.stack = String(Math.max(0, Math.round(cur + deltaChips)));
+  t.history = t.history || [];
+  t.history.push({time: Date.now(), stack: t.stack, blinds: t.blinds||"", players: t.players||"", field:"hand", delta: deltaChips});
+  return deltaChips;
 }
 
 /* =========================================================
@@ -2224,18 +2498,14 @@ function buildHandForm(h, t, isEdit){
       <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Ma position — tap un siège</label>
       ${renderHeroPosMini(positions, hPos)}
       <input type="hidden" id="hPos" value="${hPos}">
-      <div style="display:flex;gap:10px;align-items:flex-end;margin-top:8px">
-        <div style="flex:1;min-width:0">
-          <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Mon stack</label>
-          <input id="hStack" type="number" inputmode="decimal" step="any" placeholder="${unit==='bb'?'40':'30000'}" value="${h.stack||""}" class="input-sm" style="margin-top:4px;width:100%">
-        </div>
-        <div style="flex-shrink:0">
-          <div class="pos-picker-lg" id="hUnitSeg" style="display:flex;gap:3px;margin:0">
-            <button type="button" class="pos-btn seg-btn ${unit==='bb'?'active':''}" data-u="bb" onclick="setHandUnit('bb')">BB</button>
-            <button type="button" class="pos-btn seg-btn ${unit==='chips'?'active':''}" data-u="chips" onclick="setHandUnit('chips')">Jetons</button>
-          </div>
+      <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:8px">
+        <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Unité des mises</label>
+        <div class="pos-picker-lg" id="hUnitSeg" style="display:flex;gap:3px;margin:0">
+          <button type="button" class="pos-btn seg-btn ${unit==='bb'?'active':''}" data-u="bb" onclick="setHandUnit('bb')">BB</button>
+          <button type="button" class="pos-btn seg-btn ${unit==='chips'?'active':''}" data-u="chips" onclick="setHandUnit('chips')">Jetons</button>
         </div>
       </div>
+      <input type="hidden" id="hStack" value="">
     </div>
 
     <div class="field"><label>Mes cartes</label>
@@ -2367,6 +2637,7 @@ function setHandUnit(u){
   document.querySelectorAll("#preflopRows input, #flopRows input, #turnRows input, #riverRows input").forEach(inp=>{ inp.placeholder = ph; });
   const stackInp = document.getElementById("hStack");
   if(stackInp) stackInp.placeholder = u==="bb" ? "40" : "30000";
+  if(typeof updatePotChips==="function") updatePotChips();
 }
 
 function setHeroPos(p){
@@ -2903,10 +3174,16 @@ function saveHand(){
   data.ts = Date.now();
   data.time = formatTime(data.ts);
   t.hands.push(data);
+  const delta = applyHandStackDelta(t, data);
   saveState();
   closeModal();
   renderTracker();
-  toast("Main enregistrée ✓");
+  if(delta){
+    const sign = delta>0 ? "+" : "";
+    toast(`Main enregistrée ✓ Stack ${sign}${Math.round(delta).toLocaleString("fr-FR")} → ${parseInt(t.stack,10).toLocaleString("fr-FR")}`);
+  } else {
+    toast("Main enregistrée ✓");
+  }
 }
 
 function editHand(idx){
