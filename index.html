@@ -264,7 +264,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .picker-clear{background:none;border:none;color:var(--txt-mute);font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:inherit}
 .picker-hint{font-size:11px;color:var(--txt-mute);text-align:center;margin-top:8px;font-style:italic}
 /* Poker table viz */
-.table-wrap{position:relative;width:100%;aspect-ratio:1.55;margin:14px 0 28px;padding:8px}
+.table-wrap{position:relative;width:75%;max-width:500px;aspect-ratio:1.55;margin:14px auto 28px;padding:18px}
 .table-felt{position:absolute;inset:0;background:radial-gradient(ellipse at center,#235040 0%,#1a3a2e 60%,#0f261f 100%);border:7px solid #3d2814;border-radius:50%/35%;box-shadow:inset 0 0 40px rgba(0,0,0,0.4),0 6px 14px rgba(0,0,0,0.35)}
 .table-felt::after{content:"";position:absolute;inset:14px;border:1px dashed rgba(212,175,55,0.18);border-radius:50%/35%}
 .table-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:rgba(255,255,255,0.45);font-family:Georgia,serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;pointer-events:none;width:60%}
@@ -272,8 +272,21 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .seat:active{transform:translate(-50%,-50%) scale(0.9)}
 .seat.filled{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
 .seat.hero{box-shadow:0 0 0 3px rgba(212,175,55,0.6),0 0 12px rgba(212,175,55,0.4)}
-.seat .seat-label{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:10px;background:var(--bg-3);color:var(--txt);padding:1px 6px;border-radius:6px;white-space:nowrap;border:1px solid var(--line);font-weight:600;max-width:80px;overflow:hidden;text-overflow:ellipsis}
-.seat .seat-tag{position:absolute;top:-8px;right:-8px;font-size:9px;background:var(--red);color:#fff;border-radius:8px;padding:1px 5px;font-weight:700;letter-spacing:0.04em}
+.seat.tag-fish{background:#3aa757;color:#fff;border-color:#3aa757}
+.seat.tag-tag{background:#2f6fb8;color:#fff;border-color:#2f6fb8}
+.seat.tag-lag{background:#c0392b;color:#fff;border-color:#c0392b}
+.seat.tag-nit{background:#7d8fa1;color:#0e1620;border-color:#7d8fa1}
+.seat.tag-maniac{background:#8e44ad;color:#fff;border-color:#8e44ad}
+.seat.tag-cs{background:#e08a1f;color:#1a0f00;border-color:#e08a1f}
+.seat .seat-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:9px;background:var(--bg-3);color:var(--txt);padding:1px 5px;border-radius:5px;white-space:nowrap;border:1px solid var(--line);font-weight:600;max-width:70px;overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:3}
+.seat .seat-tag{position:absolute;top:-9px;right:-12px;font-size:8px;background:var(--red);color:#fff;border-radius:6px;padding:1px 4px;font-weight:700;letter-spacing:0.04em;pointer-events:none;z-index:3}
+.seat .seat-bb{position:absolute;top:-9px;left:-12px;font-size:8px;background:var(--gold);color:var(--on-gold);border-radius:6px;padding:1px 4px;font-weight:700;letter-spacing:0.02em;pointer-events:none;z-index:3;white-space:nowrap}
+.seat .seat-num{line-height:1}
+.mini-table{position:relative;width:100%;max-width:340px;aspect-ratio:1.6;margin:6px auto 4px;padding:6px}
+.mini-table .table-felt{position:absolute;inset:0;background:radial-gradient(ellipse at center,#235040 0%,#1a3a2e 60%,#0f261f 100%);border:4px solid #3d2814;border-radius:50%/35%}
+.mini-table .pos-seat{position:absolute;width:34px;height:34px;border-radius:50%;background:var(--bg-2);border:2px solid var(--line-2);transform:translate(-50%,-50%);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--txt-dim);font-family:inherit;padding:0;z-index:2;transition:transform .1s}
+.mini-table .pos-seat:hover{transform:translate(-50%,-50%) scale(1.08)}
+.mini-table .pos-seat.active{background:var(--gold);color:var(--on-gold);border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,0.25)}
 .seat.empty .seat-num{opacity:0.4}
 .table-controls{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:var(--txt-mute)}
 .seat-count-seg{display:inline-flex;gap:4px}
@@ -1338,7 +1351,7 @@ function computeGlobalStats(posFilter){
   const ended = finished.filter(t=>t.result && t.result.end);
   let avgDur = null;
   if(ended.length){
-    const total = ended.reduce((s,t)=> s + Math.max(0, (t.result.end - t.start)), 0);
+    const total = ended.reduce((s,t)=> s + Math.max(0, activeDuration(t, t.result.end)), 0);
     avgDur = total / ended.length;
   }
   let favPos = null, max = 0;
@@ -1576,18 +1589,55 @@ function renderTracker(){
   const live = state.tournaments.find(t=>t.id===state.liveId);
   const liveArea = document.getElementById("liveTournamentArea");
   if(live && !live.result){
+    const dInfo = tournamentDayInfo(live);
+    const dayBadge = (dInfo.dayCount>1 || dInfo.paused)
+      ? `<span style="margin-left:6px;padding:2px 6px;border:1px solid var(--gold);color:var(--gold);border-radius:4px;font-size:10px;letter-spacing:.08em">JOUR ${dInfo.displayDay}</span>`
+      : "";
+    const statusLine = dInfo.paused
+      ? `<span style="color:var(--txt-mute)">⏸ Pause entre Jour ${dInfo.displayDay} et Jour ${dInfo.displayDay+1} · fin ${formatTime(dInfo.lastBreak.end)}</span>`
+      : `<span style="color:var(--gold)">${formatDuration(activeDuration(live))}</span>`;
     liveArea.innerHTML = `
       <div class="live-panel">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <div>
-            <div style="font-size:11px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;font-weight:700">● Tournoi en cours</div>
+            <div style="font-size:11px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;font-weight:700">● Tournoi en cours${dayBadge}</div>
             <div style="font-size:17px;font-weight:600;margin-top:2px">${live.name}</div>
           </div>
         </div>
         <div style="font-size:12px;color:var(--txt-mute);margin-bottom:14px">
-          Buy-in ${live.buyin}€ · ${live.venue||"—"} · ${formatDate(live.start)} <button class="unit-toggle" onclick="event.stopPropagation();editStartTime()" style="margin-left:4px">⏱ ${formatTime(live.start)}</button> · <span style="color:var(--gold)">${formatDuration(Date.now()-live.start)}</span>
+          Buy-in ${live.buyin}€ · ${live.venue||"—"} · ${formatDate(live.start)} <button class="unit-toggle" onclick="event.stopPropagation();editStartTime()" style="margin-left:4px">⏱ ${formatTime(live.start)}</button> · ${statusLine}
         </div>
 
+        <div class="section-title" style="margin-top:4px">${live.tableLabel||`Table ${(live.tables&&live.tables.length||0)+1}`} — ${live.seatCount||9} sièges${live.tables&&live.tables.length?` <span style="font-size:11px;color:var(--txt-mute);font-weight:400">(${live.tables.length} table${live.tables.length>1?"s":""} précédente${live.tables.length>1?"s":""})</span>`:""}</div>
+        ${renderTable(live)}
+        <div class="table-controls">
+          <span>Tap un siège pour ajouter/modifier un joueur</span>
+          <div class="seat-count-seg">
+            <button class="${(live.seatCount||9)===6?"active":""}" onclick="setSeatCount(6)">6</button>
+            <button class="${(live.seatCount||9)===9?"active":""}" onclick="setSeatCount(9)">9</button>
+            <button class="${(live.seatCount||9)===10?"active":""}" onclick="setSeatCount(10)">10</button>
+          </div>
+        </div>
+        <div style="height:6px"></div>
+        <button class="btn secondary compact" onclick="changeTable()">🔄 Changer de table</button>
+        ${live.tables && live.tables.length ? `
+          <div class="collapse-head" id="tablesHead" onclick="this.classList.toggle('open');document.getElementById('tablesBody').classList.toggle('open')" style="margin-top:8px">
+            <span>Historique des tables (${live.tables.length})</span><span class="chev">›</span>
+          </div>
+          <div class="collapse-body" id="tablesBody">
+            <div class="history-list">
+              ${live.tables.slice().reverse().map(tb=>{
+                const players = Object.values(tb.seats||{}).filter(s=>s&&(s.name||s.tag||s.bb));
+                const playersHtml = players.length ? players.map(p=>`${p.name||"?"}${p.tag?` (${p.tag})`:""}${p.bb?` ${p.bb}bb`:""}`).join(" · ") : "Aucun joueur noté";
+                return `<div class="history-entry">
+                  <div class="ht">${tb.label} · ${formatTime(tb.ts)}</div>
+                  <div class="hb">${tb.seatCount||9} sièges · ${playersHtml}</div>
+                </div>`;
+              }).join("")}
+            </div>
+          </div>` : ""}
+
+        <div style="height:14px"></div>
         <div class="live-stats">
           <div class="live-stat"><div class="v">${formatStack(live)}</div><div class="l">Stack <button class="unit-toggle" onclick="event.stopPropagation();toggleStackUnit()">${state.stackUnit==='bb'?'bb':'jetons'}</button></div></div>
           <div class="live-stat"><div class="v">${live.blinds||"—"}</div><div class="l">Blinds</div></div>
@@ -1603,23 +1653,15 @@ function renderTracker(){
         <div style="height:8px"></div>
         <div class="row">
           <button class="btn secondary compact" onclick="addOpponentNote()">+ Note vilain</button>
+          ${dInfo.paused
+            ? `<button class="btn small compact" onclick="resumeTournamentDay()">▶ Reprendre Jour ${dInfo.displayDay+1}</button>`
+            : `<button class="btn secondary compact" onclick="endTournamentDay()">⏸ Fin Jour ${dInfo.displayDay}</button>`}
           <button class="btn small compact" onclick="finishTournament()">Terminer</button>
         </div>
 
         <div style="height:14px"></div>
         ${renderTourneyStats(live)}
         ${renderAnalysis(analyzeStats(computeTournamentStats(live, _tStatsFilter), {ctx:"tournament", tournament:live}), {btnAction:`openHandsAnalysis('tournament','${live.id}')`})}
-
-        <div class="section-title" style="margin-top:18px">Table — ${live.seatCount||9} sièges</div>
-        ${renderTable(live)}
-        <div class="table-controls">
-          <span>Tap un siège pour ajouter/modifier un joueur</span>
-          <div class="seat-count-seg">
-            <button class="${(live.seatCount||9)===6?"active":""}" onclick="setSeatCount(6)">6</button>
-            <button class="${(live.seatCount||9)===9?"active":""}" onclick="setSeatCount(9)">9</button>
-            <button class="${(live.seatCount||9)===10?"active":""}" onclick="setSeatCount(10)">10</button>
-          </div>
-        </div>
 
         ${live.history && live.history.length ? `
           <div class="collapse-head" id="histHead" onclick="this.classList.toggle('open');document.getElementById('histBody').classList.toggle('open')">
@@ -1979,9 +2021,9 @@ function quickHand(){
   if(!t) return;
   const positions = getPositionsForHand();
   _qPos = positions.includes("BTN") ? "BTN" : positions[0];
-  _qResult = "";
+  _qResult = "folded";
   const posBtns = positions.map(p=>`<button type="button" class="seg-btn${p===_qPos?" active":""}" onclick="qSetPos('${p}')">${p}</button>`).join("");
-  const resBtns = [["","—"],["won","Gagnée"],["lost","Perdue"],["folded","Foldée"],["split","Split"]]
+  const resBtns = [["folded","Fold"],["won","Gagnée"],["lost","Perdue"],["split","Split"],["","Aucune action"]]
     .map(([v,l])=>`<button type="button" class="seg-btn${v===_qResult?" active":""}" onclick="qSetResult('${v}')">${l}</button>`).join("");
   openModal(`
     <h2>Main rapide</h2>
@@ -2002,7 +2044,7 @@ function qSetPos(p){
 }
 function qSetResult(v){
   _qResult = v;
-  const labels = {"":"—", won:"Gagnée", lost:"Perdue", folded:"Foldée", split:"Split"};
+  const labels = {"":"Aucune action", won:"Gagnée", lost:"Perdue", folded:"Fold", split:"Split"};
   document.querySelectorAll("#qResSeg .seg-btn").forEach(b=>b.classList.toggle("active", b.textContent===labels[v]));
 }
 
@@ -2178,22 +2220,20 @@ function buildHandForm(h, t, isEdit){
   return `
     <h2 style="margin:0 0 12px">${isEdit?"Modifier la main":"Nouvelle main"}</h2>
 
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px">
-      <div style="flex:1;min-width:0">
-        <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Ma position</label>
-        <div class="pos-picker pos-picker-lg" style="margin-top:4px;margin-bottom:0">
-          ${positions.map(p=>`<button type="button" class="pos-btn${p===hPos?' active':''}" onclick="setHeroPos('${p}')">${p}</button>`).join("")}
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Ma position — tap un siège</label>
+      ${renderHeroPosMini(positions, hPos)}
+      <input type="hidden" id="hPos" value="${hPos}">
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-top:8px">
+        <div style="flex:1;min-width:0">
+          <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Mon stack</label>
+          <input id="hStack" type="number" inputmode="decimal" step="any" placeholder="${unit==='bb'?'40':'30000'}" value="${h.stack||""}" class="input-sm" style="margin-top:4px;width:100%">
         </div>
-        <input type="hidden" id="hPos" value="${hPos}">
-      </div>
-      <div style="width:130px;flex-shrink:0">
-        <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Mon stack</label>
-        <input id="hStack" type="number" inputmode="decimal" step="any" placeholder="${unit==='bb'?'40':'30000'}" value="${h.stack||""}" class="input-sm" style="margin-top:4px;width:100%">
-      </div>
-      <div style="flex-shrink:0">
-        <div class="pos-picker-lg" id="hUnitSeg" style="display:flex;gap:3px;margin:0">
-          <button type="button" class="pos-btn seg-btn ${unit==='bb'?'active':''}" data-u="bb" onclick="setHandUnit('bb')">BB</button>
-          <button type="button" class="pos-btn seg-btn ${unit==='chips'?'active':''}" data-u="chips" onclick="setHandUnit('chips')">Jetons</button>
+        <div style="flex-shrink:0">
+          <div class="pos-picker-lg" id="hUnitSeg" style="display:flex;gap:3px;margin:0">
+            <button type="button" class="pos-btn seg-btn ${unit==='bb'?'active':''}" data-u="bb" onclick="setHandUnit('bb')">BB</button>
+            <button type="button" class="pos-btn seg-btn ${unit==='chips'?'active':''}" data-u="chips" onclick="setHandUnit('chips')">Jetons</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2334,7 +2374,24 @@ function setHeroPos(p){
   const h = document.getElementById("hPos");
   if(h) h.value = p;
   document.querySelectorAll(".pos-picker .pos-btn[onclick^='setHeroPos']").forEach(b=>b.classList.toggle("active", b.textContent===p));
+  document.querySelectorAll("#heroPosMini .pos-seat").forEach(b=>b.classList.toggle("active", b.dataset.p===p));
   renderPreflopRows();
+}
+function renderHeroPosMini(positions, current){
+  const n = positions.length;
+  const btnIdx = positions.indexOf("BTN");
+  const ordered = btnIdx >= 0
+    ? positions.slice(btnIdx).concat(positions.slice(0, btnIdx))
+    : positions.slice();
+  let html = `<div class="mini-table" id="heroPosMini"><div class="table-felt"></div>`;
+  ordered.forEach((p,i)=>{
+    const angle = Math.PI/2 + (i/n)*2*Math.PI; // clockwise on screen from bottom (BTN)
+    const x = 50 + 40*Math.cos(angle);
+    const y = 50 + 38*Math.sin(angle);
+    html += `<button type="button" class="pos-seat${p===current?" active":""}" data-p="${p}" style="left:${x}%;top:${y}%" onclick="setHeroPos('${p}')">${p}</button>`;
+  });
+  html += `</div>`;
+  return html;
 }
 function onHeroPositionChange(){
   _heroPos = document.getElementById("hPos").value;
@@ -2919,6 +2976,110 @@ function saveOpponentNote(){
   toast("Note ajoutée ✓");
 }
 
+function changeTable(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  const curLabel = t.tableLabel || `Table ${(t.tables&&t.tables.length||0)+1}`;
+  const nextNum = (t.tables&&t.tables.length||0) + 2;
+  openModal(`
+    <h2>Changer de table</h2>
+    <p style="color:var(--txt-mute);font-size:13px;margin:-8px 0 14px">Sauvegarde la table actuelle (<b>${curLabel}</b>) dans l'historique et démarre une nouvelle table.</p>
+    <div class="field"><label>Nom nouvelle table</label><input id="ctLabel" placeholder="Ex: Table 4" value="Table ${nextNum}"></div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:normal;font-size:14px;font-weight:500;color:var(--txt)">
+        <input type="checkbox" id="ctKeepHero" checked style="width:20px;height:20px;accent-color:var(--gold);margin:0"> Garder mon siège (Hero) sur la nouvelle table
+      </label>
+    </div>
+    <button class="btn" onclick="confirmChangeTable()">Valider</button>
+  `);
+}
+function confirmChangeTable(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  t.tables = t.tables || [];
+  const curLabel = t.tableLabel || `Table ${t.tables.length+1}`;
+  t.tables.push({
+    label: curLabel,
+    ts: Date.now(),
+    seats: JSON.parse(JSON.stringify(t.seats||{})),
+    seatCount: t.seatCount||9
+  });
+  const keepHero = document.getElementById("ctKeepHero").checked;
+  let heroSeat = null, heroData = null;
+  if(keepHero && t.seats){
+    Object.keys(t.seats).forEach(k=>{
+      if(t.seats[k] && t.seats[k].hero){ heroSeat = k; heroData = {hero:true, name:t.seats[k].name||"", bb:t.seats[k].bb||""}; }
+    });
+  }
+  t.seats = {};
+  if(heroSeat && heroData) t.seats[heroSeat] = heroData;
+  t.tableLabel = document.getElementById("ctLabel").value || `Table ${t.tables.length+1}`;
+  saveState();
+  closeModal();
+  renderTracker();
+  toast(`${t.tableLabel} démarrée ✓`);
+}
+
+function endTournamentDay(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  const info = tournamentDayInfo(t);
+  if(info.paused){ toast("Déjà en pause"); return; }
+  openModal(`
+    <h2>Fin de Jour ${info.displayDay}</h2>
+    <p style="color:var(--txt-mute);font-size:13px;margin:-8px 0 14px">Met le tournoi en pause. Stack/blinds conservés. Reprends quand le Jour ${info.displayDay+1} démarre.</p>
+    <div class="field"><label>Heure de fin de journée</label><input id="dEnd" type="datetime-local" value="${nowLocalISO()}"></div>
+    <div class="field"><label>Stack de fin (optionnel)</label><input id="dStack" type="number" inputmode="numeric" placeholder="Ex: 125000" value="${t.stack||""}"></div>
+    <button class="btn" onclick="saveEndOfDay()">Valider fin de jour</button>
+  `);
+}
+function saveEndOfDay(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  const v = document.getElementById("dEnd").value;
+  const endTs = v ? new Date(v).getTime() : Date.now();
+  const stackVal = document.getElementById("dStack").value;
+  if(stackVal) t.stack = stackVal;
+  t.days = t.days || [];
+  t.days.push({end: endTs, stack: stackVal||t.stack||"", blinds: t.blinds||""});
+  saveState();
+  closeModal();
+  renderTracker();
+  toast("Fin de journée enregistrée ✓");
+}
+function resumeTournamentDay(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  const info = tournamentDayInfo(t);
+  if(!info.paused){ toast("Tournoi déjà actif"); return; }
+  openModal(`
+    <h2>Reprendre Jour ${info.displayDay+1}</h2>
+    <p style="color:var(--txt-mute);font-size:13px;margin:-8px 0 14px">Reprise du tournoi. Met à jour blinds et stack si besoin.</p>
+    <div class="field"><label>Heure de reprise</label><input id="rResume" type="datetime-local" value="${nowLocalISO()}"></div>
+    <div class="field"><label>Blinds au départ du jour</label><input id="rBlinds" placeholder="Ex: 1000/2000/200" value="${t.blinds||""}"></div>
+    <div class="field"><label>Stack au départ du jour</label><input id="rStack" type="number" inputmode="numeric" value="${t.stack||""}"></div>
+    <button class="btn" onclick="saveResumeDay()">Reprendre</button>
+  `);
+}
+function saveResumeDay(){
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  if(!t) return;
+  const v = document.getElementById("rResume").value;
+  const resumeTs = v ? new Date(v).getTime() : Date.now();
+  const last = t.days[t.days.length-1];
+  last.resume = resumeTs;
+  const newBlinds = document.getElementById("rBlinds").value;
+  const newStack = document.getElementById("rStack").value;
+  if(newBlinds) t.blinds = newBlinds;
+  if(newStack) t.stack = newStack;
+  t.history = t.history || [];
+  t.history.push({time: resumeTs, stack: newStack||t.stack||"", blinds: newBlinds||t.blinds||"", players: t.players||"", dayStart: t.days.length+1});
+  saveState();
+  closeModal();
+  renderTracker();
+  toast(`Jour ${t.days.length+1} démarré ✓`);
+}
+
 function finishTournament(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
@@ -2955,9 +3116,24 @@ function openTournamentDetail(id){
   const t = state.tournaments.find(x=>x.id===id);
   if(!t) return;
   const r = t.result;
+  const days = t.days || [];
+  const dInfo = tournamentDayInfo(t);
+  const dur = activeDuration(t, r ? r.end : Date.now());
+  const daysHtml = days.length ? `
+      <div class="card" style="margin:0 0 14px">
+        <h3>Journées (${dInfo.dayCount})</h3>
+        <div style="font-size:13px;color:var(--txt-dim);line-height:1.6">
+          <div><b>Jour 1</b> — démarré ${formatDate(t.start)} ${formatTime(t.start)}</div>
+          ${days.map((d,i)=>`
+            <div>↳ Fin Jour ${i+1} : ${formatTime(d.end)} (${formatDate(d.end)})</div>
+            ${d.resume?`<div><b>Jour ${i+2}</b> — repris ${formatDate(d.resume)} ${formatTime(d.resume)}</div>`:`<div style="color:var(--txt-mute)">⏸ en pause</div>`}
+          `).join("")}
+        </div>
+        <p style="margin-top:8px;font-size:12px;color:var(--txt-mute)">Temps actif total : ${formatDuration(dur)}</p>
+      </div>` : "";
   openModal(`
     <h2>${t.name}</h2>
-    <p style="color:var(--txt-mute);font-size:13px;margin:-8px 0 14px">${formatDate(t.start)} · ${t.venue||""} · Buy-in ${t.buyin}€</p>
+    <p style="color:var(--txt-mute);font-size:13px;margin:-8px 0 14px">${formatDate(t.start)} · ${t.venue||""} · Buy-in ${t.buyin}€${dInfo.dayCount>1?` · ${dInfo.dayCount} jours`:""}</p>
     ${r?`
       <div class="card" style="margin:0 0 14px">
         <h3>Résultat</h3>
@@ -2965,7 +3141,19 @@ function openTournamentDetail(id){
         <p>Gain : <b>${r.payout||0}€</b> (net ${(parseFloat(r.payout)||0)-(parseFloat(t.buyin)||0)}€)</p>
         ${r.notes?`<p style="font-style:italic">${r.notes}</p>`:""}
       </div>
-    `:`<p style="color:var(--gold)">● Tournoi en cours</p>`}
+    `:`<p style="color:var(--gold)">● Tournoi en cours${dInfo.paused?` — ⏸ pause après Jour ${dInfo.displayDay}`:""}</p>`}
+    ${daysHtml}
+    ${t.tables && t.tables.length ? `
+      <div class="card" style="margin:0 0 14px">
+        <h3>Tables jouées (${t.tables.length+1})</h3>
+        <div style="font-size:13px;color:var(--txt-dim);line-height:1.7">
+          ${t.tables.map((tb,i)=>{
+            const players = Object.values(tb.seats||{}).filter(s=>s&&(s.name||s.tag||s.bb));
+            return `<div><b>${tb.label}</b> · ${tb.seatCount||9} sièges · quittée ${formatTime(tb.ts)} · ${players.length} joueur(s) noté(s)</div>`;
+          }).join("")}
+          <div><b>${t.tableLabel||`Table ${t.tables.length+1}`}</b> · ${t.seatCount||9} sièges · ${r?"finale":"actuelle"}</div>
+        </div>
+      </div>` : ""}
     ${renderTourneyStats(t)}
     ${renderAnalysis(analyzeStats(computeTournamentStats(t, _tStatsFilter), {ctx:"tournament", tournament:t}), {btnAction:`openHandsAnalysis('tournament','${t.id}')`})}
     ${t.hands && t.hands.length?`
@@ -3104,6 +3292,29 @@ function formatDuration(ms){
   if(h===0) return min+" min";
   return h+"h "+String(min).padStart(2,"0");
 }
+function tournamentDayInfo(t){
+  const days = (t && t.days) || [];
+  const lastBreak = days.length ? days[days.length-1] : null;
+  const paused = !!(lastBreak && lastBreak.end && !lastBreak.resume);
+  const currentDay = days.filter(d=>d.resume).length + 1;
+  const displayDay = paused ? days.length : currentDay;
+  return {paused, currentDay, displayDay, lastBreak, dayCount: Math.max(displayDay, currentDay)};
+}
+function activeDuration(t, nowTs){
+  if(!t) return 0;
+  nowTs = nowTs || Date.now();
+  let total = 0;
+  let cur = t.start;
+  for(const d of (t.days||[])){
+    if(cur==null) break;
+    if(d.end){
+      total += Math.max(0, d.end - cur);
+      cur = d.resume || null;
+    }
+  }
+  if(cur!=null) total += Math.max(0, nowTs - cur);
+  return total;
+}
 
 /* Table viz */
 function seatPos(i, n){
@@ -3115,19 +3326,23 @@ function renderTable(t){
   const n = t.seatCount || 9;
   const seats = t.seats || {};
   const tagShort = {"Fish / Récréatif":"FISH","TAG":"TAG","LAG":"LAG","Nit":"NIT","Maniac":"MAN","Calling station":"CS"};
+  const tagClass = {"Fish / Récréatif":"tag-fish","TAG":"tag-tag","LAG":"tag-lag","Nit":"tag-nit","Maniac":"tag-maniac","Calling station":"tag-cs"};
   let html = `<div class="table-wrap"><div class="table-felt"></div><div class="table-center">${t.name||""}</div>`;
   for(let i=0;i<n;i++){
     const seatNum = i+1;
     const data = seats[String(seatNum)];
     const pos = seatPos(i, n);
-    const filled = !!(data && (data.name || data.notes || data.tag));
+    const filled = !!(data && (data.name || data.notes || data.tag || data.bb));
     const hero = !!(data && data.hero);
-    const label = filled ? (data.name || "?") : "";
+    const label = filled && data.name ? data.name : "";
     const tag = data && data.tag ? (tagShort[data.tag] || data.tag.slice(0,4).toUpperCase()) : "";
-    html += `<button class="seat ${filled?"filled":"empty"} ${hero?"hero":""}" style="left:${pos.x}%;top:${pos.y}%" onclick="openSeatModal(${seatNum})">
+    const bb = data && data.bb ? `${data.bb}bb` : "";
+    const tagCls = data && data.tag ? (tagClass[data.tag]||"") : "";
+    html += `<button class="seat ${filled?"filled":"empty"} ${tagCls} ${hero?"hero":""}" style="left:${pos.x}%;top:${pos.y}%" onclick="openSeatModal(${seatNum})">
       <span class="seat-num">${seatNum}</span>
       ${tag?`<span class="seat-tag">${tag}</span>`:""}
       ${label?`<span class="seat-label">${label}</span>`:""}
+      ${bb?`<span class="seat-bb">${bb}</span>`:""}
     </button>`;
   }
   html += `</div>`;
@@ -3157,10 +3372,13 @@ function openSeatModal(seatNum){
   openModal(`
     <h2>Siège ${seatNum}</h2>
     <div class="field"><label>Nom / surnom</label><input id="sName" placeholder="Ex: Lunettes, Pierre..." value="${d.name||""}"></div>
-    <div class="field"><label>Tag</label>
-      <select id="sTag">
-        ${tags.map(t=>`<option value="${t}" ${t===(d.tag||"")?"selected":""}>${t||"—"}</option>`).join("")}
-      </select>
+    <div class="row">
+      <div class="field"><label>Stack (BB)</label><input id="sBB" type="number" inputmode="decimal" step="any" placeholder="Ex: 35" value="${d.bb||""}"></div>
+      <div class="field"><label>Tag</label>
+        <select id="sTag">
+          ${tags.map(t=>`<option value="${t}" ${t===(d.tag||"")?"selected":""}>${t||"—"}</option>`).join("")}
+        </select>
+      </div>
     </div>
     <div class="field"><label>Notes</label><textarea id="sNotes" rows="4" placeholder="Sizing tells, comportement, ranges supposées...">${d.notes||""}</textarea></div>
     <div class="field">
@@ -3189,6 +3407,7 @@ function saveSeat(seatNum){
     name: document.getElementById("sName").value,
     tag: document.getElementById("sTag").value,
     notes: document.getElementById("sNotes").value,
+    bb: document.getElementById("sBB").value,
     hero: isHero
   };
   saveState();
