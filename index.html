@@ -601,6 +601,8 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .pe-cgrid-actions{display:flex;gap:6px;justify-content:flex-end}
 .pe-cgrid-actions .pe-cg-clear{background:#1c3a4e;border:1px solid rgba(120,180,200,0.3);color:#9fc7d8;font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:0.04em}
 .pe-cgrid-actions .pe-cg-done{background:#5fc7e8;color:#0e2638;border:none;font-size:12px;padding:6px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:800;letter-spacing:0.06em}
+.pe-cgrid-actions .pe-cg-scan{background:rgba(212,175,55,0.18);border:1px solid var(--gold-soft);color:var(--gold);font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:0.04em}
+.pe-cgrid-actions .pe-cg-scan:active{transform:scale(0.96);background:rgba(212,175,55,0.32)}
 @media (max-width:480px){
   .pe-cgrid .pe-cg-cell{font-size:10px}
   .pe-cgrid .pe-cg-cell .pe-cg-r{font-size:11px}
@@ -4743,6 +4745,7 @@ function peRenderPickerHost(){
     <div class="pe-cgrid-selected">${selHtml}</div>
     <div class="pe-cgrid-actions">
       <button type="button" class="pe-cg-clear" onclick="peGridClear()">Effacer ${m.label}</button>
+      <button type="button" class="pe-cg-scan" onclick="camScanOpen('${m.id}')">📷 Scanner</button>
       <button type="button" class="pe-cg-done" onclick="peClosePicker()">Terminé</button>
     </div>
   </div>`;
