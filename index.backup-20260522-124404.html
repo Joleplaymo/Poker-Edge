@@ -192,10 +192,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .tourney.live::before{content:"● EN COURS";position:absolute;top:10px;right:12px;color:var(--gold);font-size:10px;letter-spacing:0.1em;font-weight:700}
 .tourney{position:relative}
 .live-panel{background:linear-gradient(160deg,var(--felt),var(--bg-2));border:1px solid var(--line-2);border-radius:14px;padding:16px;margin-bottom:14px}
-.live-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
-.ante-mode-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg-3);border:1px solid var(--line-2);border-radius:8px;padding:6px 10px;margin-bottom:14px}
-.ante-mode-row .ante-mode-lbl{font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
-.ante-mode-row .seg{flex:1;max-width:260px;margin:0}
+.live-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
 .live-stat{background:rgba(0,0,0,0.25);padding:10px 6px;border-radius:8px;text-align:center;cursor:pointer;transition:background .1s}
 .live-stat:hover{background:rgba(212,175,55,0.12)}
 .live-stat input.inline-edit{width:100%;background:transparent;border:none;border-bottom:1.5px solid var(--gold);color:var(--gold);font-size:18px;font-weight:700;font-family:Georgia,serif;text-align:center;padding:0 0 2px;outline:none;line-height:1}
@@ -218,11 +215,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 /* Modal */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex;animation:fadeIn .2s}
-.modal{background:var(--bg-2);width:100%;max-width:720px;max-height:96vh;max-height:96dvh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease;-webkit-overflow-scrolling:touch}
-@media (max-width:480px){
-  .modal{padding:18px 14px calc(18px + env(safe-area-inset-bottom));max-height:100dvh;border-radius:14px 14px 0 0}
-  .modal-bg{align-items:stretch}
-}
+.modal{background:var(--bg-2);width:100%;max-width:720px;max-height:96vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 .modal h2{margin:0 0 16px;font-size:20px;font-weight:600}
 .modal .close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--txt-mute);font-size:24px;cursor:pointer}
@@ -271,61 +264,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .s-btn.red.active{color:var(--on-gold)}
 .r-btn:disabled,.s-btn:disabled{opacity:0.22;cursor:not-allowed}
 .picker-clear{background:none;border:none;color:var(--txt-mute);font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:inherit}
-.picker-scan{background:rgba(212,175,55,0.15);border:1px solid var(--gold-soft);color:var(--gold);padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;font-family:inherit;letter-spacing:0.02em}
-.picker-scan:active{transform:scale(0.96);background:rgba(212,175,55,0.28)}
 .picker-hint{font-size:11px;color:var(--txt-mute);text-align:center;margin-top:8px;font-style:italic}
-/* Camera scan modal */
-.cam-modal{position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;height:100dvh;width:100vw;background:#000;z-index:9999;display:none;flex-direction:column;overscroll-behavior:contain}
-.cam-modal.open{display:flex}
-.cam-header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 14px max(16px,env(safe-area-inset-left));background:rgba(0,0,0,0.7);color:#fff;font-size:14px;font-weight:600;letter-spacing:0.04em;min-height:54px}
-.cam-header .cam-close{background:none;border:none;color:#fff;font-size:32px;cursor:pointer;font-family:inherit;line-height:1;padding:6px 10px;min-width:44px;min-height:44px}
-.cam-stage{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
-#camVideo{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
-#camCanvas{display:none}
-.cam-overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
-.cam-guide-text{position:absolute;bottom:14px;left:12px;right:12px;text-align:center;color:#fff;font-size:13px;letter-spacing:0.04em;text-shadow:0 1px 4px rgba(0,0,0,0.85);line-height:1.3;z-index:4}
-.cam-stability{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:18px;letter-spacing:0.04em;z-index:4;display:none}
-.cam-stability.show{display:block}
-.cam-stability.stable{background:rgba(95,199,232,0.85);color:#0e2638}
-.cam-stability.locking{background:rgba(212,175,55,0.92);color:#1a1208;animation:camPulse 0.6s ease-in-out infinite alternate}
-@keyframes camPulse{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.08)}}
-.cam-controls{flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:18px;padding:14px 16px max(14px,env(safe-area-inset-bottom));background:rgba(0,0,0,0.85)}
-.cam-capture-btn{width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid var(--gold);cursor:pointer;font-size:30px;display:flex;align-items:center;justify-content:center;padding:0;-webkit-tap-highlight-color:transparent}
-.cam-capture-btn:active{transform:scale(0.93)}
-.cam-capture-btn:disabled{opacity:0.4;cursor:wait}
-.cam-status{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.88);color:#fff;padding:18px 24px;border-radius:14px;font-size:14px;text-align:center;max-width:80%;width:280px;display:none;z-index:5}
-.cam-status.show{display:block}
-.cam-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:camspin 0.9s linear infinite;margin:0 auto 10px}
-@keyframes camspin{to{transform:rotate(360deg)}}
-/* Validation modal */
-.cam-valid{flex:1;overflow-y:auto;padding:14px 14px 0;background:var(--bg);color:var(--txt);display:none;-webkit-overflow-scrolling:touch}
-.cam-valid.open{display:block}
-.cam-valid h3{margin:0 0 12px;font-size:14px;color:var(--gold);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-align:center}
-.cam-valid-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px}
-.cam-valid-card{background:var(--bg-3);border:1px solid var(--line-2);border-radius:10px;padding:8px;text-align:center}
-.cam-valid-card img{width:100%;height:auto;max-height:140px;object-fit:contain;border-radius:6px;display:block;margin:0 auto 8px;background:#000}
-.cam-valid-card .cvc-pick-row{margin-bottom:8px;text-align:left}
-.cam-valid-card .cvc-lbl{display:block;font-size:10px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:0.04em;font-weight:600;margin-bottom:3px}
-.cam-valid-card select{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:6px 4px;font-family:inherit;font-size:14px;font-weight:700;min-height:40px;width:100%}
-.cam-valid-card .cvc-suits{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.cam-valid-card .cvc-suit{background:var(--bg-2);border:1px solid var(--line);color:var(--txt-dim);border-radius:6px;padding:8px 0;font-size:18px;cursor:pointer;font-family:inherit;font-weight:700;min-height:42px;transition:background .1s,border-color .1s,color .1s}
-.cam-valid-card .cvc-suit.red{color:var(--red)}
-.cam-valid-card .cvc-suit.color-match{border-color:var(--gold-soft);background:rgba(212,175,55,0.08)}
-.cam-valid-card .cvc-suit.picked{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
-.cam-valid-card .cvc-suit.picked.red{color:var(--on-gold)}
-.cam-valid-card .cvc-suit:active{transform:scale(0.95)}
-.cam-valid-card .conf{font-size:10px;color:var(--txt-mute);margin-top:4px}
-.cam-valid-actions{display:flex;gap:10px;justify-content:center;padding:10px 0 max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--bg);margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
-.cam-valid-actions button{flex:1;max-width:200px;padding:12px 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid var(--line-2);min-height:48px}
-.cam-valid-actions .commit{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
-.cam-valid-actions .retry{background:var(--bg-3);color:var(--txt)}
-.cam-valid-empty{text-align:center;color:var(--txt-mute);padding:30px 10px;font-style:italic;grid-column:1/-1}
-@media (max-width:430px){
-  .cam-guide-frame{width:92%}
-  .cam-valid-grid{grid-template-columns:repeat(2,1fr)}
-  .cam-valid-card img{max-height:110px}
-  .cam-capture-btn{width:64px;height:64px;border-width:4px;font-size:26px}
-}
 /* Poker table viz */
 .table-wrap{position:relative;width:100%;max-width:640px;aspect-ratio:2.2;margin:14px auto 28px;padding:18px}
 .table-felt{position:absolute;inset:0;background:radial-gradient(ellipse at center,#235040 0%,#1a3a2e 60%,#0f261f 100%);border:7px solid #3d2814;border-radius:50%/35%;box-shadow:inset 0 0 40px rgba(0,0,0,0.4),0 6px 14px rgba(0,0,0,0.35)}
@@ -471,218 +410,6 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .street-body{display:none}
 .street-block.open .street-body{display:block}
 .street-block.open .street-head .toggle{transform:rotate(90deg)}
-
-/* ========== PBT-style hand table (saisie + replayer) ========== */
-/* PBT palette: navy surround, teal felt, red card backs */
-.pe-table-wrap{position:relative;width:100%;max-width:540px;margin:8px auto 18px;aspect-ratio:1.42;padding:34px 8px 28px;background:#0e2638;border-radius:18px}
-.pe-table-felt{position:absolute;inset:34px 28px 28px 28px;background:radial-gradient(ellipse at center,#3a7f93 0%,#2a6378 55%,#1c4b5e 100%);border:1px solid rgba(255,255,255,0.08);border-radius:50%/45%;box-shadow:inset 0 0 30px rgba(0,0,0,0.35),0 4px 10px rgba(0,0,0,0.3)}
-.pe-table-felt::after{content:"";position:absolute;inset:10px;border-radius:50%/45%;pointer-events:none;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,0.18) 100%)}
-.pe-pot-center{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);background:rgba(14,38,56,0.85);border:1px solid rgba(120,180,200,0.4);border-radius:14px;padding:4px 14px;font-size:11px;font-family:inherit;color:#9fc7d8;letter-spacing:0.04em;font-weight:600;white-space:nowrap;z-index:3}
-.pe-pot-center .v{color:#fff;font-weight:700;margin-left:3px}
-.pe-board-center{position:absolute;top:53%;left:50%;transform:translate(-50%,-50%);display:flex;gap:4px;justify-content:center;align-items:center;z-index:3;min-height:46px}
-.pe-card-face{width:30px;height:42px;border-radius:5px;background:#fff;color:#1a1208;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;box-shadow:0 2px 5px rgba(0,0,0,0.45);border:1px solid rgba(0,0,0,0.1)}
-.pe-card-face.red{color:#c0392b}
-.pe-card-face .r{font-size:14px;line-height:1}
-.pe-card-face .s{font-size:12px;line-height:1;margin-top:1px}
-.pe-card-face.tiny{width:22px;height:30px;border-radius:3px}
-.pe-card-face.tiny .r{font-size:11px}
-.pe-card-face.tiny .s{font-size:9px}
-.pe-card-back{width:30px;height:42px;border-radius:5px;background:linear-gradient(135deg,#d63a3a 0%,#a82222 50%,#7e1414 100%);border:1.5px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,0.5);position:relative}
-.pe-card-back::after{content:"";position:absolute;inset:3px;border-radius:3px;background:repeating-linear-gradient(45deg,rgba(255,255,255,0.08) 0 3px,transparent 3px 6px);pointer-events:none}
-.pe-card-back.tiny{width:22px;height:30px;border-radius:3px;border-width:1px}
-.pe-card-empty{width:30px;height:42px;border-radius:5px;background:rgba(0,0,0,0.25);border:1px dashed rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer}
-.pe-card-empty.tiny{width:22px;height:30px;border-radius:3px;font-size:14px}
-.pe-card-empty:hover{background:rgba(255,255,255,0.08)}
-.pe-seat{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;cursor:pointer;font-family:inherit}
-.pe-seat-cards{display:flex;gap:2px;justify-content:center;min-height:30px;margin-bottom:-12px;z-index:1}
-.pe-seat-body{width:50px;height:50px;border-radius:50%;background:linear-gradient(160deg,#1c3a4e,#0e2638);border:2px solid rgba(120,180,200,0.35);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#cfe4ed;font-weight:700;font-size:11px;line-height:1;box-shadow:0 3px 8px rgba(0,0,0,0.5);transition:box-shadow .2s,border-color .2s,transform .15s;position:relative;z-index:2}
-.pe-seat-body .pe-stk{font-size:9px;color:#9fc7d8;letter-spacing:0;margin-top:2px;font-weight:600}
-.pe-seat-label{margin-top:4px;font-size:10px;letter-spacing:0.08em;color:#9fc7d8;font-weight:700;text-transform:uppercase;background:rgba(14,38,56,0.7);padding:1px 6px;border-radius:8px;white-space:nowrap}
-.pe-seat.hero .pe-seat-body{border-color:#d4af37;background:linear-gradient(160deg,#2a2010,#0e0e0e);box-shadow:0 0 0 2px rgba(212,175,55,0.35),0 3px 8px rgba(0,0,0,0.6)}
-.pe-seat.hero .pe-seat-label{color:#d4af37}
-.pe-seat.active .pe-seat-body{border-color:#5fc7e8;box-shadow:0 0 0 3px rgba(95,199,232,0.55),0 0 18px rgba(95,199,232,0.6);animation:peSeatPulse 1.4s ease-in-out infinite}
-.pe-seat.active .pe-seat-label{color:#5fc7e8}
-.pe-seat.folded .pe-seat-body{opacity:0.3;filter:grayscale(0.8)}
-.pe-seat.folded .pe-seat-cards{opacity:0.25}
-.pe-seat.folded .pe-seat-label{text-decoration:line-through;opacity:0.5}
-.pe-seat.winner .pe-seat-body{border-color:#5a9a6a;box-shadow:0 0 0 3px rgba(90,154,106,0.55),0 0 18px rgba(90,154,106,0.6)}
-.pe-seat.winner .pe-seat-label{color:#5a9a6a}
-.pe-bet-chip{background:rgba(14,38,56,0.85);border:1px solid rgba(120,180,200,0.5);border-radius:12px;padding:1px 7px;font-size:10px;color:#cfe4ed;font-weight:700;font-family:inherit;white-space:nowrap;letter-spacing:0.02em;animation:peChipPop .25s ease-out}
-.pe-bet-chip:empty{display:none}
-.pe-dealer-btn{position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;color:#0e2638;border:1.5px solid rgba(0,0,0,0.2);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;box-shadow:0 2px 5px rgba(0,0,0,0.5);z-index:4;transform:translate(-50%,-50%);pointer-events:none}
-.pe-action-bubble{position:absolute;background:#d4af37;color:#1a1208;font-weight:800;font-size:11px;padding:3px 9px;border-radius:12px;letter-spacing:0.04em;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,0.5);transform:translate(-50%,-50%);z-index:4;animation:peBubbleIn .25s ease-out;white-space:nowrap;font-family:inherit}
-.pe-action-bubble.fold{background:#6b7a8a;color:#fff}
-.pe-action-bubble.check{background:#9fc7d8;color:#0e2638}
-.pe-action-bubble.call{background:#5a9a6a;color:#fff}
-.pe-action-bubble.raise,.pe-action-bubble.jam,.pe-action-bubble.bet{background:#c84a3a;color:#fff}
-@keyframes peSeatPulse{0%,100%{box-shadow:0 0 0 3px rgba(95,199,232,0.55),0 0 18px rgba(95,199,232,0.6)}50%{box-shadow:0 0 0 5px rgba(95,199,232,0.7),0 0 28px rgba(95,199,232,0.85)}}
-@keyframes peChipPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes peBubbleIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-
-/* Saisie panel (bottom) */
-.pe-street-tabs{display:flex;gap:4px;margin:8px 0 10px;flex-wrap:wrap}
-.pe-street-tab{flex:1;min-width:50px;background:var(--bg-3);border:1px solid var(--line-2);color:var(--txt-mute);padding:6px 8px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border-radius:6px;cursor:pointer;font-family:inherit}
-.pe-street-tab.active{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
-.pe-street-tab.locked{opacity:0.4;cursor:not-allowed}
-.pe-street-tab .pe-tab-pot{display:block;font-size:9px;margin-top:1px;color:inherit;opacity:0.8;font-weight:600;letter-spacing:0}
-.pe-action-panel{background:var(--bg-2);border:1px solid var(--gold-soft);border-radius:10px;padding:10px;margin-bottom:10px}
-.pe-action-panel .pe-ap-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px}
-.pe-action-panel .pe-ap-actor{color:var(--gold);font-weight:700;letter-spacing:0.04em}
-.pe-action-panel .pe-ap-actor .pe-hero-tag{font-size:9px;background:var(--gold);color:var(--on-gold);padding:1px 5px;border-radius:4px;margin-left:4px;letter-spacing:0.06em}
-.pe-action-panel .pe-ap-undo{background:none;border:1px solid var(--line-2);color:var(--txt-mute);font-size:10px;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
-.pe-action-panel .pe-ap-undo:hover{border-color:var(--gold);color:var(--gold)}
-.pe-table-undo{background:rgba(14,38,56,0.85);border:1px solid rgba(120,180,200,0.4);color:#9fc7d8;font-size:11px;padding:4px 12px;border-radius:14px;cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
-.pe-table-undo:hover{background:rgba(95,199,232,0.18);color:#fff;border-color:#5fc7e8}
-.pe-table-undo:disabled{opacity:0.3;cursor:not-allowed}
-
-/* Hand navigation (prev/next) flanking table */
-.pe-hand-nav{display:flex;align-items:stretch;gap:6px;margin:8px 0}
-.pe-hand-nav-table{flex:1;min-width:0}
-.pe-hand-nav-btn{background:rgba(14,38,56,0.7);border:1px solid rgba(120,180,200,0.4);color:#9fc7d8;font-size:18px;font-weight:800;font-family:inherit;cursor:pointer;padding:0 10px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:42px;transition:background .15s,color .15s,border-color .15s}
-.pe-hand-nav-btn:hover{background:rgba(95,199,232,0.18);color:#fff;border-color:#5fc7e8}
-.pe-hand-nav-btn:disabled{opacity:0.25;cursor:not-allowed}
-.pe-hand-nav-btn .pe-nav-lbl{font-size:8px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;line-height:1;opacity:0.85}
-.pe-hand-nav-btn .pe-nav-ico{font-size:20px;line-height:1}
-
-/* Showdown opp cards (clickable to open grid modal) */
-.pe-sd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px}
-.pe-sd-opp{background:#1c3a4e;border:1px solid rgba(120,180,200,0.3);border-radius:8px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:background .15s,border-color .15s}
-.pe-sd-opp:hover{background:rgba(95,199,232,0.18);border-color:#5fc7e8}
-.pe-sd-opp-pos{font-size:11px;color:#9fc7d8;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
-.pe-sd-opp-cards{display:flex;gap:4px}
-
-/* Blinds/Ante info bar */
-.pe-save-row{display:flex;gap:8px;flex-wrap:wrap}
-.pe-save-row .btn{flex:1;min-width:160px}
-.pe-blinds-info{background:var(--bg-3);border:1px solid var(--line-2);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--txt-dim);text-align:center;margin:4px 0 8px;letter-spacing:0.02em}
-.pe-blinds-info b{color:var(--gold);font-weight:700;font-family:Georgia,serif}
-.pe-blinds-info .pe-ante-mode{display:inline-block;background:rgba(212,175,55,0.18);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;border-radius:8px;margin-left:4px}
-.pe-blinds-info .pe-ante-cfg{background:none;border:1px solid var(--gold);color:var(--gold);font-size:11px;padding:2px 8px;border-radius:6px;font-family:inherit;cursor:pointer;font-weight:700;letter-spacing:0.04em;margin-left:6px}
-.pe-blinds-info:empty{display:none}
-.pe-action-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:6px}
-.pe-action-grid .pe-act-btn{background:var(--bg-3);border:1px solid var(--line-2);color:var(--txt);padding:9px 4px;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:7px;cursor:pointer;font-family:inherit;transition:background .1s,border-color .1s}
-.pe-action-grid .pe-act-btn:hover{border-color:var(--gold)}
-.pe-action-grid .pe-act-btn.active{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
-.pe-action-grid .pe-act-btn.fold{color:#c84a3a}
-.pe-action-grid .pe-act-btn.fold.active{background:#c84a3a;color:#fff;border-color:#c84a3a}
-.pe-amount-row{display:flex;gap:5px;align-items:center;margin-top:6px}
-.pe-amount-row input{flex:1;padding:8px 10px;font-size:14px;background:var(--bg-3);border:1px solid var(--gold-soft);border-radius:6px;color:var(--txt);font-family:inherit}
-.pe-amount-row .pe-quick{background:var(--bg-3);border:1px solid var(--line-2);color:var(--txt-dim);font-size:11px;padding:6px 9px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700}
-.pe-amount-row .pe-quick:hover{border-color:var(--gold);color:var(--gold)}
-.pe-amount-row .pe-confirm{background:var(--gold);color:var(--on-gold);border:none;font-size:12px;padding:8px 14px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:800;letter-spacing:0.06em;text-transform:uppercase}
-/* Inline raise (replaces raise btn cell when pending) */
-.pe-act-inline-raise{display:flex;gap:3px;background:var(--bg-3);border:1px solid var(--gold);border-radius:7px;padding:2px;align-items:stretch}
-.pe-act-inline-raise input{flex:1;min-width:0;width:100%;padding:6px 6px;font-size:13px;background:transparent;border:none;color:var(--txt);font-family:inherit;font-weight:700;text-align:center;outline:none}
-.pe-act-inline-raise .pe-act-confirm{background:var(--gold);color:var(--on-gold);border:none;font-size:11px;padding:0 9px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:800;letter-spacing:0.04em;text-transform:uppercase}
-.pe-quick-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;justify-content:center}
-.pe-quick-row .pe-quick{background:var(--bg-3);border:1px solid var(--line-2);color:var(--txt-dim);font-size:11px;padding:5px 11px;border-radius:5px;cursor:pointer;font-family:inherit;font-weight:700}
-.pe-quick-row .pe-quick:hover{border-color:var(--gold);color:var(--gold)}
-
-/* Replayer controls */
-.pe-replay-controls{display:flex;gap:6px;justify-content:center;align-items:center;background:var(--bg-2);border:1px solid var(--line-2);border-radius:10px;padding:8px;margin:10px 0}
-.pe-replay-controls button{background:var(--bg-3);border:1px solid var(--line-2);color:var(--gold);width:38px;height:38px;border-radius:50%;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0}
-.pe-replay-controls button:hover{border-color:var(--gold);background:rgba(212,175,55,0.1)}
-.pe-replay-controls button.play{background:var(--gold);color:var(--on-gold);border-color:var(--gold);width:46px;height:46px;font-size:16px}
-.pe-replay-controls .pe-step-info{color:var(--txt-mute);font-size:11px;margin:0 6px;font-family:Georgia,serif;letter-spacing:0.04em;min-width:80px;text-align:center}
-.pe-replay-controls .pe-speed{background:var(--bg-3);border:1px solid var(--line-2);color:var(--txt-dim);font-size:11px;padding:6px 10px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;width:auto}
-.pe-replay-log{background:var(--bg-3);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:var(--txt-dim);min-height:34px;line-height:1.5}
-.pe-replay-log b{color:var(--gold)}
-
-/* Mini card-picker trigger (board / hero) inside table */
-.pe-pick-trigger{font-size:9px;color:rgba(212,175,55,0.7);text-align:center;margin-top:2px;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer}
-.pe-pick-trigger:hover{color:#f3d36b}
-
-/* Inline picker dropdown in saisie */
-.pe-picker-modal{background:var(--bg-2);border:1px solid var(--gold-soft);border-radius:10px;padding:12px;margin-bottom:10px}
-.pe-picker-modal .pe-pm-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.pe-picker-modal .pe-pm-title{color:var(--gold);font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
-.pe-picker-modal .pe-pm-close{background:none;border:none;color:var(--txt-mute);font-size:18px;cursor:pointer;padding:0 6px}
-
-/* Card grid picker (PBT-style) — modal overlay */
-.pe-cgrid-modal{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px 10px;overflow-y:auto;animation:peBubbleIn .15s ease-out}
-.pe-cgrid-wrap{background:#0e2638;border:1px solid rgba(120,180,200,0.3);border-radius:12px;padding:14px;width:100%;max-width:640px;margin:auto;box-shadow:0 10px 40px rgba(0,0,0,0.7)}
-.pe-cgrid-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap}
-.pe-cgrid-title{font-size:13px;color:#cfe4ed;font-weight:700;letter-spacing:0.04em}
-.pe-cgrid-close{background:none;border:none;color:#9fc7d8;font-size:20px;cursor:pointer;padding:0 6px;line-height:1}
-.pe-cgrid-targets{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
-.pe-cgrid-target{flex:1;min-width:70px;background:#1c3a4e;border:1px solid rgba(120,180,200,0.3);color:#9fc7d8;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;border-radius:6px;padding:6px 4px;cursor:pointer;font-family:inherit}
-.pe-cgrid-target.active{background:#5fc7e8;color:#0e2638;border-color:#5fc7e8}
-.pe-cgrid-target .pe-tg-count{display:block;font-size:9px;opacity:0.85;margin-top:1px;font-weight:600}
-.pe-cgrid{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-bottom:10px}
-.pe-cgrid .pe-cg-cell{aspect-ratio:0.72;background:#a8b4c0;border:1px solid #6b7884;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:Georgia,serif;font-weight:700;color:#1a1208;font-size:13px;padding:1px;line-height:1;transition:transform .08s,box-shadow .15s;position:relative;overflow:hidden}
-.pe-cgrid .pe-cg-cell.red{color:#9c1f1f}
-.pe-cgrid .pe-cg-cell:hover{transform:scale(1.05)}
-.pe-cgrid .pe-cg-cell.picked{background:#fff;box-shadow:0 0 0 2px #5fc7e8;color:#1a1208}
-.pe-cgrid .pe-cg-cell.picked.red{color:#c0392b}
-.pe-cgrid .pe-cg-cell.dimmed{opacity:0.35;cursor:not-allowed;background:#5a6470;color:#1a2028}
-.pe-cgrid .pe-cg-cell .pe-cg-r{font-size:13px;line-height:1}
-.pe-cgrid .pe-cg-cell .pe-cg-s{font-size:11px;line-height:1;margin-top:1px}
-.pe-cgrid-selected{background:#1c3a4e;border:1px solid rgba(120,180,200,0.3);border-radius:8px;padding:8px;min-height:54px;display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.pe-cgrid-selected:empty::before{content:"Aucune carte choisie";color:#5d7a8a;font-style:italic;font-size:12px}
-.pe-cgrid-selected .pe-cg-sel{display:flex;flex-direction:column;align-items:center;gap:2px}
-.pe-cgrid-selected .pe-cg-sel .pe-cg-sel-lbl{font-size:9px;color:#9fc7d8;letter-spacing:0.05em;text-transform:uppercase;font-weight:600}
-.pe-cgrid-actions{display:flex;gap:6px;justify-content:flex-end}
-.pe-cgrid-actions .pe-cg-clear{background:#1c3a4e;border:1px solid rgba(120,180,200,0.3);color:#9fc7d8;font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:0.04em}
-.pe-cgrid-actions .pe-cg-done{background:#5fc7e8;color:#0e2638;border:none;font-size:12px;padding:6px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:800;letter-spacing:0.06em}
-.pe-cgrid-actions .pe-cg-scan{background:rgba(212,175,55,0.18);border:1px solid var(--gold-soft);color:var(--gold);font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:0.04em}
-.pe-cgrid-actions .pe-cg-scan:active{transform:scale(0.96);background:rgba(212,175,55,0.32)}
-@media (max-width:480px){
-  .pe-cgrid-modal{padding:10px 6px env(safe-area-inset-bottom)}
-  .pe-cgrid-wrap{padding:12px 8px;border-radius:10px}
-  .pe-cgrid{gap:2px}
-  .pe-cgrid .pe-cg-cell{font-size:10px;aspect-ratio:0.68;border-radius:2px}
-  .pe-cgrid .pe-cg-cell .pe-cg-r{font-size:11px}
-  .pe-cgrid .pe-cg-cell .pe-cg-s{font-size:9px}
-  .pe-cgrid-target{min-width:60px;font-size:10px;padding:8px 4px;min-height:42px}
-  .pe-cgrid-target .pe-tg-count{font-size:9px}
-  .pe-cgrid-actions{flex-wrap:wrap;gap:6px}
-  .pe-cgrid-actions .pe-cg-clear,.pe-cgrid-actions .pe-cg-scan,.pe-cgrid-actions .pe-cg-done{flex:1;min-height:44px;padding:10px 8px;font-size:12px}
-  .pe-cgrid-actions .pe-cg-done{flex:1.4}
-}
-
-/* Hero position picker — row buttons */
-.pe-hero-pos-row{display:flex;gap:3px;flex-wrap:wrap;margin:4px 0 6px}
-.pe-hp-btn{flex:1;min-width:54px;background:var(--bg-3);border:1px solid var(--line-2);color:var(--txt-dim);padding:7px 4px;font-size:12px;font-weight:700;letter-spacing:0.04em;border-radius:6px;cursor:pointer;font-family:inherit;transition:background .1s,color .1s,border-color .1s}
-.pe-hp-btn:hover{border-color:var(--gold);color:var(--gold)}
-.pe-hp-btn.active{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
-
-/* Floating action menu — absolute positioned inward from seat (toward table center) */
-.pe-seat-menu{display:flex;gap:2px;background:rgba(14,38,56,0.95);border:1px solid #5fc7e8;border-radius:6px;padding:3px;box-shadow:0 4px 14px rgba(0,0,0,0.7);animation:peBubbleIn .15s ease-out;white-space:nowrap;z-index:6;position:absolute;transform:translate(-50%,-50%)}
-.pe-seat-menu .pe-sm-btn{background:#1c3a4e;border:1px solid rgba(120,180,200,0.35);color:#cfe4ed;padding:4px 0;font-size:11px;font-weight:800;letter-spacing:0;border-radius:4px;cursor:pointer;font-family:inherit;line-height:1;min-width:22px}
-.pe-seat-menu .pe-sm-btn.fold{color:#ff8b7c;border-color:rgba(200,74,58,0.5)}
-.pe-seat-menu .pe-sm-btn.fold:hover{background:#c84a3a;color:#fff}
-.pe-seat-menu .pe-sm-btn.check{color:#9fc7d8}
-.pe-seat-menu .pe-sm-btn.check:hover{background:#9fc7d8;color:#0e2638}
-.pe-seat-menu .pe-sm-btn.call,.pe-seat-menu .pe-sm-btn.limp{color:#7ed397}
-.pe-seat-menu .pe-sm-btn.call:hover,.pe-seat-menu .pe-sm-btn.limp:hover{background:#5a9a6a;color:#fff}
-.pe-seat-menu .pe-sm-btn.raise,.pe-seat-menu .pe-sm-btn.bet,.pe-seat-menu .pe-sm-btn.jam{color:#f3d36b}
-.pe-seat-menu .pe-sm-btn.raise:hover,.pe-seat-menu .pe-sm-btn.bet:hover,.pe-seat-menu .pe-sm-btn.jam:hover{background:#d4af37;color:#1a1208}
-.pe-sm-inline-raise{display:flex;gap:2px;background:#1c3a4e;border:1px solid #d4af37;border-radius:5px;padding:2px;align-items:stretch}
-.pe-sm-inline-raise input{width:60px;padding:3px 4px;font-size:11px;background:transparent;border:none;color:#fff;font-family:inherit;font-weight:800;text-align:center;outline:none}
-.pe-sm-inline-raise .pe-sm-confirm{background:#d4af37;color:#1a1208;border:none;font-size:9px;padding:0 7px;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:800;letter-spacing:0.04em}
-/* Give table wrap extra bottom padding for hero seat menu */
-.pe-table-wrap{padding-bottom:60px}
-
-@media (max-width:480px){
-  .pe-table-wrap{aspect-ratio:1.35;max-width:100%;padding:24px 4px 22px;border-radius:14px}
-  .pe-seat-body{width:42px;height:42px;font-size:10px}
-  .pe-seat-body .pe-pos{font-size:10px}
-  .pe-seat-body .pe-stk{font-size:8px}
-  .pe-hand-nav{gap:4px}
-  .pe-hand-nav-btn{min-width:30px;padding:0 4px;font-size:14px}
-  .pe-hand-nav-btn .pe-nav-lbl{display:none}
-  .pe-hand-nav-btn .pe-nav-ico{font-size:18px}
-  .pe-hero-pos-row{gap:2px}
-  .pe-hp-btn{min-width:0;padding:8px 2px;font-size:11px;letter-spacing:0;flex:1 1 auto}
-  .pe-blinds-info{font-size:11px;padding:5px 8px}
-  .pe-action-panel{padding:8px}
-  .pe-street-tabs{gap:3px}
-  .pe-save-row{display:flex;flex-direction:column;gap:8px}
-  .pe-save-row .btn{width:100%}
-  .pe-card-face,.pe-card-back,.pe-card-empty{width:26px;height:38px}
-  .pe-card-face .r{font-size:12px}
-  .pe-card-face .s{font-size:10px}
-}
 </style>
 </head>
 <body>
@@ -849,33 +576,6 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <div class="modal">
     <button class="close" onclick="closeModal()">×</button>
     <div id="modalContent"></div>
-  </div>
-</div>
-
-<!-- ============== CAMERA SCAN MODAL ============== -->
-<div class="cam-modal" id="camModal">
-  <div class="cam-header">
-    <span id="camTitle">Scanner cartes</span>
-    <button class="cam-close" onclick="camScanClose()" title="Fermer">×</button>
-  </div>
-  <div class="cam-stage" id="camStage">
-    <video id="camVideo" autoplay playsinline muted></video>
-    <canvas id="camCanvas"></canvas>
-    <canvas id="camOverlay" class="cam-overlay"></canvas>
-    <div class="cam-guide-text" id="camGuideText">Posez les cartes sur fond uni</div>
-    <div class="cam-stability" id="camStability"></div>
-    <div class="cam-status" id="camStatus"></div>
-  </div>
-  <div class="cam-valid" id="camValid">
-    <h3>Cartes détectées — Valider ou corriger</h3>
-    <div class="cam-valid-grid" id="camValidGrid"></div>
-    <div class="cam-valid-actions">
-      <button class="retry" onclick="camScanRetry()">↻ Re-scanner</button>
-      <button class="commit" onclick="camScanCommit()">✓ Valider</button>
-    </div>
-  </div>
-  <div class="cam-controls" id="camControls">
-    <button class="cam-capture-btn" id="camCaptureBtn" onclick="camScanCapture()" title="Capturer">📷</button>
   </div>
 </div>
 
@@ -1226,30 +926,12 @@ function formatChips(n){
 }
 function renderLiveStatsInline(t){
   const bl = parseBlinds(t.blinds);
-  const mode = t.anteMode || "perPlayer";
   return `<div class="live-stats">
     <div class="live-stat" onclick="startInlineEdit(this,'stack')" data-val="${t.stack||""}"><div class="v">${formatChips(t.stack)}</div><div class="l">Stack</div></div>
     <div class="live-stat" onclick="startInlineEdit(this,'sb')" data-val="${bl.sb||""}"><div class="v">${bl.sb!=null?bl.sb:"—"}</div><div class="l">SB</div></div>
     <div class="live-stat" onclick="startInlineEdit(this,'bb')" data-val="${bl.bb||""}"><div class="v">${bl.bb!=null?bl.bb:"—"}</div><div class="l">BB</div></div>
-    <div class="live-stat" onclick="startInlineEdit(this,'ante')" data-val="${bl.ante||""}"><div class="v">${bl.ante!=null?bl.ante:"—"}</div><div class="l">Ante</div></div>
     <div class="live-stat" onclick="startInlineEdit(this,'players')" data-val="${t.players||""}"><div class="v">${t.players||"—"}</div><div class="l">Joueurs</div></div>
-  </div>
-  <div class="ante-mode-row">
-    <span class="ante-mode-lbl">Mode ante</span>
-    <div class="seg small" id="anteModeSeg">
-      <button type="button" class="seg-btn ${mode==='perPlayer'?'active':''}" onclick="setTournAnteMode('perPlayer')">Par joueur</button>
-      <button type="button" class="seg-btn ${mode==='bb'?'active':''}" onclick="setTournAnteMode('bb')">Big ante (BB)</button>
-    </div>
   </div>`;
-}
-
-function setTournAnteMode(m){
-  const t = state.tournaments.find(x=>x.id===state.liveId);
-  if(!t) return;
-  t.anteMode = m;
-  saveState();
-  renderTracker();
-  toast(`Mode ante: ${m==='bb'?'Big ante (BB)':'Par joueur'}`);
 }
 function startInlineEdit(cell, field){
   if(cell.querySelector("input")) return;
@@ -1379,12 +1061,11 @@ function saveInlineField(field, val){
     t.stack = val==="" ? "" : String(parseFloat(val));
   } else if(field==="players"){
     t.players = val;
-  } else if(field==="sb" || field==="bb" || field==="ante"){
+  } else if(field==="sb" || field==="bb"){
     const cur = parseBlinds(t.blinds);
     const num = val==="" ? null : parseFloat(val);
     if(field==="sb") cur.sb = num;
-    else if(field==="bb") cur.bb = num;
-    else cur.ante = num;
+    else cur.bb = num;
     t.blinds = buildBlindsStr(cur.sb, cur.bb, cur.ante);
   }
   t.history = t.history || [];
@@ -2289,19 +1970,12 @@ function renderHandTip(tips, all){
   return `<div class="hand-tip ${t.type}"><span class="ico">${ico[t.type]||"•"}</span><span>${t.text}</span></div>`;
 }
 
-function renderHandEntry(h, idx, tid){
+function renderHandEntry(h, idx){
   const handCards = h.cards?`<span style="color:var(--gold);font-family:Georgia">${h.cards}</span>`:"";
   const unit = h.unit || h.stackUnit;
   const unitSuffix = unit==="chips" ? " j" : "bb";
   const stackStr = h.stack ? `${h.stack}${unit==='chips'?' j':' bb'}` : "?";
   const editAttr = idx!==undefined ? `onclick="editHand(${idx})"` : "";
-  const replayTid = tid || (state && state.liveId) || "";
-  const hasActions = (h.preflop && h.preflop.actions && h.preflop.actions.length) ||
-                     (h.flop && h.flop.actions && h.flop.actions.length) ||
-                     (h.turn && h.turn.actions && h.turn.actions.length) ||
-                     (h.river && h.river.actions && h.river.actions.length);
-  const replayBtn = (hasActions && idx!==undefined) ?
-    `<button type="button" class="weekTag" style="background:rgba(212,175,55,0.18);color:var(--gold);border:1px solid var(--gold-soft);cursor:pointer;font-family:inherit;padding:2px 8px;font-size:11px;font-weight:700;letter-spacing:.04em;border-radius:10px" onclick="event.stopPropagation();openHandReplay('${replayTid}',${idx})">▶ Rejouer</button>` : "";
 
   const fmtActions = (acts) => (acts||[]).filter(a=>a.action).map(a=>{
     let s = `<span style="color:var(--txt-dim)">${a.position}</span> ${a.action}`;
@@ -2343,7 +2017,7 @@ function renderHandEntry(h, idx, tid){
 
   const tipHtml = renderHandTip(analyzeHand(h), false);
   return `<div class="hand-entry" ${editAttr}>
-    <div class="top"><span class="tag-mini">${h.position||"?"} · ${stackStr}</span><span style="display:flex;align-items:center;gap:6px">${replayBtn}<span>${h.time||""}</span></span></div>
+    <div class="top"><span class="tag-mini">${h.position||"?"} · ${stackStr}</span><span>${h.time||""}</span></div>
     <div class="body">
       ${handCards}
       ${body?`<div style="margin-top:4px">${body}</div>`:""}
@@ -2424,22 +2098,9 @@ function updateLiveStack(focus){
   const bb = getBB(t);
   const startUnit = bb ? "bb" : "chips";
   const startVal = (startUnit==="bb" && bb && t.stack) ? (parseFloat(t.stack)/bb).toFixed(1) : (t.stack||"");
-  const curBl = parseBlinds(t.blinds) || {};
-  const curMode = t.anteMode || "perPlayer";
   openModal(`
     <h2>Mise à jour</h2>
-    <div class="row">
-      <div class="field"><label>Petite blind</label><input id="uSB" type="number" inputmode="decimal" step="any" placeholder="500" value="${curBl.sb!=null?curBl.sb:''}" oninput="onBlindsChange()"></div>
-      <div class="field"><label>Grande blind</label><input id="uBB" type="number" inputmode="decimal" step="any" placeholder="1000" value="${curBl.bb!=null?curBl.bb:''}" oninput="onBlindsChange()"></div>
-    </div>
-    <div class="field"><label>Ante</label><input id="uAnte" type="number" inputmode="decimal" step="any" placeholder="100 (laisse vide si pas d'ante)" value="${curBl.ante!=null?curBl.ante:''}" oninput="onBlindsChange()"></div>
-    <div class="field"><label>Mode ante</label>
-      <div class="seg small" id="uAnteModeSeg">
-        <button type="button" class="seg-btn ${curMode==='perPlayer'?'active':''}" data-m="perPlayer" onclick="setAnteMode('perPlayer')">Par joueur</button>
-        <button type="button" class="seg-btn ${curMode==='bb'?'active':''}" data-m="bb" onclick="setAnteMode('bb')">À la BB (Big ante)</button>
-      </div>
-      <div class="picker-hint">Par joueur: chaque siège paie. À la BB: seule BB paie 1× ante.</div>
-    </div>
+    <div class="field"><label>Blinds actuelles</label><input id="uBlinds" placeholder="Ex: 500/1000/100" value="${t.blinds||""}" oninput="onBlindsChange()"></div>
     <div class="field">
       <label>Stack actuel</label>
       <input id="uStack" type="number" inputmode="decimal" step="any" value="${startVal}">
@@ -2453,7 +2114,6 @@ function updateLiveStack(focus){
     <div class="field"><label>Joueurs restants</label><input id="uPlayers" type="number" inputmode="numeric" value="${t.players||""}"></div>
     <button class="btn" onclick="saveStackUpdate()">Enregistrer</button>
   `);
-  _anteMode = curMode;
   refreshStackHint();
   const focusMap = {stack:"uStack", blinds:"uBlinds", players:"uPlayers"};
   const fid = focusMap[focus];
@@ -2463,34 +2123,11 @@ function updateLiveStack(focus){
 }
 
 let _stackInputUnit = "bb";
-let _anteMode = "perPlayer";
-
-function setAnteMode(m){
-  _anteMode = m;
-  document.querySelectorAll("#uAnteModeSeg .seg-btn").forEach(b=>{
-    b.classList.toggle("active", b.dataset.m===m);
-  });
-}
-
-function getBlindsFromInputs(){
-  const sb = document.getElementById("uSB");
-  const bb = document.getElementById("uBB");
-  const ante = document.getElementById("uAnte");
-  const sbV = sb ? sb.value.trim() : "";
-  const bbV = bb ? bb.value.trim() : "";
-  const anteV = ante ? ante.value.trim() : "";
-  let str = "";
-  if(sbV || bbV){
-    str = (sbV||"0") + "/" + (bbV||"0");
-    if(anteV) str += "/" + anteV;
-  }
-  return str;
-}
-
 function setStackInputUnit(u){
   const inp = document.getElementById("uStack");
   const cur = parseFloat(inp.value);
-  const bb = getBB({blinds: getBlindsFromInputs()});
+  const t = state.tournaments.find(x=>x.id===state.liveId);
+  const bb = getBB({blinds: document.getElementById("uBlinds").value});
   if(!isNaN(cur) && bb){
     if(_stackInputUnit==="bb" && u==="chips") inp.value = Math.round(cur*bb);
     else if(_stackInputUnit==="chips" && u==="bb") inp.value = (cur/bb).toFixed(1);
@@ -2505,7 +2142,7 @@ function onBlindsChange(){ refreshStackHint(); }
 function refreshStackHint(){
   const hint = document.getElementById("uStackHint");
   if(!hint) return;
-  const bb = getBB({blinds: getBlindsFromInputs()});
+  const bb = getBB({blinds: document.getElementById("uBlinds").value});
   const v = parseFloat(document.getElementById("uStack").value);
   if(!bb){ hint.textContent = "Blinds inconnues — saisie en jetons uniquement."; return; }
   if(isNaN(v)){ hint.textContent = `BB = ${bb} jetons.`; return; }
@@ -2516,8 +2153,7 @@ function refreshStackHint(){
 function saveStackUpdate(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
-  t.blinds = getBlindsFromInputs();
-  t.anteMode = _anteMode;
+  t.blinds = document.getElementById("uBlinds").value;
   const raw = parseFloat(document.getElementById("uStack").value);
   if(!isNaN(raw)){
     const bb = getBB(t);
@@ -2541,23 +2177,12 @@ function saveStackUpdate(){
   toast("Mis à jour ✓");
 }
 
-function peNextHeroPos(t){
-  const positions = POSITIONS_BY_SEATS[t && t.seatCount ? t.seatCount : 9] || POSITIONS_BY_SEATS[9];
-  const lastHand = t && t.hands && t.hands.length ? t.hands[t.hands.length-1] : null;
-  if(!lastHand || !lastHand.position) return positions.includes("BTN") ? "BTN" : positions[positions.length-3];
-  const idx = positions.indexOf(lastHand.position);
-  if(idx < 0) return lastHand.position;
-  const n = positions.length;
-  return positions[((idx - 1) + n) % n];
-}
-
 function addHand(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
   const bb = getBB(t);
   const unit = bb && bb>0 ? "bb" : "chips";
-  const seed = {unit, position: peNextHeroPos(t)};
-  _peEditingIdx = -1;
+  const seed = {unit};
   openModal(buildHandForm(seed, t, false));
   initHandForm(seed, t);
 }
@@ -2637,28 +2262,14 @@ function applyHandStackDelta(t, h){
     const sbChips = bl.sb!=null ? bl.sb : (bb ? bb*0.5 : 0);
     const bbChips = bl.bb!=null ? bl.bb : (bb || 0);
     const anteChips = bl.ante!=null ? bl.ante : 0;
-    // Initial contribs (chips) — blinds + antes (mode: perPlayer or bb)
+    // Initial contribs (chips) — blinds
     const initContrib = {};
     if(sbChips) initContrib.SB = sbChips;
     if(bbChips) initContrib.BB = bbChips;
-    const seats = t.seatCount || 9;
-    const anteMode = t.anteMode || "perPlayer";
-    let anteTotal = 0;
-    if(anteChips){
-      if(anteMode === "bb"){
-        initContrib.BB = (initContrib.BB || 0) + anteChips;
-        anteTotal = anteChips;
-      } else {
-        const allPositions = POSITIONS_BY_SEATS[seats] || POSITIONS_BY_SEATS[9];
-        allPositions.forEach(p => {
-          initContrib[p] = (initContrib[p] || 0) + anteChips;
-        });
-        anteTotal = anteChips * seats;
-      }
-    }
     // Process all streets, tracking per-position contribution
     let contrib = Object.assign({}, initContrib);
-    let pot = sbChips + bbChips + anteTotal;
+    const seats = t.seatCount || 9;
+    let pot = sbChips + bbChips + anteChips * seats;
     const runStreet = (acts, resetContribOthers) => {
       if(resetContribOthers){
         // Postflop: contributions reset per street, but we keep total invested separately
@@ -2785,10 +2396,7 @@ function pkrHtml(id, label, count){
       <button type="button" class="s-btn red" data-s="d" onclick="pkrPickSuit('${id}','d')">♦</button>
       <button type="button" class="s-btn" data-s="c" onclick="pkrPickSuit('${id}','c')">♣</button>
     </div>
-    <div style="text-align:center;display:flex;justify-content:center;gap:14px;align-items:center">
-      <button type="button" class="picker-clear" onclick="pkrClear('${id}')">Effacer</button>
-      <button type="button" class="picker-scan" onclick="camScanOpen('${id}')" title="Scanner via caméra">📷 Scanner</button>
-    </div>
+    <div style="text-align:center"><button type="button" class="picker-clear" onclick="pkrClear('${id}')">Effacer</button></div>
     <input type="hidden" id="${id}_out" value="">
   </div>`;
 }
@@ -2816,11 +2424,6 @@ function afterPickerChange(id){
   Object.keys(_pkrs).forEach(pid => { if(pid !== id) pkrRender(pid); });
   if(typeof updateBoardPreviews==="function" && (id==="pkrFlop"||id==="pkrTurn")) updateBoardPreviews();
   if(typeof evaluateShowdown==="function") evaluateShowdown();
-  // PBT table-view live refresh
-  if(document.getElementById("peTableHost") && typeof peRefreshSaisie==="function"){
-    const host = document.getElementById("peTableHost");
-    if(host) host.innerHTML = renderPokerTable(peBuildLiveSnapshot(_peCurStreet));
-  }
 }
 function pkrSync(id){
   const p=_pkrs[id]; if(!p) return;
@@ -2872,15 +2475,7 @@ function pkrRender(id){
     });
   }
 }
-function pkrValue(id){
-  const p = _pkrs[id];
-  if(p){
-    const suitChar = {s:"♠",h:"♥",d:"♦",c:"♣"};
-    return p.slots.map(c => c ? c.r+suitChar[c.s] : "").filter(Boolean).join(" ");
-  }
-  const out=document.getElementById(id+"_out");
-  return out ? out.value : "";
-}
+function pkrValue(id){ const out=document.getElementById(id+"_out"); return out ? out.value : ""; }
 
 /* Hand form v2 state */
 let _handUnit = "bb";
@@ -2893,18 +2488,18 @@ let _pendingShowdown = [];
 
 function buildHandForm(h, t, isEdit){
   const bb = getBB(t);
-  const unit = h.unit || h.stackUnit || "chips";
+  const unit = h.unit || h.stackUnit || (bb ? "bb" : "chips");
   const positions = getPositionsForHand();
   const hPos = h.position || (positions.includes("BTN") ? "BTN" : positions[positions.length-3]);
   return `
-    <h2 style="margin:0 0 8px">${isEdit?"Modifier la main":"Nouvelle main"}</h2>
+    <h2 style="margin:0 0 12px">${isEdit?"Modifier la main":"Nouvelle main"}</h2>
 
-    <div style="margin-bottom:8px">
-      <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Ma position</label>
-      ${renderHeroPosRow(positions, hPos)}
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Ma position — tap un siège</label>
+      ${renderHeroPosMini(positions, hPos)}
       <input type="hidden" id="hPos" value="${hPos}">
-      <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:6px">
-        <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Unité</label>
+      <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:8px">
+        <label style="font-size:11px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Unité des mises</label>
         <div class="pos-picker-lg" id="hUnitSeg" style="display:flex;gap:3px;margin:0">
           <button type="button" class="pos-btn seg-btn ${unit==='bb'?'active':''}" data-u="bb" onclick="setHandUnit('bb')">BB</button>
           <button type="button" class="pos-btn seg-btn ${unit==='chips'?'active':''}" data-u="chips" onclick="setHandUnit('chips')">Jetons</button>
@@ -2913,27 +2508,48 @@ function buildHandForm(h, t, isEdit){
       <input type="hidden" id="hStack" value="">
     </div>
 
-    <!-- Blinds / Ante info -->
-    <div class="pe-blinds-info" id="peBlindsInfo"></div>
-
-    <!-- PBT-style live table flanked by nav buttons -->
-    <div class="pe-hand-nav">
-      <button type="button" class="pe-hand-nav-btn" id="peNavPrev" onclick="peNavHand('prev')" title="Main précédente"><span class="pe-nav-ico">◀</span><span class="pe-nav-lbl">Préc.</span></button>
-      <div class="pe-hand-nav-table"><div id="peTableHost"></div></div>
-      <button type="button" class="pe-hand-nav-btn" id="peNavNext" onclick="peNavHand('next')" title="Main suivante"><span class="pe-nav-ico">▶</span><span class="pe-nav-lbl">Suiv.</span></button>
+    <div class="field"><label>Mes cartes</label>
+      ${pkrHtml('pkrHero','',2)}
     </div>
 
-    <!-- Undo (near table, above tabs) -->
-    <div id="peUndoHost" style="display:flex;justify-content:flex-end;margin:-4px 0 6px"></div>
+    <div class="street-block open" id="streetBlock_preflop">
+      <div class="street-head" onclick="toggleStreet2('preflop')"><div style="display:flex;align-items:center;gap:8px"><div class="name">Préflop</div><span id="streetPot_preflop" class="street-pot-badge"></span></div><button type="button" class="toggle">›</button></div>
+      <div class="street-body"><div id="preflopRows"></div></div>
+    </div>
 
-    <!-- Street tabs -->
-    <div class="pe-street-tabs" id="peStreetTabs"></div>
+    <div class="street-block open" id="streetBlock_flop">
+      <div class="street-head" onclick="toggleStreet2('flop')"><div style="display:flex;align-items:center;gap:8px"><div class="name">Flop</div><span id="streetPot_flop" class="street-pot-badge"></span></div><button type="button" class="toggle">›</button></div>
+      <div class="street-body">
+        <div class="board-picker">${pkrHtml('pkrFlop','Cartes du flop',3)}</div>
+        <div id="flopRows"></div>
+      </div>
+    </div>
 
-    <!-- Action panel -->
-    <div class="pe-action-panel" id="peActionPanel"></div>
+    <div class="street-block" id="streetBlock_turn">
+      <div class="street-head" onclick="toggleStreet2('turn')"><div style="display:flex;align-items:center;gap:8px"><div class="name">Turn</div><span id="streetPot_turn" class="street-pot-badge"></span></div><button type="button" class="toggle">›</button></div>
+      <div class="street-body">
+        <div id="turnPrevBoard"></div>
+        <div class="board-picker">${pkrHtml('pkrTurn','Carte du turn',1)}</div>
+        <div id="turnRows"></div>
+      </div>
+    </div>
 
-    <!-- Showdown opp cards (visible only on showdown tab) -->
-    <div id="peShowdownHost"></div>
+    <div class="street-block" id="streetBlock_river">
+      <div class="street-head" onclick="toggleStreet2('river')"><div style="display:flex;align-items:center;gap:8px"><div class="name">River</div><span id="streetPot_river" class="street-pot-badge"></span></div><button type="button" class="toggle">›</button></div>
+      <div class="street-body">
+        <div id="riverPrevBoard"></div>
+        <div class="board-picker">${pkrHtml('pkrRiver','Carte de la river',1)}</div>
+        <div id="riverRows"></div>
+      </div>
+    </div>
+
+    <div class="street-block" id="streetBlock_showdown">
+      <div class="street-head" onclick="toggleStreet2('showdown')"><div class="name">Abattage</div><button type="button" class="toggle">›</button></div>
+      <div class="street-body">
+        <div id="showdownRows"></div>
+        <div id="showdownResult"></div>
+      </div>
+    </div>
 
     <div class="field"><label>Notes / Réflexion</label><textarea id="hNotes" rows="3" placeholder="Ce que je pensais, sizing du vilain, tells...">${h.notes||""}</textarea></div>
     <div class="field"><label>Résultat</label>
@@ -2949,22 +2565,20 @@ function buildHandForm(h, t, isEdit){
       ? `<button class="btn" onclick="updateHand(${h._idx})">Enregistrer</button>
          <div style="height:8px"></div>
          <button class="btn danger small" onclick="deleteHand(${h._idx})">Supprimer la main</button>`
-      : `<div class="pe-save-row">
-           <button class="btn" onclick="saveHand()">Enregistrer</button>
-           <button class="btn secondary" onclick="saveHandAndNext()">Enregistrer + suivante ▶</button>
-         </div>`}
+      : `<button class="btn" onclick="saveHand()">Enregistrer la main</button>`}
   `;
 }
 
 function initHandForm(h, t){
   const bb = getBB(t);
-  _handUnit = h.unit || h.stackUnit || "chips";
+  _handUnit = h.unit || h.stackUnit || (bb ? "bb" : "chips");
   _heroPos = h.position || "BTN";
   pkrResetAll();
   pkrEnsure("pkrHero",  2, h.cards || "");
   pkrEnsure("pkrFlop",  3, h.flop  ? h.flop.board  : "");
   pkrEnsure("pkrTurn",  1, h.turn  ? h.turn.board  : "");
   pkrEnsure("pkrRiver", 1, h.river ? h.river.board : "");
+  ["pkrHero","pkrFlop","pkrTurn","pkrRiver"].forEach(id=>{ pkrSync(id); pkrRender(id); });
   _pendingActions = {
     preflop: (h.preflop && h.preflop.actions) || migratePreflopFromLegacy(h),
     flop:    (h.flop    && h.flop.actions)    || migrateStreetFromLegacy(h,"flop"),
@@ -2973,10 +2587,9 @@ function initHandForm(h, t){
   };
   _pendingRaise = {preflop:false, flop:false, turn:false, river:false};
   _pendingShowdown = h.showdown || [];
-  _peCurStreet = "preflop";
-  _pePickerOpen = null;
-  _curActionPos = {preflop:"", flop:"", turn:"", river:""};
-  peRefreshSaisie();
+  renderPreflopRows();
+  updateBoardPreviews();
+  evaluateShowdown();
 }
 
 function migratePreflopFromLegacy(h){
@@ -3025,7 +2638,6 @@ function setHandUnit(u){
   const stackInp = document.getElementById("hStack");
   if(stackInp) stackInp.placeholder = u==="bb" ? "40" : "30000";
   if(typeof updatePotChips==="function") updatePotChips();
-  if(document.getElementById("peTableHost") && typeof peRefreshSaisie==="function") peRefreshSaisie();
 }
 
 function setHeroPos(p){
@@ -3034,17 +2646,8 @@ function setHeroPos(p){
   if(h) h.value = p;
   document.querySelectorAll(".pos-picker .pos-btn[onclick^='setHeroPos']").forEach(b=>b.classList.toggle("active", b.textContent===p));
   document.querySelectorAll("#heroPosMini .pos-seat").forEach(b=>b.classList.toggle("active", b.dataset.p===p));
-  document.querySelectorAll("#heroPosRow .pe-hp-btn").forEach(b=>b.classList.toggle("active", b.dataset.p===p));
-  if(document.getElementById("peTableHost") && typeof peRefreshSaisie==="function"){
-    peRefreshSaisie();
-  } else if(typeof renderPreflopRows === "function"){
-    renderPreflopRows();
-  }
+  renderPreflopRows();
 }
-function renderHeroPosRow(positions, current){
-  return `<div class="pe-hero-pos-row" id="heroPosRow">${positions.map(p=>`<button type="button" class="pe-hp-btn${p===current?' active':''}" data-p="${p}" onclick="setHeroPos('${p}')">${p}</button>`).join("")}</div>`;
-}
-
 function renderHeroPosMini(positions, current){
   const n = positions.length;
   const btnIdx = positions.indexOf("BTN");
@@ -3086,10 +2689,10 @@ function getNextActor(street, ordered, foldedSet){
   const actions = _pendingActions[street] || [];
   const active = ordered.filter(p => !foldedSet.has(p));
   if(active.length <= 1) return null;
-  // Last raise/bet index (anything that opens or reopens action)
+  // Last raise index
   let lastRaiseIdx = -1;
   for(let i = actions.length-1; i >= 0; i--){
-    if(["raise","bet","3-bet","4-bet","5-bet","jam"].includes(actions[i].action)){ lastRaiseIdx = i; break; }
+    if(["raise","3-bet","4-bet","5-bet","jam"].includes(actions[i].action)){ lastRaiseIdx = i; break; }
   }
   // Last action index per position
   const lastActed = {};
@@ -3563,8 +3166,7 @@ function collectHandData(){
   };
 }
 
-function saveHand(opts){
-  opts = opts || {};
+function saveHand(){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t) return;
   t.hands = t.hands || [];
@@ -3574,22 +3176,6 @@ function saveHand(opts){
   t.hands.push(data);
   const delta = applyHandStackDelta(t, data);
   saveState();
-  if(opts.next){
-    // Re-open empty hand form (chain saisie)
-    const bb = getBB(t);
-    const unit = bb && bb>0 ? "bb" : "chips";
-    const seed = {unit};
-    openModal(buildHandForm(seed, t, false));
-    initHandForm(seed, t);
-    renderTracker();
-    const sign = delta>0 ? "+" : "";
-    if(delta){
-      toast(`Main ${t.hands.length} ✓ ${sign}${Math.round(delta).toLocaleString("fr-FR")}`);
-    } else {
-      toast(`Main ${t.hands.length} ✓`);
-    }
-    return;
-  }
   closeModal();
   renderTracker();
   if(delta){
@@ -3600,70 +3186,9 @@ function saveHand(opts){
   }
 }
 
-function saveHandAndNext(){ saveHand({next:true}); }
-
-let _peEditingIdx = -1;
-
-function peNavHand(dir){
-  const t = state.tournaments.find(x=>x.id===state.liveId);
-  if(!t){ return; }
-  t.hands = t.hands || [];
-  // Save current state first
-  if(_peEditingIdx >= 0 && t.hands[_peEditingIdx]){
-    // Editing existing — update without reopening
-    const data = collectHandData();
-    data.ts = t.hands[_peEditingIdx].ts || Date.now();
-    data.time = t.hands[_peEditingIdx].time || formatTime(data.ts);
-    t.hands[_peEditingIdx] = data;
-    saveState();
-  } else {
-    // New hand — only save if there are actual actions or cards
-    const data = collectHandData();
-    const hasData = (data.cards) || (data.preflop && data.preflop.actions.length) ||
-                    (data.flop && (data.flop.board || data.flop.actions.length)) ||
-                    (data.turn && (data.turn.board || data.turn.actions.length)) ||
-                    (data.river && (data.river.board || data.river.actions.length));
-    if(hasData){
-      data.ts = Date.now();
-      data.time = formatTime(data.ts);
-      t.hands.push(data);
-      applyHandStackDelta(t, data);
-      _peEditingIdx = t.hands.length - 1;
-      saveState();
-    }
-  }
-  // Decide target
-  let targetIdx;
-  if(dir === "prev"){
-    if(_peEditingIdx <= 0){ toast("Aucune main précédente"); return; }
-    targetIdx = _peEditingIdx - 1;
-  } else {
-    if(_peEditingIdx < 0 || _peEditingIdx >= t.hands.length - 1){
-      // Open new hand — auto-rotate hero pos
-      _peEditingIdx = -1;
-      const bb = getBB(t);
-      const unit = bb && bb>0 ? "bb" : "chips";
-      const seed = {unit, position: peNextHeroPos(t)};
-      openModal(buildHandForm(seed, t, false));
-      initHandForm(seed, t);
-      renderTracker();
-      toast("Nouvelle main");
-      return;
-    }
-    targetIdx = _peEditingIdx + 1;
-  }
-  _peEditingIdx = targetIdx;
-  const h = Object.assign({_idx: targetIdx}, t.hands[targetIdx]);
-  openModal(buildHandForm(h, t, true));
-  initHandForm(h, t);
-  renderTracker();
-  toast(`Main ${targetIdx+1}/${t.hands.length}`);
-}
-
 function editHand(idx){
   const t = state.tournaments.find(x=>x.id===state.liveId);
   if(!t || !t.hands[idx]) return;
-  _peEditingIdx = idx;
   const h = Object.assign({_idx: idx}, t.hands[idx]);
   openModal(buildHandForm(h, t, true));
   initHandForm(h, t);
@@ -3910,7 +3435,7 @@ function openTournamentDetail(id){
     ${renderAnalysis(analyzeStats(computeTournamentStats(t, _tStatsFilter), {ctx:"tournament", tournament:t}), {btnAction:`openHandsAnalysis('tournament','${t.id}')`})}
     ${t.hands && t.hands.length?`
       <h3 style="margin-top:14px">Mains (${t.hands.length})</h3>
-      ${t.hands.map((h,i)=>renderHandEntry(h,i,t.id)).join("")}
+      ${t.hands.map(h=>renderHandEntry(h)).join("")}
     `:""}
     ${t.notes && t.notes.length?`
       <h3 style="margin-top:14px">Notes adversaires</h3>
@@ -4198,1108 +3723,6 @@ function saveStartTime(){
 }
 
 /* =========================================================
-   PBT-style poker table renderer (saisie + replayer)
-   ========================================================= */
-
-function peFmtAmt(v, unit){
-  if(v === null || v === undefined || v === "") return "";
-  if(unit === "chips") return Math.round(v).toLocaleString("fr-FR");
-  return (Math.round(v*10)/10)+"bb";
-}
-
-function peRenderCard(card, opts){
-  opts = opts || {};
-  const cls = opts.tiny ? "tiny" : "";
-  if(opts.back) return `<div class="pe-card-back ${cls}"></div>`;
-  if(!card) return `<div class="pe-card-empty ${cls}">+</div>`;
-  const sChar = ({s:"♠",h:"♥",d:"♦",c:"♣"})[card.s] || card.s;
-  const isRed = card.s==="h" || card.s==="d";
-  return `<div class="pe-card-face ${cls} ${isRed?'red':''}"><div class="r">${card.r}</div><div class="s">${sChar}</div></div>`;
-}
-
-function peRenderCards(cardsStr, opts){
-  const cards = parseHandCards(cardsStr || "");
-  return cards.map(c => peRenderCard(c, opts)).join("");
-}
-
-/**
- * snap = {
- *   positions: [...], heroPos, dealerPos, activePos,
- *   folded: Set, winners: Set,
- *   bets: {pos: amt}, stacks: {pos: amt} | null,
- *   heroCards: "Ah Ks", oppCards: {pos: "QcQd"}, showOppBacks: bool,
- *   board: "Ah 7d 2c", pot, unit,
- *   actionBubble: {pos, text, type} | null,
- *   onSeatClick: "fnName", onBoardClick: "fnName", onHeroCardsClick: "fnName"
- * }
- */
-function renderPokerTable(snap){
-  const positions = snap.positions || [];
-  const n = positions.length;
-  if(!n) return "";
-  const heroIdx = positions.indexOf(snap.heroPos);
-  const ordered = heroIdx >= 0 ? positions.slice(heroIdx).concat(positions.slice(0, heroIdx)) : positions.slice();
-  const Rx = 40, Ry = 35;
-  const betRx = 26, betRy = 20;
-  const bubbleRx = 31, bubbleRy = 23;
-  let html = `<div class="pe-table-wrap"><div class="pe-table-felt"></div>`;
-  // Pot pill: "Street • Pot X"
-  const streetLbl = ({preflop:"Préflop",flop:"Flop",turn:"Turn",river:"River",showdown:"Abattage"})[snap.street] || "";
-  const potVal = (snap.pot && snap.pot > 0) ? peFmtAmt(snap.pot, snap.unit) : "0";
-  if(streetLbl || snap.pot){
-    html += `<div class="pe-pot-center">${streetLbl?streetLbl+" • ":""}Pot<span class="v">${potVal}</span></div>`;
-  }
-  // Board (centre) — show 5 placeholders (face-down) until each is revealed
-  const boardCards = snap.board ? parseHandCards(snap.board) : [];
-  const boardClick = snap.onBoardClick ? `onclick="${snap.onBoardClick}()"` : "";
-  let boardHtml = "";
-  for(let i=0;i<5;i++){
-    if(i < boardCards.length) boardHtml += peRenderCard(boardCards[i]);
-    else boardHtml += `<div class="pe-card-back"></div>`;
-  }
-  html += `<div class="pe-board-center" ${boardClick} style="${snap.onBoardClick?'cursor:pointer':''}">${boardHtml}</div>`;
-  // Dealer button — placed between dealer seat and its neighbor (half-step)
-  if(snap.dealerPos){
-    const dIdx = ordered.indexOf(snap.dealerPos);
-    if(dIdx >= 0){
-      const ang = Math.PI/2 + (dIdx/n)*2*Math.PI + Math.PI/n;
-      const dRx = Rx - 6;
-      const dRy = Ry - 6;
-      const dx = 50 + dRx*Math.cos(ang);
-      const dy = 50 + dRy*Math.sin(ang);
-      html += `<div class="pe-dealer-btn" style="left:${dx}%;top:${dy}%">D</div>`;
-    }
-  }
-  // Bet chips
-  ordered.forEach((p,i)=>{
-    const bet = snap.bets && snap.bets[p];
-    if(!bet || bet <= 0) return;
-    const ang = Math.PI/2 + (i/n)*2*Math.PI;
-    const x = 50 + betRx*Math.cos(ang);
-    const y = 50 + betRy*Math.sin(ang);
-    html += `<div class="pe-bet-chip" style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);z-index:3">${peFmtAmt(bet, snap.unit)}</div>`;
-  });
-  // Seats
-  ordered.forEach((p,i)=>{
-    const ang = Math.PI/2 + (i/n)*2*Math.PI;
-    const x = 50 + Rx*Math.cos(ang);
-    const y = 50 + Ry*Math.sin(ang);
-    const isHero = p === snap.heroPos;
-    const isActive = p === snap.activePos;
-    const isFolded = snap.folded && snap.folded.has(p);
-    const isWinner = snap.winners && snap.winners.has(p);
-    let cardsHtml = "";
-    if(isHero && snap.heroCards){
-      cardsHtml = peRenderCards(snap.heroCards, {tiny:true});
-    } else if(!isFolded && snap.oppCards && snap.oppCards[p]){
-      cardsHtml = peRenderCards(snap.oppCards[p], {tiny:true});
-    } else if(!isFolded && snap.showOppBacks && !isHero){
-      cardsHtml = `<div class="pe-card-back tiny"></div><div class="pe-card-back tiny"></div>`;
-    } else if(isHero && snap.onHeroCardsClick){
-      cardsHtml = `<div class="pe-card-empty tiny">+</div><div class="pe-card-empty tiny">+</div>`;
-    }
-    const stk = snap.stacks && snap.stacks[p];
-    const stkInner = (stk || stk === 0) ? `<div class="pe-stk">${peFmtAmt(stk, snap.unit)}</div>` : "";
-    const cls = "pe-seat"+(isHero?" hero":"")+(isActive?" active":"")+(isFolded?" folded":"")+(isWinner?" winner":"");
-    let cardsClick = "";
-    if(isHero && snap.onHeroCardsClick) cardsClick = `onclick="event.stopPropagation();${snap.onHeroCardsClick}()"`;
-    const cardsWrap = cardsHtml ? `<div class="pe-seat-cards" ${cardsClick} style="${cardsClick?'cursor:pointer':''}">${cardsHtml}</div>` : `<div class="pe-seat-cards"></div>`;
-    let seatClick = "";
-    if(snap.onSeatClick && !isFolded) seatClick = `onclick="${snap.onSeatClick}('${p}')"`;
-    const seatInner = isHero ? '★' : (stk||stk===0 ? '' : '·');
-    html += `<div class="${cls}" style="left:${x}%;top:${y}%" ${seatClick}>
-      ${cardsWrap}
-      <div class="pe-seat-body">${seatInner}${stkInner}</div>
-      <div class="pe-seat-label">${p}</div>
-    </div>`;
-  });
-  // Action bubble
-  if(snap.actionBubble){
-    const bp = snap.actionBubble.pos;
-    const bIdx = ordered.indexOf(bp);
-    if(bIdx >= 0){
-      const ang = Math.PI/2 + (bIdx/n)*2*Math.PI;
-      const bx = 50 + bubbleRx*Math.cos(ang);
-      const by = 50 + bubbleRy*Math.sin(ang);
-      const type = (snap.actionBubble.type||"").toLowerCase();
-      html += `<div class="pe-action-bubble ${type}" style="left:${bx}%;top:${by}%">${snap.actionBubble.text}</div>`;
-    }
-  }
-  /* Inline seat action menu (F L C R J) removed — actions taken from bottom panel only */
-  html += `</div>`;
-  return html;
-}
-
-/* Build snapshot from current saisie pending state */
-function peBuildLiveSnapshot(curStreet){
-  const positions = getPositionsForHand();
-  const heroPos = _heroPos;
-  // Compute folded set, bets per street, pot
-  const blinds = getBlindContrib();
-  const folded = new Set();
-  // Include ante in initial pot per anteMode
-  const t = state.tournaments.find(x=>x.id===state.liveId);
-  const bl = t ? parseBlinds(t.blinds) : {};
-  const anteChipsRaw = (bl && bl.ante) ? bl.ante : 0;
-  const bbChipsT = getBB(t);
-  let anteUnit = 0;
-  if(anteChipsRaw){
-    anteUnit = (_handUnit === "chips") ? anteChipsRaw : (bbChipsT ? anteChipsRaw / bbChipsT : 0);
-  }
-  const anteMode = (t && t.anteMode) || "perPlayer";
-  const seats = (t && t.seatCount) || 9;
-  const anteTotalPot = anteUnit * (anteMode === "bb" ? 1 : seats);
-  let pot = (blinds.SB||0) + (blinds.BB||0) + anteTotalPot;
-  let lastBets = {};
-  const streetOrder = ["preflop","flop","turn","river"];
-  let lastStreetWithAction = "preflop";
-  // Compute through streets up to curStreet (inclusive)
-  for(const st of streetOrder){
-    const acts = _pendingActions[st] || [];
-    if(acts.length) lastStreetWithAction = st;
-    let contrib;
-    if(st === "preflop"){
-      contrib = Object.assign({}, blinds);
-      if(anteUnit){
-        if(anteMode === "bb"){
-          contrib.BB = (contrib.BB || 0) + anteUnit;
-        } else {
-          positions.forEach(p => {
-            contrib[p] = (contrib[p] || 0) + anteUnit;
-          });
-        }
-      }
-    } else {
-      contrib = {};
-    }
-    acts.forEach(a=>{
-      const prev = contrib[a.position] || 0;
-      let newC = prev;
-      const amtN = parseFloat(a.amt);
-      const bbU = (_handUnit === "chips" && getBB(state.tournaments.find(x=>x.id===state.liveId))) ? getBB(state.tournaments.find(x=>x.id===state.liveId)) : 1;
-      if(a.action === "fold"){ folded.add(a.position); }
-      else if(a.action === "check" || !a.action){}
-      else if(a.action === "limp") newC = Math.max(prev, bbU);
-      else if(!isNaN(amtN) && amtN > 0) newC = amtN;
-      else if(a.action === "call"){
-        const vals = Object.values(contrib);
-        newC = vals.length ? Math.max.apply(null, vals) : 0;
-      }
-      if(newC > prev){
-        pot += (newC - prev);
-        contrib[a.position] = newC;
-      }
-    });
-    if(st === curStreet || st === lastStreetWithAction){
-      lastBets = contrib;
-    }
-    if(st === curStreet) break;
-  }
-  // Boards visible based on street
-  const boardParts = [];
-  if(["flop","turn","river","showdown"].includes(curStreet)) boardParts.push(pkrValue("pkrFlop"));
-  if(["turn","river","showdown"].includes(curStreet)) boardParts.push(pkrValue("pkrTurn"));
-  if(["river","showdown"].includes(curStreet)) boardParts.push(pkrValue("pkrRiver"));
-  const board = boardParts.filter(Boolean).join(" ");
-  // Active actor for current street — init if empty
-  if(curStreet !== "showdown"){
-    const foldedSet = foldedInStreet(curStreet);
-    const ordered = (curStreet === "preflop") ? positions : orderPostflop(activeForStreet(curStreet));
-    if(!_curActionPos[curStreet] || foldedSet.has(_curActionPos[curStreet]) || !ordered.includes(_curActionPos[curStreet])){
-      const next = getNextActor(curStreet, ordered, foldedSet);
-      _curActionPos[curStreet] = next || ordered.find(p=>!foldedSet.has(p)) || "";
-    }
-  }
-  let activePos = _curActionPos[curStreet] || "";
-  if(curStreet === "showdown") activePos = "";
-  // Bubble: last action of current street
-  const curActs = _pendingActions[curStreet] || [];
-  let bubble = null;
-  if(curActs.length){
-    const la = curActs[curActs.length-1];
-    const unitSuf = _handUnit==="chips" ? "" : "bb";
-    let txt = la.action;
-    if(la.amt) txt += " "+la.amt+unitSuf;
-    bubble = {pos: la.position, text: txt, type: la.action};
-  }
-  // Action menu choices per street
-  let menuActions = null;
-  if(curStreet !== "showdown" && activePos){
-    menuActions = (curStreet === "preflop") ? ["fold","limp","call","raise"] : ["fold","check","call","bet","raise"];
-  }
-  return {
-    positions, heroPos, dealerPos: "BTN", activePos,
-    folded, bets: lastBets, stacks: null,
-    heroCards: pkrValue("pkrHero"), oppCards: {}, showOppBacks: false,
-    board, pot, unit: _handUnit,
-    street: curStreet,
-    actionBubble: bubble,
-    actionMenu: menuActions ? {pos: activePos, actions: menuActions, raisePending: _pendingRaise[curStreet]} : null,
-    onSeatClick: "peSaisieSeatClick", onBoardClick: "peSaisieBoardClick", onHeroCardsClick: "peSaisieHeroClick"
-  };
-}
-
-function peSaisieMenuAction(action){
-  const st = _peCurStreet;
-  if(st === "showdown") return;
-  peClickAction(st, action);
-}
-
-let _peCurStreet = "preflop";
-let _pePickerOpen = null;
-
-function peSaisieSeatClick(pos){
-  // Override actor on current street (only if not folded)
-  const st = _peCurStreet === "showdown" ? null : _peCurStreet;
-  if(!st) return;
-  const folded = foldedInStreet(st);
-  if(folded.has(pos)) return;
-  _curActionPos[st] = pos;
-  _pendingRaise[st] = false;
-  peRefreshSaisie();
-}
-
-function peSaisieBoardClick(){
-  let target = null;
-  if(_peCurStreet === "flop" || (_peCurStreet === "preflop" && pkrValue("pkrFlop") === "")) target = "flop";
-  else if(_peCurStreet === "turn") target = "turn";
-  else if(_peCurStreet === "river") target = "river";
-  else if(_peCurStreet === "showdown") target = "river";
-  else target = "flop";
-  _pePickerOpen = target;
-  peRefreshSaisie();
-}
-function peSaisieHeroClick(){
-  _pePickerOpen = "hero";
-  peRefreshSaisie();
-}
-function peClosePicker(){
-  _pePickerOpen = null;
-  peRefreshSaisie();
-}
-
-function peSetStreet(st){
-  // Validate access: can't open street if previous street action not closed
-  _peCurStreet = st;
-  _pePickerOpen = null;
-  peRefreshSaisie();
-}
-
-function peStreetReachable(st){
-  if(st === "preflop") return true;
-  // Need at least one action recorded and 2+ active after preflop
-  if(st === "flop"){
-    return (_pendingActions.preflop||[]).length > 0 && activeAfterPreflop().length >= 2;
-  }
-  let active = activeAfterPreflop();
-  if(active.length < 2) return false;
-  if(st === "flop") return true;
-  // flop must have at least 1 action OR have a board
-  const flopActs = _pendingActions.flop || [];
-  if(st === "turn"){
-    flopActs.forEach(a=>{ if(a.action==="fold") active = active.filter(p=>p!==a.position); });
-    return active.length >= 2 && (flopActs.length > 0 || !!pkrValue("pkrFlop"));
-  }
-  if(st === "river"){
-    flopActs.forEach(a=>{ if(a.action==="fold") active = active.filter(p=>p!==a.position); });
-    const turnActs = _pendingActions.turn || [];
-    turnActs.forEach(a=>{ if(a.action==="fold") active = active.filter(p=>p!==a.position); });
-    return active.length >= 2 && (turnActs.length > 0 || !!pkrValue("pkrTurn"));
-  }
-  if(st === "showdown"){
-    return getStillInAtShowdown().length >= 2;
-  }
-  return false;
-}
-
-function peStreetPotForTab(st){
-  // Compute pot value through end of street st (or current pending if it's the current)
-  const blinds = getBlindContrib();
-  const t = state.tournaments.find(x=>x.id===state.liveId);
-  const bl = t ? parseBlinds(t.blinds) : {};
-  const bbChipsT = getBB(t);
-  const anteRaw = (bl && bl.ante) ? bl.ante : 0;
-  const anteUnit = anteRaw ? (_handUnit === "chips" ? anteRaw : (bbChipsT ? anteRaw / bbChipsT : 0)) : 0;
-  const anteMode = (t && t.anteMode) || "perPlayer";
-  const seats = (t && t.seatCount) || 9;
-  let pot = (blinds.SB||0) + (blinds.BB||0) + anteUnit * (anteMode === "bb" ? 1 : seats);
-  const streets = ["preflop","flop","turn","river"];
-  for(const s of streets){
-    let contrib = (s === "preflop") ? Object.assign({}, blinds) : {};
-    const bbU = (_handUnit === "chips" && getBB(state.tournaments.find(x=>x.id===state.liveId))) ? getBB(state.tournaments.find(x=>x.id===state.liveId)) : 1;
-    (_pendingActions[s]||[]).forEach(a=>{
-      const prev = contrib[a.position] || 0;
-      let newC = prev;
-      const amtN = parseFloat(a.amt);
-      if(a.action==="fold" || a.action==="check" || !a.action){}
-      else if(a.action==="limp") newC = Math.max(prev, bbU);
-      else if(!isNaN(amtN) && amtN > 0) newC = amtN;
-      else if(a.action==="call"){
-        const vals = Object.values(contrib);
-        newC = vals.length ? Math.max.apply(null, vals) : 0;
-      }
-      if(newC > prev){ pot += (newC - prev); contrib[a.position] = newC; }
-    });
-    if(s === st) return pot;
-  }
-  return pot;
-}
-
-function peRefreshSaisie(){
-  const host = document.getElementById("peTableHost");
-  if(host){
-    host.innerHTML = renderPokerTable(peBuildLiveSnapshot(_peCurStreet));
-  }
-  const info = document.getElementById("peBlindsInfo");
-  if(info){
-    const t = state.tournaments.find(x=>x.id===state.liveId);
-    if(t){
-      const bl = parseBlinds(t.blinds) || {};
-      const mode = t.anteMode || "perPlayer";
-      let txt = "";
-      if(bl.sb!=null && bl.bb!=null){
-        txt = `Blinds <b>${bl.sb}/${bl.bb}</b>`;
-        if(bl.ante){
-          const modeLbl = mode === "bb" ? "Big Ante (BB seule)" : "Par joueur";
-          txt += ` · Ante <b>${bl.ante}</b> <span class="pe-ante-mode">${modeLbl}</span>`;
-        }
-      } else {
-        txt = `<span style="opacity:0.7">Blinds non définies · <button type="button" class="pe-ante-cfg" onclick="closeModal();updateLiveStack('blinds')">Configurer</button></span>`;
-      }
-      info.innerHTML = txt;
-    }
-  }
-  const tabs = document.getElementById("peStreetTabs");
-  if(tabs){
-    tabs.innerHTML = ["preflop","flop","turn","river","showdown"].map(st=>{
-      const label = {preflop:"PF",flop:"Flop",turn:"Turn",river:"River",showdown:"SD"}[st];
-      const reachable = peStreetReachable(st);
-      const active = st === _peCurStreet;
-      const pot = (st !== "showdown") ? peStreetPotForTab(st) : 0;
-      const potStr = (pot > 0 && st !== "preflop") ? `<span class="pe-tab-pot">${peFmtAmt(pot,_handUnit)}</span>` : "";
-      return `<button type="button" class="pe-street-tab ${active?'active':''} ${reachable?'':'locked'}" onclick="peSetStreet('${st}')">${label}${potStr}</button>`;
-    }).join("");
-  }
-  const panel = document.getElementById("peActionPanel");
-  if(panel){
-    panel.innerHTML = peRenderActionPanel(_peCurStreet);
-  }
-  const undoHost = document.getElementById("peUndoHost");
-  if(undoHost){
-    const done = _pendingActions[_peCurStreet] || [];
-    undoHost.innerHTML = done.length ? `<button type="button" class="pe-table-undo" onclick="peUndoLast('${_peCurStreet}')">↶ Undo</button>` : "";
-  }
-  // Picker mounted to body (modal overlay)
-  let gridOverlay = document.getElementById("peGridOverlay");
-  if(_pePickerOpen && PE_TARGET_MAP[_pePickerOpen]){
-    if(!gridOverlay){
-      gridOverlay = document.createElement("div");
-      gridOverlay.id = "peGridOverlay";
-      gridOverlay.className = "pe-cgrid-modal";
-      gridOverlay.addEventListener("click", e => { if(e.target === gridOverlay) peClosePicker(); });
-      document.body.appendChild(gridOverlay);
-    }
-    gridOverlay.innerHTML = peRenderPickerHost();
-  } else if(gridOverlay){
-    gridOverlay.remove();
-  }
-  const sdHost = document.getElementById("peShowdownHost");
-  if(sdHost){
-    sdHost.innerHTML = (_peCurStreet === "showdown") ? peRenderShowdownSection() : "";
-    if(_peCurStreet === "showdown"){
-      const active = getStillInAtShowdown();
-      active.filter(p=>p!==_heroPos).forEach(p=>{
-        const pid = "pkrSd_"+p.replace(/[^a-zA-Z0-9]/g,'_');
-        if(_pkrs[pid]) pkrRender(pid);
-      });
-    }
-  }
-  if(typeof evaluateShowdown==="function") evaluateShowdown();
-}
-
-const PE_TARGET_MAP = {
-  hero:  {id:"pkrHero",  label:"Mes cartes", count:2},
-  flop:  {id:"pkrFlop",  label:"Flop",       count:3},
-  turn:  {id:"pkrTurn",  label:"Turn",       count:1},
-  river: {id:"pkrRiver", label:"River",      count:1}
-};
-const PE_TARGET_ORDER = ["hero","flop","turn","river"];
-
-function peGetActiveTargets(){
-  const list = [...PE_TARGET_ORDER];
-  if(_peCurStreet === "showdown" && typeof getStillInAtShowdown === "function"){
-    const active = getStillInAtShowdown();
-    active.filter(p => p !== _heroPos).forEach(p => {
-      const key = "opp_" + p.replace(/[^a-zA-Z0-9]/g, "_");
-      if(!PE_TARGET_MAP[key]){
-        PE_TARGET_MAP[key] = {id: "pkrSd_"+p.replace(/[^a-zA-Z0-9]/g,'_'), label: "Adv " + p, count: 2};
-      }
-      if(!list.includes(key)) list.push(key);
-    });
-  }
-  return list;
-}
-
-function peGridGetCardLocation(r, s){
-  for(const t of peGetActiveTargets()){
-    const m = PE_TARGET_MAP[t]; if(!m) continue;
-    const p = _pkrs[m.id];
-    if(!p) continue;
-    for(let i=0;i<p.count;i++){
-      const c = p.slots[i];
-      if(c && c.r === r && c.s === s) return {target:t, slot:i};
-    }
-  }
-  return null;
-}
-
-function peGridTap(r, s){
-  const target = _pePickerOpen;
-  if(!target || !PE_TARGET_MAP[target]) return;
-  const loc = peGridGetCardLocation(r, s);
-  const m = PE_TARGET_MAP[target];
-  pkrEnsure(m.id, m.count, "");
-  const p = _pkrs[m.id];
-  if(loc){
-    if(loc.target === target){
-      // Same target: remove
-      _pkrs[m.id].slots[loc.slot] = null;
-    } else {
-      // Different target: move card here (remove from old, place in next empty)
-      _pkrs[PE_TARGET_MAP[loc.target].id].slots[loc.slot] = null;
-      let placed = false;
-      for(let i=0;i<p.count;i++){
-        if(!p.slots[i]){ p.slots[i] = {r, s}; placed = true; break; }
-      }
-      if(!placed) p.slots[p.count-1] = {r, s};
-    }
-  } else {
-    // Free card: place in current target's next empty slot
-    let placed = false;
-    for(let i=0;i<p.count;i++){
-      if(!p.slots[i]){ p.slots[i] = {r, s}; placed = true; break; }
-    }
-    if(!placed){
-      // Overwrite last
-      p.slots[p.count-1] = {r, s};
-    }
-    // Auto-advance to next non-full target
-    if(p.slots.every(c=>c)){
-      const order = peGetActiveTargets();
-      const idx = order.indexOf(target);
-      for(let j=idx+1;j<order.length;j++){
-        const np = _pkrs[PE_TARGET_MAP[order[j]].id];
-        if(np && np.slots.some(c=>!c)){
-          _pePickerOpen = order[j];
-          break;
-        }
-      }
-    }
-  }
-  ["pkrHero","pkrFlop","pkrTurn","pkrRiver"].forEach(id => { if(_pkrs[id]) pkrSync(id); });
-  peRefreshSaisie();
-}
-
-function peGridSetTarget(target){
-  if(!PE_TARGET_MAP[target]) return;
-  _pePickerOpen = target;
-  peRefreshSaisie();
-}
-
-function peGridClear(){
-  const target = _pePickerOpen;
-  if(!target || !PE_TARGET_MAP[target]) return;
-  const m = PE_TARGET_MAP[target];
-  const p = _pkrs[m.id];
-  if(p){
-    p.slots = Array(p.count).fill(null);
-    pkrSync(m.id);
-  }
-  peRefreshSaisie();
-}
-
-function peRenderPickerHost(){
-  if(!_pePickerOpen) return "";
-  if(!PE_TARGET_MAP[_pePickerOpen]) return "";
-  const allTargets = peGetActiveTargets();
-  // Ensure all pkrs exist (so we can track cards used across targets)
-  allTargets.forEach(t => {
-    const m = PE_TARGET_MAP[t];
-    pkrEnsure(m.id, m.count, "");
-  });
-  const ranks = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
-  const suits = [["s","♠",false],["h","♥",true],["d","♦",true],["c","♣",false]];
-  const curTarget = _pePickerOpen;
-  // Build target chips
-  const targetChips = allTargets.map(t => {
-    const m = PE_TARGET_MAP[t];
-    const p = _pkrs[m.id];
-    const filled = p ? p.slots.filter(c=>c).length : 0;
-    return `<button type="button" class="pe-cgrid-target ${t===curTarget?'active':''}" onclick="peGridSetTarget('${t}')">${m.label}<span class="pe-tg-count">${filled}/${m.count}</span></button>`;
-  }).join("");
-  // Build 4×13 grid
-  let gridHtml = "";
-  suits.forEach(([s, sChar, isRed]) => {
-    ranks.forEach(r => {
-      const loc = peGridGetCardLocation(r, s);
-      let cls = "pe-cg-cell";
-      if(isRed) cls += " red";
-      if(loc){
-        if(loc.target === curTarget) cls += " picked";
-        else cls += " dimmed";
-      }
-      gridHtml += `<button type="button" class="${cls}" onclick="peGridTap('${r}','${s}')"><span class="pe-cg-r">${r}</span><span class="pe-cg-s">${sChar}</span></button>`;
-    });
-  });
-  // Build selected row for current target
-  const m = PE_TARGET_MAP[curTarget];
-  const p = _pkrs[m.id];
-  let selHtml = "";
-  if(p){
-    p.slots.forEach((c,i) => {
-      if(!c) return;
-      const sChar = ({s:"♠",h:"♥",d:"♦",c:"♣"})[c.s];
-      const isRed = c.s==="h"||c.s==="d";
-      selHtml += `<div class="pe-cg-sel"><div class="pe-card-face ${isRed?'red':''}"><div class="r">${c.r}</div><div class="s">${sChar}</div></div></div>`;
-    });
-  }
-  return `<div class="pe-cgrid-wrap">
-    <div class="pe-cgrid-head">
-      <div class="pe-cgrid-title">Choisis les cartes connues</div>
-      <button type="button" class="pe-cgrid-close" onclick="peClosePicker()" aria-label="Fermer">×</button>
-    </div>
-    <div class="pe-cgrid-targets">${targetChips}</div>
-    <div class="pe-cgrid">${gridHtml}</div>
-    <div class="pe-cgrid-selected">${selHtml}</div>
-    <div class="pe-cgrid-actions">
-      <button type="button" class="pe-cg-clear" onclick="peGridClear()">Effacer ${m.label}</button>
-      <button type="button" class="pe-cg-scan" onclick="camScanOpen('${m.id}')">📷 Scanner</button>
-      <button type="button" class="pe-cg-done" onclick="peClosePicker()">Terminé</button>
-    </div>
-  </div>`;
-}
-
-function peRenderShowdownSection(){
-  const active = getStillInAtShowdown();
-  if(active.length < 2){
-    return `<div class="empty-msg">Moins de 2 joueurs encore en jeu — pas d'abattage.</div>`;
-  }
-  const opps = active.filter(p => p !== _heroPos);
-  let html = `<div style="font-size:11px;color:var(--txt-mute);margin-bottom:8px;text-align:center">Tape les cartes des adversaires (optionnel — pour déduire le gagnant)</div>`;
-  html += `<div class="pe-sd-grid">`;
-  opps.forEach(p=>{
-    const pid = "pkrSd_"+p.replace(/[^a-zA-Z0-9]/g,'_');
-    const initial = (_pendingShowdown.find(sd => sd.position===p) || {}).cards || "";
-    pkrEnsure(pid, 2, initial);
-    const key = "opp_" + p.replace(/[^a-zA-Z0-9]/g, "_");
-    if(!PE_TARGET_MAP[key]) PE_TARGET_MAP[key] = {id: pid, label: "Adv " + p, count: 2};
-    const cards = pkrValue(pid);
-    const cardCells = (parseHandCards(cards) || []);
-    let cardsHtml = "";
-    for(let i=0;i<2;i++){
-      if(cardCells[i]){
-        const c = cardCells[i];
-        const sChar = ({s:"♠",h:"♥",d:"♦",c:"♣"})[c.s];
-        const isRed = c.s==="h"||c.s==="d";
-        cardsHtml += `<div class="pe-card-face ${isRed?'red':''}"><div class="r">${c.r}</div><div class="s">${sChar}</div></div>`;
-      } else {
-        cardsHtml += `<div class="pe-card-empty">+</div>`;
-      }
-    }
-    html += `<div class="pe-sd-opp" onclick="peOpenOppPicker('${p}')">
-      <div class="pe-sd-opp-pos">${p}</div>
-      <div class="pe-sd-opp-cards">${cardsHtml}</div>
-    </div>`;
-  });
-  html += `</div><div id="showdownResult"></div>`;
-  return html;
-}
-
-function peOpenOppPicker(pos){
-  const key = "opp_" + pos.replace(/[^a-zA-Z0-9]/g, "_");
-  const pid = "pkrSd_" + pos.replace(/[^a-zA-Z0-9]/g, "_");
-  pkrEnsure(pid, 2, "");
-  if(!PE_TARGET_MAP[key]) PE_TARGET_MAP[key] = {id: pid, label: "Adv " + pos, count: 2};
-  _pePickerOpen = key;
-  peRefreshSaisie();
-}
-
-function peRenderActionPanel(st){
-  if(st === "showdown"){
-    return `<div style="text-align:center;color:var(--txt-mute);font-size:12px;padding:8px">Pas d'action — abattage. Renseigne les cartes des adversaires ci-dessous.</div>`;
-  }
-  const positions = getPositionsForHand();
-  const folded = foldedInStreet(st);
-  const ordered = (st === "preflop") ? positions : orderPostflop(activeForStreet(st));
-  // Init actor if needed
-  if(!_curActionPos[st] || folded.has(_curActionPos[st]) || !ordered.includes(_curActionPos[st])){
-    const next = getNextActor(st, ordered, folded);
-    _curActionPos[st] = next || ordered.find(p=>!folded.has(p)) || "";
-  }
-  const cur = _curActionPos[st];
-  if(!cur){
-    return `<div style="text-align:center;color:var(--txt-mute);font-size:12px;padding:8px">Action close.</div>`;
-  }
-  const isHero = cur === _heroPos;
-  const raisePending = _pendingRaise[st];
-  const acts = (st === "preflop") ? ["fold","limp","call","raise"] : ["fold","check","call","bet","raise"];
-  const unitSuf = _handUnit === "chips" ? "" : "bb";
-  const ph = _handUnit === "bb" ? "2.5" : "5000";
-  // History summary (chips at top)
-  const done = _pendingActions[st] || [];
-  const summary = done.length ? `<div class="act-summary" style="margin-bottom:6px">${done.map((a,i)=>{
-    const h = a.position===_heroPos;
-    return `<span class="act-chip${h?" hero":""}" onclick="peJumpToAction('${st}',${i})"><b>${a.position}</b> ${a.action||"—"}${a.amt?" "+a.amt+unitSuf:""}<span class="x"> ✕</span></span>`;
-  }).join("")}</div>` : "";
-  // Inline raise: if pending, replace the raise/bet button cell with input + OK
-  const btns = acts.map(a => {
-    if(raisePending && (a === "raise" || a === "bet")){
-      return `<div class="pe-act-inline-raise">
-        <input id="peAmtInput_${st}" type="number" inputmode="decimal" step="any" placeholder="${ph}" oninput="peAmtChange('${st}')" onblur="setTimeout(()=>{const inp=document.getElementById('peAmtInput_${st}');if(inp&&inp.value)peConfirmRaise('${st}');},180)" autofocus>
-        <button type="button" class="pe-act-confirm" onclick="peConfirmRaise('${st}')">OK</button>
-      </div>`;
-    }
-    const cls = "pe-act-btn"+(a==="fold"?" fold":"");
-    return `<button type="button" class="${cls}" onclick="peClickAction('${st}','${a}')">${a}</button>`;
-  }).join("");
-  // Quick amounts row only when raise pending
-  let quickRow = "";
-  if(raisePending){
-    const bb = getBB(state.tournaments.find(x=>x.id===state.liveId));
-    const quick = (_handUnit==="bb") ? [["2.5x","2.5"],["3x","3"],["4x","4"]] : (bb ? [["2.5bb",String(bb*2.5)],["3bb",String(bb*3)]] : []);
-    quickRow = `<div class="pe-quick-row">${quick.map(([l,v])=>`<button type="button" class="pe-quick" onclick="peQuickAmt('${st}','${v}')">${l}</button>`).join("")}</div>`;
-  }
-  return `${summary}
-    <div class="pe-ap-head">
-      <div class="pe-ap-actor">À ${cur}${isHero?'<span class="pe-hero-tag">moi</span>':""}</div>
-    </div>
-    <div class="pe-action-grid">${btns}</div>
-    ${quickRow}`;
-}
-
-function peClickAction(st, action){
-  const cur = _curActionPos[st];
-  if(!cur) return;
-  if(action === "raise" || action === "bet"){
-    if(!_pendingRaise[st]){
-      _pendingRaise[st] = true;
-      peRefreshSaisie();
-      setTimeout(()=>{ const inp = document.getElementById("peAmtInput_"+st); if(inp){ inp.focus(); } }, 50);
-      return;
-    }
-    // Already pending: confirm with current amount
-    const inp = document.getElementById("peAmtInput_"+st);
-    const amt = inp ? inp.value : "";
-    _pendingActions[st].push({position: cur, action, amt});
-    _pendingRaise[st] = false;
-  } else if(action === "jam"){
-    _pendingActions[st].push({position: cur, action: "jam", amt: ""});
-    _pendingRaise[st] = false;
-  } else {
-    _pendingActions[st].push({position: cur, action, amt: ""});
-    _pendingRaise[st] = false;
-  }
-  // Advance actor
-  const folded = foldedInStreet(st);
-  const ordered = (st === "preflop") ? getPositionsForHand() : orderPostflop(activeForStreet(st));
-  const next = getNextActor(st, ordered, folded);
-  _curActionPos[st] = next || ordered.find(p=>!folded.has(p)) || "";
-  // Auto-advance street if closed
-  if(!next){
-    const nextSt = peNextStreet(st);
-    if(nextSt && peStreetReachable(nextSt)){
-      _peCurStreet = nextSt;
-    }
-  }
-  // Auto-detect hand winner by fold-out
-  peCheckAutoResult();
-  peRefreshSaisie();
-}
-
-function peCheckAutoResult(){
-  const stillIn = getStillInAtShowdown();
-  const resSel = document.getElementById("hResult");
-  if(!resSel) return;
-  const heroFolded = !stillIn.includes(_heroPos);
-  if(heroFolded && !resSel.value){
-    resSel.value = "lost";
-    if(stillIn.length >= 2) toast("Main perdue (hero fold)");
-  } else if(stillIn.length === 1 && stillIn[0] === _heroPos && !resSel.value){
-    resSel.value = "won";
-    toast("Main gagnée — tous se sont couchés");
-  }
-}
-
-function peNextStreet(st){
-  const order = ["preflop","flop","turn","river","showdown"];
-  const i = order.indexOf(st);
-  return order[i+1] || null;
-}
-
-function peQuickAmt(st, val){
-  if(val === "jam"){
-    _pendingActions[st].push({position: _curActionPos[st], action: "jam", amt: ""});
-    _pendingRaise[st] = false;
-    const folded = foldedInStreet(st);
-    const ordered = (st === "preflop") ? getPositionsForHand() : orderPostflop(activeForStreet(st));
-    const next = getNextActor(st, ordered, folded);
-    _curActionPos[st] = next || "";
-    peRefreshSaisie();
-    return;
-  }
-  const inp = document.getElementById("peAmtInput_"+st);
-  if(inp){ inp.value = val; inp.focus(); }
-}
-function peAmtChange(st){
-  // Update live bet display
-  const inp = document.getElementById("peAmtInput_"+st);
-  if(!inp) return;
-  // Just refresh table to reflect projected bet
-  const host = document.getElementById("peTableHost");
-  if(host){
-    const snap = peBuildLiveSnapshot(_peCurStreet);
-    const v = parseFloat(inp.value);
-    if(!isNaN(v) && v > 0){
-      snap.bets = Object.assign({}, snap.bets);
-      snap.bets[_curActionPos[st]] = v;
-    }
-    host.innerHTML = renderPokerTable(snap);
-  }
-}
-function peConfirmRaise(st){
-  if(!_pendingRaise[st]) return;
-  const inp = document.getElementById("peAmtInput_"+st);
-  const amt = inp ? inp.value : "";
-  if(!amt) return;
-  const action = (st === "preflop" || (_pendingActions[st]||[]).some(a=>["raise","bet","3-bet","4-bet"].includes(a.action))) ? "raise" : "bet";
-  _pendingActions[st].push({position: _curActionPos[st], action, amt});
-  _pendingRaise[st] = false;
-  const folded = foldedInStreet(st);
-  const ordered = (st === "preflop") ? getPositionsForHand() : orderPostflop(activeForStreet(st));
-  const next = getNextActor(st, ordered, folded);
-  _curActionPos[st] = next || ordered.find(p=>!folded.has(p)) || "";
-  if(!next){
-    const ns = peNextStreet(st);
-    if(ns && peStreetReachable(ns)) _peCurStreet = ns;
-  }
-  peRefreshSaisie();
-}
-function peUndoLast(st){
-  if(!(_pendingActions[st]||[]).length){
-    // Reach back to previous street
-    const order = ["preflop","flop","turn","river"];
-    const i = order.indexOf(st);
-    for(let j=i-1;j>=0;j--){
-      if((_pendingActions[order[j]]||[]).length){
-        _peCurStreet = order[j];
-        _pendingActions[order[j]].pop();
-        peRefreshSaisie();
-        return;
-      }
-    }
-    return;
-  }
-  _pendingActions[st].pop();
-  _pendingRaise[st] = false;
-  peRefreshSaisie();
-}
-function peJumpToAction(st, idx){
-  // Truncate actions at idx (keep before, drop idx and after)
-  _pendingActions[st] = _pendingActions[st].slice(0, idx);
-  _pendingRaise[st] = false;
-  // Clear subsequent streets
-  const order = ["preflop","flop","turn","river"];
-  const i = order.indexOf(st);
-  if(i >= 0){
-    for(let j=i+1;j<order.length;j++){
-      _pendingActions[order[j]] = [];
-      _curActionPos[order[j]] = "";
-      _pendingRaise[order[j]] = false;
-    }
-  }
-  _peCurStreet = st;
-  peRefreshSaisie();
-}
-
-/* Override afterPickerChange to also refresh saisie if in PBT mode */
-const _origAfterPickerChange = (typeof afterPickerChange === "function") ? afterPickerChange : null;
-function peOnPickerChange(id){
-  if(typeof updateBoardPreviews==="function" && (id==="pkrFlop"||id==="pkrTurn")) updateBoardPreviews();
-  if(typeof evaluateShowdown==="function") evaluateShowdown();
-  if(document.getElementById("peTableHost")){
-    peRefreshSaisie();
-  }
-}
-
-/* =========================================================
-   Hand replayer
-   ========================================================= */
-
-let _peReplayState = null;
-
-function openHandReplay(tid, idx){
-  // Backwards compat: if called with single arg, treat as idx with liveId
-  if(arguments.length === 1){ idx = tid; tid = state.liveId; }
-  let ctxT = state.tournaments.find(x=>x.id===tid) || state.tournaments.find(x=>x.id===state.liveId);
-  let hand = ctxT && ctxT.hands ? ctxT.hands[idx] : null;
-  if(!hand){
-    for(const tt of state.tournaments){
-      if(tt.hands && tt.hands[idx]){ hand = tt.hands[idx]; ctxT = tt; break; }
-    }
-  }
-  if(!hand){ toast("Main introuvable"); return; }
-  _peReplayState = {
-    hand,
-    tournament: ctxT,
-    steps: peBuildReplaySteps(hand, ctxT),
-    cur: 0,
-    playing: false,
-    timer: null,
-    speed: 1
-  };
-  openModal(`<h2 style="margin:0 0 12px">Rejouer la main</h2>
-    <div id="peReplayTable"></div>
-    <div class="pe-replay-log" id="peReplayLog"></div>
-    <div class="pe-replay-controls">
-      <button type="button" onclick="peReplayStep(-999)" title="Début">⏮</button>
-      <button type="button" onclick="peReplayStep(-1)" title="Précédent">◀</button>
-      <button type="button" class="play" id="peReplayPlay" onclick="peReplayToggle()" title="Lecture">▶</button>
-      <button type="button" onclick="peReplayStep(1)" title="Suivant">▶</button>
-      <button type="button" onclick="peReplayStep(999)" title="Fin">⏭</button>
-      <button type="button" class="pe-speed" id="peReplaySpeed" onclick="peReplaySpeedToggle()">1x</button>
-      <span class="pe-step-info" id="peReplayInfo"></span>
-    </div>
-    <button class="btn secondary compact" onclick="peReplayClose()">Fermer</button>
-  `);
-  peReplayRender();
-}
-
-function peReplayClose(){
-  if(_peReplayState && _peReplayState.timer){ clearInterval(_peReplayState.timer); }
-  _peReplayState = null;
-  closeModal();
-}
-
-function peBuildReplaySteps(h, t){
-  const positions = POSITIONS_BY_SEATS[t && t.seatCount ? t.seatCount : 9] || POSITIONS_BY_SEATS[9];
-  const unit = h.unit || "bb";
-  const bb = getBB(t || {});
-  const bbU = (unit === "chips" && bb) ? bb : 1;
-  const sb = bb ? bb*0.5 : 0.5;
-  const bbInit = bb || 1;
-  const blinds = (unit === "chips" && bb) ? {SB: sb, BB: bbInit} : {SB: 0.5, BB: 1};
-  const steps = [];
-  // Step 0: dealing (no board, blinds posted)
-  steps.push({
-    label: "Distribution. SB / BB postées.",
-    street: "preflop",
-    folded: new Set(),
-    bets: Object.assign({}, blinds),
-    pot: (blinds.SB||0) + (blinds.BB||0),
-    board: "",
-    bubble: null,
-    activePos: ""
-  });
-  const streetData = [
-    {key:"preflop", label:"Préflop", board:""},
-    {key:"flop", label:"Flop", board: h.flop && h.flop.board || ""},
-    {key:"turn", label:"Turn", board: h.turn && h.turn.board || ""},
-    {key:"river", label:"River", board: h.river && h.river.board || ""}
-  ];
-  let folded = new Set();
-  let pot = (blinds.SB||0) + (blinds.BB||0);
-  let cumBoard = "";
-  streetData.forEach((sd, sIdx) => {
-    // Add street transition step (board reveal) for postflop
-    if(sIdx > 0){
-      cumBoard = [streetData[1].board, streetData[2].board, streetData[3].board].slice(0, sIdx).filter(Boolean).join(" ");
-      steps.push({
-        label: `${sd.label}.${sd.board?' Cartes: '+sd.board:''}`,
-        street: sd.key,
-        folded: new Set(folded),
-        bets: {},
-        pot,
-        board: cumBoard,
-        bubble: null,
-        activePos: ""
-      });
-    }
-    const acts = (h[sd.key] && h[sd.key].actions) || [];
-    let contrib = (sd.key === "preflop") ? Object.assign({}, blinds) : {};
-    acts.forEach((a, aIdx) => {
-      const prev = contrib[a.position] || 0;
-      let newC = prev;
-      const amtN = parseFloat(a.amt);
-      if(a.action === "fold"){ folded.add(a.position); }
-      else if(a.action === "check" || !a.action){}
-      else if(a.action === "limp") newC = Math.max(prev, bbU);
-      else if(!isNaN(amtN) && amtN > 0) newC = amtN;
-      else if(a.action === "call"){
-        const vals = Object.values(contrib);
-        newC = vals.length ? Math.max.apply(null, vals) : 0;
-      } else if(a.action === "jam"){
-        // jam = all-in, treat as raise of unknown — use max contrib so far + something significant
-        const vals = Object.values(contrib);
-        newC = Math.max(prev, (vals.length ? Math.max.apply(null, vals)*2 : bbU*10));
-      }
-      if(newC > prev){
-        pot += (newC - prev);
-        contrib[a.position] = newC;
-      }
-      let bubbleText = a.action;
-      if(a.amt) bubbleText += " "+a.amt+(unit==="chips"?"":"bb");
-      steps.push({
-        label: `<b>${a.position}</b> ${a.action}${a.amt?' '+a.amt+(unit==='chips'?'':'bb'):''}`,
-        street: sd.key,
-        folded: new Set(folded),
-        bets: Object.assign({}, contrib),
-        pot,
-        board: cumBoard,
-        bubble: {pos: a.position, text: bubbleText, type: a.action},
-        activePos: a.position
-      });
-    });
-  });
-  // Showdown
-  if(h.showdown && h.showdown.length){
-    const sdMap = {};
-    h.showdown.forEach(s => { if(s.cards) sdMap[s.position] = s.cards; });
-    if(Object.keys(sdMap).length){
-      cumBoard = [h.flop&&h.flop.board, h.turn&&h.turn.board, h.river&&h.river.board].filter(Boolean).join(" ");
-      // Determine winner using evaluator if board is 5
-      const winners = new Set();
-      try{
-        const board = parseHandCards(cumBoard);
-        if(board.length === 5){
-          const players = [];
-          h.showdown.forEach(s=>{
-            if(!s.cards || folded.has(s.position)) return;
-            const cards = parseHandCards(s.cards);
-            if(cards.length === 2){
-              players.push({pos: s.position, best: evalBest5([...cards, ...board])});
-            }
-          });
-          // Also include hero if in showdown and not folded
-          const heroPos = h.position;
-          if(heroPos && !folded.has(heroPos) && h.cards && !players.some(p=>p.pos===heroPos)){
-            const hc = parseHandCards(h.cards);
-            if(hc.length === 2) players.push({pos: heroPos, best: evalBest5([...hc, ...board])});
-          }
-          if(players.length){
-            players.sort((a,b)=>cmpKey(b.best.key, a.best.key));
-            const topKey = players[0].best.key;
-            players.forEach(p=>{ if(cmpKey(p.best.key, topKey)===0) winners.add(p.pos); });
-          }
-        }
-      }catch(e){}
-      steps.push({
-        label: "Abattage. Cartes révélées.",
-        street: "showdown",
-        folded: new Set(folded),
-        bets: {},
-        pot,
-        board: cumBoard,
-        bubble: null,
-        activePos: "",
-        oppCards: sdMap,
-        showOppFace: true,
-        winners
-      });
-    }
-  }
-  // Final result step
-  if(h.result){
-    const lbl = {won:"Hero gagne le pot.", lost:"Hero perd.", folded:"Hero foldée.", split:"Pot partagé."}[h.result] || "";
-    if(lbl){
-      const last = steps[steps.length-1];
-      steps.push({
-        label: lbl,
-        street: last.street,
-        folded: new Set(folded),
-        bets: {},
-        pot,
-        board: last.board,
-        bubble: null,
-        activePos: "",
-        oppCards: last.oppCards || {},
-        showOppFace: last.showOppFace,
-        winners: last.winners
-      });
-    }
-  }
-  return steps;
-}
-
-function peReplayRender(){
-  const s = _peReplayState;
-  if(!s) return;
-  const step = s.steps[s.cur];
-  if(!step) return;
-  const h = s.hand;
-  const positions = POSITIONS_BY_SEATS[s.tournament && s.tournament.seatCount ? s.tournament.seatCount : 9] || POSITIONS_BY_SEATS[9];
-  const snap = {
-    positions, heroPos: h.position, dealerPos: "BTN",
-    activePos: step.activePos,
-    folded: step.folded,
-    bets: step.bets,
-    stacks: null,
-    heroCards: h.cards || "",
-    oppCards: step.oppCards || {},
-    showOppBacks: !step.showOppFace,
-    board: step.board || "",
-    pot: step.pot,
-    unit: h.unit || "bb",
-    street: step.street,
-    actionBubble: step.bubble,
-    winners: step.winners
-  };
-  const host = document.getElementById("peReplayTable");
-  if(host) host.innerHTML = renderPokerTable(snap);
-  const log = document.getElementById("peReplayLog");
-  if(log) log.innerHTML = step.label;
-  const info = document.getElementById("peReplayInfo");
-  if(info) info.textContent = `${s.cur+1} / ${s.steps.length}`;
-}
-
-function peReplayStep(d){
-  const s = _peReplayState; if(!s) return;
-  if(d === -999) s.cur = 0;
-  else if(d === 999) s.cur = s.steps.length - 1;
-  else s.cur = Math.max(0, Math.min(s.steps.length-1, s.cur + d));
-  if(s.cur >= s.steps.length-1 && s.playing){ peReplayToggle(); }
-  peReplayRender();
-}
-
-function peReplayToggle(){
-  const s = _peReplayState; if(!s) return;
-  s.playing = !s.playing;
-  const btn = document.getElementById("peReplayPlay");
-  if(btn) btn.textContent = s.playing ? "⏸" : "▶";
-  if(s.timer){ clearInterval(s.timer); s.timer = null; }
-  if(s.playing){
-    const interval = 1100 / s.speed;
-    s.timer = setInterval(()=>{
-      if(!_peReplayState) return;
-      if(_peReplayState.cur >= _peReplayState.steps.length-1){
-        clearInterval(_peReplayState.timer); _peReplayState.timer = null; _peReplayState.playing = false;
-        const b = document.getElementById("peReplayPlay"); if(b) b.textContent = "▶";
-        return;
-      }
-      _peReplayState.cur++;
-      peReplayRender();
-    }, interval);
-  }
-}
-
-function peReplaySpeedToggle(){
-  const s = _peReplayState; if(!s) return;
-  s.speed = s.speed === 1 ? 1.5 : s.speed === 1.5 ? 2 : s.speed === 2 ? 0.5 : 1;
-  const b = document.getElementById("peReplaySpeed");
-  if(b) b.textContent = s.speed + "x";
-  if(s.playing){ peReplayToggle(); peReplayToggle(); }
-}
-
-/* =========================================================
    INIT
    ========================================================= */
 loadState();
@@ -5314,749 +3737,6 @@ if(!window.navigator.standalone){
 
 // Service worker for offline (inline, no separate file needed for basic caching via App Cache fallback)
 // PWA install works via manifest in real deployment; for local file this is enough.
-
-/* =========================================================
-   CAMERA CARD SCANNER
-   Pipeline: getUserMedia -> capture -> OpenCV segmentation
-   -> per card: Tesseract rank OCR + HSV color + suit shape match
-   -> validation modal -> commit via pkrPickRank/pkrPickSuit
-   ========================================================= */
-const _cam = {
-  active:false, stream:null, targetPickerId:null, detected:[],
-  ocrReady:null, ocrWorker:null,
-  liveRaf:null, lastDetect:0, lastBoxes:[], stableCount:0, stableTarget:5,
-  freezeLive:false,
-  // ML model state
-  ortReady:null, ortSession:null, ortLabels:null, ortInputName:null,
-  ortMode:null /* "ml" | "fallback" */
-};
-const CAM_MODEL_URL = "models/cards/yolov8m_synthetic.int8.onnx";
-const CAM_LABELS_URL = "models/cards/labels.json";
-const CAM_MODEL_INPUT_SIZE = 640;
-const CAM_CONF_THRESHOLD = 0.45;
-const CAM_NMS_IOU = 0.45;
-const CAM_INFERENCE_FPS = 2.5; /* throttle live inference */
-const CAM_RANKS = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
-const CAM_SUITS = ["s","h","d","c"];
-const CAM_SUIT_CHAR = {s:"♠",h:"♥",d:"♦",c:"♣"};
-
-function camToast(msg){
-  if(typeof toast === "function"){ toast(msg); return; }
-  const el = document.getElementById("toast");
-  if(!el) return;
-  el.textContent = msg; el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"), 2500);
-}
-function camStatus(html){
-  const el = document.getElementById("camStatus");
-  if(!el) return;
-  if(!html){ el.classList.remove("show"); el.innerHTML = ""; return; }
-  el.innerHTML = html; el.classList.add("show");
-}
-
-/* ---- Lazy loaders ---- */
-function camLoadScript(src){
-  return new Promise((resolve, reject)=>{
-    const existing = document.querySelector(`script[src="${src}"]`);
-    if(existing){
-      if(existing.dataset.loaded === "1") return resolve();
-      existing.addEventListener("load", ()=>resolve());
-      existing.addEventListener("error", ()=>reject(new Error("load fail "+src)));
-      return;
-    }
-    const s = document.createElement("script");
-    s.src = src; s.async = true;
-    s.onload = ()=>{ s.dataset.loaded = "1"; resolve(); };
-    s.onerror = ()=>reject(new Error("load fail "+src));
-    document.head.appendChild(s);
-  });
-}
-async function camEnsureOnnx(progress){
-  if(_cam.ortReady) return _cam.ortReady;
-  _cam.ortReady = (async ()=>{
-    if(progress) progress("Chargement runtime ONNX...");
-    await camLoadScript("https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js");
-    if(!window.ort) throw new Error("onnxruntime-web non chargé");
-    // Configure wasm paths to CDN
-    window.ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
-    window.ort.env.wasm.numThreads = 1; /* iOS Safari = single-thread (no SAB) */
-    if(progress) progress("Chargement modèle cartes (~26 MB)...");
-    const [labelsRes, session] = await Promise.all([
-      fetch(CAM_LABELS_URL).then(r => r.ok ? r.json() : Promise.reject(new Error("labels.json introuvable"))),
-      window.ort.InferenceSession.create(CAM_MODEL_URL, {
-        executionProviders: ["wasm"],
-        graphOptimizationLevel: "all"
-      })
-    ]);
-    _cam.ortSession = session;
-    _cam.ortLabels = labelsRes;
-    _cam.ortInputName = session.inputNames[0];
-    _cam.ortMode = "ml";
-    if(progress) progress("");
-    return session;
-  })();
-  _cam.ortReady.catch(()=>{ _cam.ortReady = null; _cam.ortMode = "fallback"; });
-  return _cam.ortReady;
-}
-
-function camEnsureTesseract(progress){
-  if(_cam.ocrReady) return _cam.ocrReady;
-  if(progress) progress("Téléchargement Tesseract.js...");
-  _cam.ocrReady = camLoadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js")
-    .then(async ()=>{
-      if(progress) progress("Téléchargement modèle OCR (~3 MB)...");
-      const w = await Tesseract.createWorker("eng", 1, {
-        logger: m => {
-          if(progress && m.status){
-            const pct = m.progress != null ? Math.round(m.progress*100) : null;
-            progress(`Tesseract: ${m.status}${pct!=null?` ${pct}%`:""}`);
-          }
-        }
-      });
-      if(progress) progress("Configuration OCR...");
-      await w.setParameters({
-        tessedit_char_whitelist: "AKQJT98765432",
-        tessedit_pageseg_mode: "10",
-        classify_bln_numeric_mode: "0"
-      });
-      _cam.ocrWorker = w;
-      return w;
-    })
-    .catch(e => { _cam.ocrReady = null; throw e; });
-  return _cam.ocrReady;
-}
-
-/* ---- Modal open/close + camera ---- */
-async function camScanOpen(pickerId){
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    alert("Caméra non supportée par ce navigateur. Utilisez Chrome/Safari sur HTTPS.");
-    return;
-  }
-  const p = _pkrs[pickerId];
-  if(!p){ camToast("Picker introuvable"); return; }
-  _cam.targetPickerId = pickerId;
-  _cam.detected = [];
-  _cam.lastBoxes = [];
-  _cam.stableCount = 0;
-  _cam.freezeLive = false;
-  const modal = document.getElementById("camModal");
-  modal.classList.add("open");
-  document.getElementById("camValid").classList.remove("open");
-  document.getElementById("camControls").style.display = "flex";
-  document.getElementById("camStage").style.display = "flex";
-  const freeSlots = p.slots.filter(s=>!s).length;
-  document.getElementById("camTitle").textContent = `Scanner — ${freeSlots} emplacement${freeSlots>1?"s":""} libre${freeSlots>1?"s":""}`;
-  document.getElementById("camGuideText").textContent = `Posez ${freeSlots>1?"les cartes côte à côte":"la carte"} sur fond sombre uni`;
-  camSetStability("Chargement modèle...", "");
-  // Preload ONNX model (blocking-ish — needed for ML detection)
-  camEnsureOnnx(msg => camStatus(msg ? `<div class="cam-spinner"></div>${msg}` : ""))
-    .then(()=>{ camStatus(""); camSetStability("Recherche cartes...", ""); })
-    .catch(err => {
-      console.warn("ONNX init failed, falling back to brightness detector", err);
-      _cam.ortMode = "fallback";
-      camStatus("");
-      camToast("Modèle ML indisponible — détection simple activée");
-      camSetStability("Recherche cartes (mode simple)...", "");
-    });
-  try{
-    const constraints = { video: { facingMode: { ideal: "environment" }, width:{ideal:1280}, height:{ideal:720} }, audio:false };
-    _cam.stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const video = document.getElementById("camVideo");
-    video.srcObject = _cam.stream;
-    await video.play().catch(()=>{});
-    _cam.active = true;
-    camLiveLoop();
-  }catch(err){
-    camToast("Caméra refusée: " + (err.message || err.name));
-    camScanClose();
-  }
-}
-function camScanClose(){
-  _cam.active = false;
-  _cam.freezeLive = false;
-  if(_cam.liveRaf){ cancelAnimationFrame(_cam.liveRaf); _cam.liveRaf = null; }
-  if(_cam.stream){
-    _cam.stream.getTracks().forEach(t=>t.stop());
-    _cam.stream = null;
-  }
-  const v = document.getElementById("camVideo");
-  if(v) v.srcObject = null;
-  const ov = document.getElementById("camOverlay");
-  if(ov){ const ctx = ov.getContext("2d"); ctx.clearRect(0,0,ov.width,ov.height); }
-  document.getElementById("camModal").classList.remove("open");
-  camStatus("");
-  camSetStability("", "");
-}
-function camScanRetry(){
-  document.getElementById("camValid").classList.remove("open");
-  document.getElementById("camStage").style.display = "flex";
-  document.getElementById("camControls").style.display = "flex";
-  _cam.detected = [];
-  _cam.lastBoxes = [];
-  _cam.stableCount = 0;
-  _cam.freezeLive = false;
-  camSetStability("Recherche cartes...", "");
-  camLiveLoop();
-}
-function camSetStability(text, cls){
-  const el = document.getElementById("camStability");
-  if(!el) return;
-  if(!text){ el.classList.remove("show","stable","locking"); el.textContent=""; return; }
-  el.textContent = text;
-  el.classList.add("show");
-  el.classList.toggle("stable", cls === "stable");
-  el.classList.toggle("locking", cls === "locking");
-}
-
-/* ---- Live detection loop ---- */
-let _camInferring = false;
-async function camLiveLoop(){
-  if(!_cam.active || _cam.freezeLive){ _cam.liveRaf = null; return; }
-  const now = performance.now();
-  const minInterval = _cam.ortMode === "ml" ? (1000 / CAM_INFERENCE_FPS) : 180;
-  if(now - _cam.lastDetect < minInterval || _camInferring){
-    _cam.liveRaf = requestAnimationFrame(camLiveLoop);
-    return;
-  }
-  _cam.lastDetect = now;
-  const video = document.getElementById("camVideo");
-  const overlay = document.getElementById("camOverlay");
-  if(!video || !overlay || !video.videoWidth){
-    _cam.liveRaf = requestAnimationFrame(camLiveLoop);
-    return;
-  }
-  let boxes;
-  if(_cam.ortMode === "ml" && _cam.ortSession){
-    _camInferring = true;
-    try { boxes = await camDetectCardsML(video); }
-    catch(e){ console.warn("ML inference err", e); boxes = []; }
-    _camInferring = false;
-  } else {
-    boxes = camDetectCards(video, 240);
-  }
-  camDrawOverlay(overlay, video, boxes);
-  // Stability tracking
-  const expected = camFreeSlotsCount();
-  const stable = boxes.length > 0 && boxes.length <= expected && camBoxesSimilar(_cam.lastBoxes, boxes);
-  if(stable){
-    _cam.stableCount++;
-    if(_cam.stableCount >= _cam.stableTarget){
-      // Auto-snap
-      _cam.freezeLive = true;
-      camSetStability("Capture...", "locking");
-      camLockAndProcess(boxes);
-      return;
-    } else if(_cam.stableCount >= Math.max(3, _cam.stableTarget-3)){
-      camSetStability(`${boxes.length} carte${boxes.length>1?"s":""} — verrouillage...`, "locking");
-    } else {
-      camSetStability(`${boxes.length} carte${boxes.length>1?"s":""} détectée${boxes.length>1?"s":""}`, "stable");
-    }
-  } else {
-    _cam.stableCount = 0;
-    if(boxes.length === 0) camSetStability("Recherche cartes...", "");
-    else if(boxes.length > expected) camSetStability(`Trop de cartes (${boxes.length}, max ${expected})`, "");
-    else camSetStability(`${boxes.length} carte${boxes.length>1?"s":""}`, "stable");
-  }
-  _cam.lastBoxes = boxes;
-  _cam.liveRaf = requestAnimationFrame(camLiveLoop);
-}
-
-function camFreeSlotsCount(){
-  const p = _pkrs[_cam.targetPickerId];
-  return p ? p.slots.filter(s=>!s).length : 5;
-}
-
-function camBoxesSimilar(a, b){
-  if(!a || !b || a.length !== b.length) return false;
-  for(let i=0;i<a.length;i++){
-    const ax = (a[i].x + a[i].w/2), ay = (a[i].y + a[i].h/2);
-    const bx = (b[i].x + b[i].w/2), by = (b[i].y + b[i].h/2);
-    const tol = Math.max(8, a[i].w * 0.08);
-    if(Math.abs(ax-bx) > tol || Math.abs(ay-by) > tol) return false;
-    if(Math.abs(a[i].w - b[i].w) > a[i].w*0.15) return false;
-  }
-  return true;
-}
-
-/* Pure-JS card detection via brightness threshold + connected components.
-   Assumes cards are brighter than background (white/light cards on darker surface).
-   Returns boxes in VIDEO coordinates (videoWidth × videoHeight). */
-function camDetectCards(video, downW){
-  const vw = video.videoWidth, vh = video.videoHeight;
-  if(!vw) return [];
-  const dw = downW, dh = Math.round(vh * (dw/vw));
-  const c = camDetectCards._buf || (camDetectCards._buf = document.createElement("canvas"));
-  c.width = dw; c.height = dh;
-  const ctx = c.getContext("2d", { willReadFrequently: true });
-  ctx.drawImage(video, 0, 0, dw, dh);
-  const img = ctx.getImageData(0, 0, dw, dh);
-  const data = img.data;
-  // Compute mean brightness for adaptive threshold
-  let sum = 0, n = 0;
-  for(let i=0;i<data.length;i+=16){ // sample every 4 pixels
-    const lum = (data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114);
-    sum += lum; n++;
-  }
-  const meanLum = sum / n;
-  // Threshold: pixels significantly brighter than mean = candidate card
-  // Higher offset = stricter; cards must be quite bright
-  const thresh = Math.max(120, meanLum + 35);
-  const mask = new Uint8Array(dw * dh);
-  for(let y=0; y<dh; y++){
-    for(let x=0; x<dw; x++){
-      const i = (y*dw + x) * 4;
-      const lum = data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114;
-      mask[y*dw + x] = lum >= thresh ? 1 : 0;
-    }
-  }
-  // Connected components (4-connect, stack-based flood fill)
-  const labels = new Int32Array(dw * dh);
-  const blobs = []; // {minX,minY,maxX,maxY,area}
-  let nextLabel = 1;
-  const stack = [];
-  for(let y=0; y<dh; y++){
-    for(let x=0; x<dw; x++){
-      const idx = y*dw + x;
-      if(mask[idx] !== 1 || labels[idx] !== 0) continue;
-      let minX=x,minY=y,maxX=x,maxY=y,area=0;
-      stack.length = 0; stack.push(x, y);
-      while(stack.length){
-        const py = stack.pop(), px = stack.pop();
-        if(px<0||py<0||px>=dw||py>=dh) continue;
-        const pi = py*dw+px;
-        if(mask[pi]!==1 || labels[pi]!==0) continue;
-        labels[pi] = nextLabel;
-        area++;
-        if(px<minX) minX=px; if(py<minY) minY=py;
-        if(px>maxX) maxX=px; if(py>maxY) maxY=py;
-        stack.push(px+1, py); stack.push(px-1, py);
-        stack.push(px, py+1); stack.push(px, py-1);
-      }
-      blobs.push({minX, minY, maxX, maxY, area, label: nextLabel});
-      nextLabel++;
-    }
-  }
-  // Filter blobs by aspect ratio + area + fill density
-  const imgArea = dw * dh;
-  const candidates = [];
-  for(const b of blobs){
-    const bw = b.maxX - b.minX + 1;
-    const bh = b.maxY - b.minY + 1;
-    const a = bw * bh;
-    if(a < imgArea * 0.015 || a > imgArea * 0.55) continue;
-    if(bw < 20 || bh < 28) continue;
-    const ratio = bw / bh; // card portrait ratio ≈ 0.62-0.78
-    const inversed = bh / bw;
-    const portraitOk = ratio >= 0.45 && ratio <= 0.95;
-    const landscapeOk = inversed >= 0.45 && inversed <= 0.95;
-    if(!portraitOk && !landscapeOk) continue;
-    const fill = b.area / a; // bounding box fill density — cards should fill bbox densely
-    if(fill < 0.55) continue;
-    candidates.push({ x:b.minX, y:b.minY, w:bw, h:bh, fill });
-  }
-  // Sort left-to-right (top-to-bottom if mostly vertical layout)
-  candidates.sort((a,b)=> (a.x === b.x ? a.y - b.y : a.x - b.x));
-  // Cap to free slots
-  const maxN = Math.max(1, Math.min(camFreeSlotsCount(), 5));
-  const chosen = candidates.slice(0, maxN);
-  // Scale back to video coords
-  const sx = vw / dw, sy = vh / dh;
-  return chosen.map(b => ({
-    x: Math.round(b.x * sx), y: Math.round(b.y * sy),
-    w: Math.round(b.w * sx), h: Math.round(b.h * sy)
-  }));
-}
-
-/* ML-based YOLOv8 inference. Returns boxes with rank+suit already classified. */
-async function camDetectCardsML(video){
-  const ort = window.ort;
-  const sess = _cam.ortSession;
-  const S = CAM_MODEL_INPUT_SIZE;
-  const vw = video.videoWidth, vh = video.videoHeight;
-  if(!vw) return [];
-  // Letterbox into S×S to preserve aspect
-  const scale = Math.min(S / vw, S / vh);
-  const newW = Math.round(vw * scale);
-  const newH = Math.round(vh * scale);
-  const offX = Math.floor((S - newW) / 2);
-  const offY = Math.floor((S - newH) / 2);
-  const buf = camDetectCardsML._buf || (camDetectCardsML._buf = document.createElement("canvas"));
-  buf.width = S; buf.height = S;
-  const ctx = buf.getContext("2d", { willReadFrequently: true });
-  ctx.fillStyle = "#727272"; /* gray padding (YOLO standard) */
-  ctx.fillRect(0, 0, S, S);
-  ctx.drawImage(video, 0, 0, vw, vh, offX, offY, newW, newH);
-  const imgData = ctx.getImageData(0, 0, S, S);
-  // Build NCHW Float32 tensor [1, 3, S, S], normalize 0..1
-  const tensor = new Float32Array(3 * S * S);
-  const px = imgData.data;
-  const plane = S * S;
-  for(let i = 0, p = 0; i < px.length; i += 4, p++){
-    tensor[p]             = px[i]     / 255.0;
-    tensor[p + plane]     = px[i + 1] / 255.0;
-    tensor[p + 2 * plane] = px[i + 2] / 255.0;
-  }
-  const input = new ort.Tensor("float32", tensor, [1, 3, S, S]);
-  const feeds = {}; feeds[_cam.ortInputName] = input;
-  const outputs = await sess.run(feeds);
-  const out = outputs[sess.outputNames[0]];
-  // YOLOv8 ONNX output: shape [1, 4+nc, 8400] (here nc=52 so 56 channels)
-  const [_, channels, numAnchors] = out.dims;
-  const data = out.data;
-  const numClasses = channels - 4;
-  const detections = [];
-  for(let i = 0; i < numAnchors; i++){
-    let bestScore = 0, bestCls = -1;
-    for(let c = 0; c < numClasses; c++){
-      const score = data[(4 + c) * numAnchors + i];
-      if(score > bestScore){ bestScore = score; bestCls = c; }
-    }
-    if(bestScore < CAM_CONF_THRESHOLD) continue;
-    const cx = data[0 * numAnchors + i];
-    const cy = data[1 * numAnchors + i];
-    const w  = data[2 * numAnchors + i];
-    const h  = data[3 * numAnchors + i];
-    // Convert from letterbox space back to video coords
-    const x0 = (cx - w/2 - offX) / scale;
-    const y0 = (cy - h/2 - offY) / scale;
-    const bw = w / scale, bh = h / scale;
-    detections.push({
-      x: Math.max(0, x0), y: Math.max(0, y0),
-      w: Math.min(vw, bw), h: Math.min(vh, bh),
-      score: bestScore, classId: bestCls,
-      label: _cam.ortLabels[String(bestCls)]
-    });
-  }
-  // NMS
-  detections.sort((a, b) => b.score - a.score);
-  const kept = [];
-  for(const det of detections){
-    let keep = true;
-    for(const k of kept){
-      const iou = camIoU(det, k);
-      if(iou > CAM_NMS_IOU){ keep = false; break; }
-    }
-    if(keep) kept.push(det);
-    if(kept.length > 10) break;
-  }
-  // Dedupe by class label (keep highest score per unique card)
-  const seen = new Set();
-  const uniq = [];
-  for(const k of kept){
-    if(seen.has(k.label)) continue;
-    seen.add(k.label);
-    uniq.push(k);
-  }
-  // Cap to free slots
-  const maxN = Math.max(1, Math.min(camFreeSlotsCount(), 5));
-  // Sort left-to-right
-  uniq.sort((a, b) => a.x - b.x);
-  return uniq.slice(0, maxN);
-}
-
-function camIoU(a, b){
-  const ax2 = a.x + a.w, ay2 = a.y + a.h;
-  const bx2 = b.x + b.w, by2 = b.y + b.h;
-  const ix = Math.max(0, Math.min(ax2, bx2) - Math.max(a.x, b.x));
-  const iy = Math.max(0, Math.min(ay2, by2) - Math.max(a.y, b.y));
-  const inter = ix * iy;
-  const uni = a.w * a.h + b.w * b.h - inter;
-  return uni > 0 ? inter / uni : 0;
-}
-
-function camDrawOverlay(overlay, video, boxes){
-  const vw = video.videoWidth, vh = video.videoHeight;
-  if(!vw) return;
-  // Match overlay to video display size
-  const rect = video.getBoundingClientRect();
-  overlay.width = rect.width;
-  overlay.height = rect.height;
-  const ctx = overlay.getContext("2d");
-  ctx.clearRect(0, 0, overlay.width, overlay.height);
-  // Compute video display rect within overlay (object-fit:contain behavior)
-  const sx = overlay.width / vw, sy = overlay.height / vh;
-  const scale = Math.min(sx, sy);
-  const dispW = vw * scale, dispH = vh * scale;
-  const ox = (overlay.width - dispW) / 2;
-  const oy = (overlay.height - dispH) / 2;
-  ctx.lineWidth = 3;
-  ctx.font = "bold 14px system-ui, sans-serif";
-  ctx.textBaseline = "top";
-  boxes.forEach((b, i) => {
-    const x = ox + b.x * scale;
-    const y = oy + b.y * scale;
-    const w = b.w * scale;
-    const h = b.h * scale;
-    ctx.strokeStyle = "rgba(95,199,232,0.95)";
-    ctx.fillStyle = "rgba(95,199,232,0.12)";
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeRect(x, y, w, h);
-    // Corner ticks
-    const tick = 14;
-    ctx.strokeStyle = "rgba(212,175,55,0.95)";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(x, y+tick); ctx.lineTo(x, y); ctx.lineTo(x+tick, y);
-    ctx.moveTo(x+w-tick, y); ctx.lineTo(x+w, y); ctx.lineTo(x+w, y+tick);
-    ctx.moveTo(x+w, y+h-tick); ctx.lineTo(x+w, y+h); ctx.lineTo(x+w-tick, y+h);
-    ctx.moveTo(x+tick, y+h); ctx.lineTo(x, y+h); ctx.lineTo(x, y+h-tick);
-    ctx.stroke();
-    ctx.lineWidth = 3;
-    // Class label badge (ML mode)
-    if(b.label){
-      const lbl = camNormalizeLabel(b.label);
-      const isRed = lbl.endsWith("h") || lbl.endsWith("d");
-      const txt = `${lbl.slice(0,-1)}${({h:"♥",d:"♦",c:"♣",s:"♠"})[lbl.slice(-1)]||""}`;
-      ctx.font = "bold 16px system-ui, sans-serif";
-      const tw = ctx.measureText(txt).width + 12;
-      const th2 = 22;
-      ctx.fillStyle = "rgba(0,0,0,0.85)";
-      ctx.fillRect(x, Math.max(0, y - th2), tw, th2);
-      ctx.fillStyle = isRed ? "#ff6b6b" : "#fff";
-      ctx.fillText(txt, x + 6, Math.max(2, y - th2 + 4));
-    }
-  });
-}
-
-/* Convert model label like "10s" → "Ts" (T for ten, matches app convention) */
-function camNormalizeLabel(lbl){
-  if(!lbl) return lbl;
-  if(lbl.startsWith("10")) return "T" + lbl.slice(2);
-  return lbl;
-}
-
-/* ---- Lock + capture pipeline ---- */
-async function camLockAndProcess(boxes){
-  camStatus(`<div class="cam-spinner"></div>Lecture des cartes...`);
-  const video = document.getElementById("camVideo");
-  const canvas = document.getElementById("camCanvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-  const useML = _cam.ortMode === "ml";
-  // Only load Tesseract for fallback (brightness) mode
-  if(!useML){
-    try { await camEnsureTesseract(msg => camStatus(`<div class="cam-spinner"></div>${msg}`)); }
-    catch(e){
-      camStatus("");
-      alert("OCR indisponible: " + e.message + "\n\nTu pourras saisir les cartes manuellement.");
-      _cam.ocrWorker = null;
-    }
-  }
-  const results = [];
-  for(let i=0; i<boxes.length; i++){
-    camStatus(`<div class="cam-spinner"></div>Carte ${i+1}/${boxes.length}...`);
-    let card;
-    if(useML && boxes[i].label){
-      card = camProcessCardML(canvas, boxes[i]);
-    } else {
-      card = await camProcessCard(canvas, boxes[i]);
-    }
-    results.push(card);
-  }
-  camStatus("");
-  _cam.detected = results;
-  camShowValidation();
-}
-
-/* ML-mode per-card: rank+suit already known from classifier, just generate preview */
-function camProcessCardML(srcCanvas, box){
-  const pad = Math.round(Math.min(box.w, box.h) * 0.02);
-  const x = Math.max(0, box.x + pad);
-  const y = Math.max(0, box.y + pad);
-  const w = Math.min(srcCanvas.width - x, box.w - pad*2);
-  const h = Math.min(srcCanvas.height - y, box.h - pad*2);
-  const thumb = document.createElement("canvas");
-  const targetH = 140;
-  const ratio = w / h;
-  let tw, th;
-  if(ratio < 1){ th = targetH; tw = Math.round(targetH * ratio); }
-  else { tw = 140; th = Math.round(140 / ratio); }
-  thumb.width = tw; thumb.height = th;
-  thumb.getContext("2d").drawImage(srcCanvas, x, y, w, h, 0, 0, tw, th);
-  const preview = thumb.toDataURL("image/jpeg", 0.7);
-  const lbl = camNormalizeLabel(box.label); /* e.g. "Ah", "Ts" */
-  const rank = lbl.slice(0, -1);
-  const suit = lbl.slice(-1);
-  const color = (suit === "h" || suit === "d") ? "red" : "black";
-  return {
-    rank, suit, color,
-    conf: Math.round((box.score || 0) * 100),
-    preview
-  };
-}
-
-/* Manual capture button — overrides auto-snap (uses current boxes or full frame) */
-async function camScanCapture(){
-  if(!_cam.active) return;
-  _cam.freezeLive = true;
-  if(_cam.liveRaf){ cancelAnimationFrame(_cam.liveRaf); _cam.liveRaf = null; }
-  const boxes = _cam.lastBoxes && _cam.lastBoxes.length ? _cam.lastBoxes : null;
-  if(!boxes){
-    camStatus("");
-    alert("Aucune carte détectée à l'image. Pose les cartes dans le cadre puis réessaie.");
-    _cam.freezeLive = false;
-    camLiveLoop();
-    return;
-  }
-  await camLockAndProcess(boxes);
-}
-
-/* ---- Per-card processing: crop + OCR rank + suit color ---- */
-async function camProcessCard(srcCanvas, box){
-  // Add small inner margin to crop
-  const pad = Math.round(Math.min(box.w, box.h) * 0.02);
-  const x = Math.max(0, box.x + pad);
-  const y = Math.max(0, box.y + pad);
-  const w = Math.min(srcCanvas.width - x, box.w - pad*2);
-  const h = Math.min(srcCanvas.height - y, box.h - pad*2);
-  // Crop card to its own canvas
-  const cardCanvas = document.createElement("canvas");
-  cardCanvas.width = w; cardCanvas.height = h;
-  const cctx = cardCanvas.getContext("2d");
-  cctx.drawImage(srcCanvas, x, y, w, h, 0, 0, w, h);
-  // If landscape, rotate 90 to portrait
-  let portrait = cardCanvas;
-  if(w > h){
-    portrait = document.createElement("canvas");
-    portrait.width = h; portrait.height = w;
-    const pctx = portrait.getContext("2d");
-    pctx.translate(h, 0);
-    pctx.rotate(Math.PI/2);
-    pctx.drawImage(cardCanvas, 0, 0);
-  }
-  const pw = portrait.width, ph = portrait.height;
-  // Rank corner = top-left ~28% × 22%
-  const rW = Math.round(pw * 0.32);
-  const rH = Math.round(ph * 0.22);
-  const rankCanvas = document.createElement("canvas");
-  rankCanvas.width = rW * 3; rankCanvas.height = rH * 3;
-  const rctx = rankCanvas.getContext("2d");
-  rctx.imageSmoothingEnabled = true;
-  rctx.imageSmoothingQuality = "high";
-  rctx.drawImage(portrait, 0, 0, rW, rH, 0, 0, rankCanvas.width, rankCanvas.height);
-  // Binarize for OCR
-  const rimg = rctx.getImageData(0,0,rankCanvas.width, rankCanvas.height);
-  let sum=0; for(let i=0;i<rimg.data.length;i+=4) sum += rimg.data[i]*0.299 + rimg.data[i+1]*0.587 + rimg.data[i+2]*0.114;
-  const mean = sum / (rimg.data.length/4);
-  for(let i=0;i<rimg.data.length;i+=4){
-    const lum = rimg.data[i]*0.299 + rimg.data[i+1]*0.587 + rimg.data[i+2]*0.114;
-    const v = lum < mean - 10 ? 0 : 255;
-    rimg.data[i] = rimg.data[i+1] = rimg.data[i+2] = v;
-  }
-  rctx.putImageData(rimg, 0, 0);
-  // Run OCR
-  let rank = "?", rankConf = 0;
-  if(_cam.ocrWorker){
-    try{
-      const { data } = await _cam.ocrWorker.recognize(rankCanvas);
-      const raw = (data.text || "").replace(/\s/g,"").toUpperCase();
-      rankConf = data.confidence || 0;
-      const conf = { "0":"Q", "O":"Q", "I":"A", "1":"A", "L":"A", "S":"5", "Z":"2", "B":"8", "G":"6" };
-      for(const ch of raw){
-        const m = conf[ch] || ch;
-        if(CAM_RANKS.includes(m)){ rank = m; break; }
-      }
-    }catch(e){ console.warn("OCR err", e); }
-  }
-  // Suit color = sample full card pixels, count red vs black significant pixels
-  const sctx = portrait.getContext("2d");
-  const sd = sctx.getImageData(0, 0, pw, ph).data;
-  let redN = 0, blackN = 0;
-  for(let i=0;i<sd.length;i+=16){ // every 4th pixel
-    const r = sd[i], g = sd[i+1], b = sd[i+2];
-    const max = Math.max(r,g,b), min = Math.min(r,g,b);
-    const lum = (r+g+b)/3;
-    if(lum > 200 && (max-min) < 30) continue; // white card background
-    if(lum < 80 && (max-min) < 40) blackN++;
-    else if(r > 110 && r > g*1.4 && r > b*1.4) redN++;
-  }
-  const color = redN > blackN ? "red" : "black";
-  // Preview thumb
-  const thumb = document.createElement("canvas");
-  const th = 140, tw = Math.round(pw * (th/ph));
-  thumb.width = tw; thumb.height = th;
-  thumb.getContext("2d").drawImage(portrait, 0, 0, tw, th);
-  const preview = thumb.toDataURL("image/jpeg", 0.7);
-  return {
-    rank, suit: null, color,
-    conf: rankConf ? Math.round(rankConf) : 0,
-    preview
-  };
-}
-
-/* ---- Validation UI ---- */
-function camShowValidation(){
-  const grid = document.getElementById("camValidGrid");
-  if(!_cam.detected.length){
-    grid.innerHTML = `<div class="cam-valid-empty">Aucune carte détectée</div>`;
-  } else {
-    grid.innerHTML = _cam.detected.map((c,i)=>{
-      const ranksOpts = ["?"].concat(CAM_RANKS).map(r=>`<option value="${r}" ${r===c.rank?"selected":""}>${r}</option>`).join("");
-      // Suit buttons: 4 separate, highlight detected color suits, picked one if any
-      const suitBtns = CAM_SUITS.map(s=>{
-        const isRed = (s==="h"||s==="d");
-        const colorMatch = (c.color === "red" && isRed) || (c.color === "black" && !isRed);
-        const picked = c.suit === s;
-        const cls = `cvc-suit ${isRed?'red':''} ${colorMatch?'color-match':''} ${picked?'picked':''}`;
-        return `<button type="button" class="${cls}" onclick="camValidPickSuit(${i},'${s}')">${CAM_SUIT_CHAR[s]}</button>`;
-      }).join("");
-      const confText = c.conf ? `conf. rank ${c.conf}%` : "rank non lu";
-      return `<div class="cam-valid-card">
-        <img src="${c.preview}" alt="card ${i}">
-        <div class="cvc-pick-row">
-          <label class="cvc-lbl">Rang</label>
-          <select onchange="camValidEdit(${i},'rank',this.value)">${ranksOpts}</select>
-        </div>
-        <div class="cvc-pick-row">
-          <label class="cvc-lbl">Couleur (${c.color === "red" ? "rouge" : "noir"} détecté)</label>
-          <div class="cvc-suits">${suitBtns}</div>
-        </div>
-        <div class="conf">${confText}</div>
-      </div>`;
-    }).join("");
-  }
-  document.getElementById("camStage").style.display = "none";
-  document.getElementById("camControls").style.display = "none";
-  document.getElementById("camValid").classList.add("open");
-}
-function camValidEdit(idx, field, val){
-  if(!_cam.detected[idx]) return;
-  _cam.detected[idx][field] = val;
-}
-function camValidPickSuit(idx, suit){
-  if(!_cam.detected[idx]) return;
-  _cam.detected[idx].suit = suit;
-  // Re-render just to update picked highlights
-  camShowValidation();
-}
-function camScanCommit(){
-  const p = _pkrs[_cam.targetPickerId];
-  if(!p){ camScanClose(); return; }
-  const valid = _cam.detected.filter(c => CAM_RANKS.includes(c.rank) && CAM_SUITS.includes(c.suit));
-  if(!valid.length){
-    alert("Aucune carte valide (rank=?). Corrige avant de valider.");
-    return;
-  }
-  // Avoid dupes with existing slots/other pickers
-  const existing = getExcludedCards(_cam.targetPickerId, -1);
-  let written = 0, skipped = 0;
-  for(const card of valid){
-    // Find first empty slot
-    const slotIdx = p.slots.findIndex(s=>!s);
-    if(slotIdx === -1) break;
-    const key = card.rank + card.suit;
-    if(existing.has(key)){ skipped++; continue; }
-    existing.add(key);
-    p.activeSlot = slotIdx;
-    p.pickRank = card.rank;
-    pkrPickSuit(_cam.targetPickerId, card.suit);
-    written++;
-  }
-  camScanClose();
-  if(written) camToast(`${written} carte${written>1?"s":""} ajoutée${written>1?"s":""}${skipped?` (${skipped} doublon${skipped>1?"s":""} ignoré${skipped>1?"s":""})`:""}`);
-  else camToast("Aucune carte ajoutée");
-}
 
 </script>
 </body>
