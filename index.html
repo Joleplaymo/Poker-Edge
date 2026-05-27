@@ -218,7 +218,11 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 /* Modal */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex;animation:fadeIn .2s}
-.modal{background:var(--bg-2);width:100%;max-width:720px;max-height:96vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease}
+.modal{background:var(--bg-2);width:100%;max-width:720px;max-height:96vh;max-height:96dvh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease;-webkit-overflow-scrolling:touch}
+@media (max-width:480px){
+  .modal{padding:18px 14px calc(18px + env(safe-area-inset-bottom));max-height:100dvh;border-radius:14px 14px 0 0}
+  .modal-bg{align-items:stretch}
+}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 .modal h2{margin:0 0 16px;font-size:20px;font-weight:600}
 .modal .close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--txt-mute);font-size:24px;cursor:pointer}
@@ -537,6 +541,8 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .pe-sd-opp-cards{display:flex;gap:4px}
 
 /* Blinds/Ante info bar */
+.pe-save-row{display:flex;gap:8px;flex-wrap:wrap}
+.pe-save-row .btn{flex:1;min-width:160px}
 .pe-blinds-info{background:var(--bg-3);border:1px solid var(--line-2);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--txt-dim);text-align:center;margin:4px 0 8px;letter-spacing:0.02em}
 .pe-blinds-info b{color:var(--gold);font-weight:700;font-family:Georgia,serif}
 .pe-blinds-info .pe-ante-mode{display:inline-block;background:rgba(212,175,55,0.18);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;border-radius:8px;margin-left:4px}
@@ -647,10 +653,21 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .pe-table-wrap{padding-bottom:60px}
 
 @media (max-width:480px){
-  .pe-table-wrap{aspect-ratio:1.25;max-width:100%}
-  .pe-seat-body{width:46px;height:46px;font-size:10px}
+  .pe-table-wrap{aspect-ratio:1.35;max-width:100%;padding:24px 4px 22px;border-radius:14px}
+  .pe-seat-body{width:42px;height:42px;font-size:10px}
   .pe-seat-body .pe-pos{font-size:10px}
   .pe-seat-body .pe-stk{font-size:8px}
+  .pe-hand-nav{gap:4px}
+  .pe-hand-nav-btn{min-width:30px;padding:0 4px;font-size:14px}
+  .pe-hand-nav-btn .pe-nav-lbl{display:none}
+  .pe-hand-nav-btn .pe-nav-ico{font-size:18px}
+  .pe-hero-pos-row{gap:2px}
+  .pe-hp-btn{min-width:0;padding:8px 2px;font-size:11px;letter-spacing:0;flex:1 1 auto}
+  .pe-blinds-info{font-size:11px;padding:5px 8px}
+  .pe-action-panel{padding:8px}
+  .pe-street-tabs{gap:3px}
+  .pe-save-row{display:flex;flex-direction:column;gap:8px}
+  .pe-save-row .btn{width:100%}
   .pe-card-face,.pe-card-back,.pe-card-empty{width:26px;height:38px}
   .pe-card-face .r{font-size:12px}
   .pe-card-face .s{font-size:10px}
@@ -2922,9 +2939,9 @@ function buildHandForm(h, t, isEdit){
       ? `<button class="btn" onclick="updateHand(${h._idx})">Enregistrer</button>
          <div style="height:8px"></div>
          <button class="btn danger small" onclick="deleteHand(${h._idx})">Supprimer la main</button>`
-      : `<div style="display:flex;gap:8px;flex-wrap:wrap">
-           <button class="btn" style="flex:1;min-width:160px" onclick="saveHand()">Enregistrer</button>
-           <button class="btn secondary" style="flex:1;min-width:160px" onclick="saveHandAndNext()">Enregistrer + suivante ▶</button>
+      : `<div class="pe-save-row">
+           <button class="btn" onclick="saveHand()">Enregistrer</button>
+           <button class="btn secondary" onclick="saveHandAndNext()">Enregistrer + suivante ▶</button>
          </div>`}
   `;
 }
