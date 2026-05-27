@@ -4327,18 +4327,7 @@ function renderPokerTable(snap){
       html += `<div class="pe-action-bubble ${type}" style="left:${bx}%;top:${by}%">${snap.actionBubble.text}</div>`;
     }
   }
-  // Action menu for active seat — placed inward (toward center) to avoid overlap with neighbor seats
-  if(snap.actionMenu && snap.actionMenu.pos){
-    const aIdx = ordered.indexOf(snap.actionMenu.pos);
-    if(aIdx >= 0){
-      const ang = Math.PI/2 + (aIdx/n)*2*Math.PI;
-      const mRx = Rx - 14, mRy = Ry - 14;
-      const mx = 50 + mRx*Math.cos(ang);
-      const my = 50 + mRy*Math.sin(ang);
-      const labelOf = {fold:"F", limp:"L", check:"K", call:"C", bet:"B", raise:"R", jam:"J"};
-      html += `<div class="pe-seat-menu" style="left:${mx}%;top:${my}%" onclick="event.stopPropagation()">${snap.actionMenu.actions.map(a => `<button type="button" class="pe-sm-btn ${a}" title="${a}" onclick="peSaisieMenuAction('${a}')">${labelOf[a]||a[0].toUpperCase()}</button>`).join("")}</div>`;
-    }
-  }
+  /* Inline seat action menu (F L C R J) removed — actions taken from bottom panel only */
   html += `</div>`;
   return html;
 }
