@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Poker Tracker + Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/2.14.0/tf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #27ae60;
+            --bg: #ecf0f1;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #bdc3c7;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1a1a1a;
+                --card-bg: #2d2d2d;
+                --text: #ecf0f1;
+                --text-light: #95a5a6;
+                --border: #555555;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 430px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .header-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.15);
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .stat-box .value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .stat-box .label {
+            font-size: 10px;
+            opacity: 0.85;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 70px;
+            z-index: 99;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            flex: 0 0 auto;
+            padding: 10px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .content {
+            padding: 12px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+
+        .player-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary);
+        }
+
+        .player-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .player-stack {
+            text-align: right;
+        }
+
+        .stack-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:active {
+            opacity: 0.85;
+            transform: scale(0.96);
+        }
+
+        .btn-secondary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary:active {
+            opacity: 0.85;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .camera-section {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 300px;
+            display: block;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px dashed rgba(255,255,255,0.3);
+            pointer-events: none;
+        }
+
+        .detection-box {
+            position: absolute;
+            border: 2px solid #00ff00;
+            border-radius: 4px;
+            background: rgba(0,255,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff00;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+        }
+
+        .camera-controls button {
+            padding: 8px 12px;
+            background: var(--secondary);
+            color: white;
+            font-size: 12px;
+        }
+
+        .detected-cards {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card-badge {
+            background: var(--card-bg);
+            border: 2px solid var(--secondary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .confidence {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            max-width: 380px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
+            padding: 0;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            z-index: 500;
+            max-width: 430px;
+            margin: 0 auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            color: var(--text-light);
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px 12px;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 36px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .status-badge.recording {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+        }
+
+        .status-badge.ready {
+            background: rgba(39, 174, 96, 0.2);
+            color: var(--success);
+        }
+
+        .ranking {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 6px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .rank-num {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--secondary);
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .rank-info {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .rank-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .rank-stack {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .stat-card .label {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 430px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .bottom-nav {
+                width: 100vw;
+                left: 0;
+                transform: none;
+            }
+
+            #videoFeed {
+                height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>♠️ Poker Tracker<span class="status-badge ready" id="statusBadge">PRÊT</span></h1>
+            <div class="header-stats">
+                <div class="stat-box">
+                    <div class="value" id="playersCount">0</div>
+                    <div class="label">Joueurs</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="handsCount">0</div>
+                    <div class="label">Mains</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="timeElapsed">0m</div>
+                    <div class="label">Durée</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="dashboard">
+                <i class="fas fa-home"></i> Dashboard
+            </button>
+            <button class="tab-btn" data-tab="scanner">
+                <i class="fas fa-camera"></i> Scanner
+            </button>
+            <button class="tab-btn" data-tab="players">
+                <i class="fas fa-users"></i> Joueurs
+            </button>
+            <button class="tab-btn" data-tab="hands">
+                <i class="fas fa-cards-dealt"></i> Mains
+            </button>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="tab-content active">
+            <div class="content">
+                <div class="card">
+                    <button class="btn-primary" style="width: 100%; margin-bottom: 8px;" onclick="openAddPlayerModal()">
+                        <i class="fas fa-user-plus"></i> Ajouter joueur
+                    </button>
+                    <button class="btn-secondary" style="width: 100%;" onclick="switchTab('scanner')">
+                        <i class="fas fa-camera"></i> Scanner cartes
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 10px;">Top Joueurs</h3>
+                    <div id="topPlayers">
+                        <div class="empty-state">
+                            <i class="fas fa-trophy"></i>
+                            <p style="font-size: 12px;">Pas de joueurs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="font-size: 14px; margin-bottom: 8px;">Stats</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="value" id="totalChips">0</div>
+                            <div class="label">Chips total</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value" id="avgStack">0</div>
+                            <div class="label">Moyenne</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCANNER TAB -->
+        <div id="scanner" class="tab-content">
+            <div class="content">
+                <div class="camera-section">
+                    <video id="videoFeed" autoplay playsinline></video>
+                    <div class="camera-overlay"></div>
+                    <div id="detectionOverlay"></div>
+                </div>
+
+                <div class="camera-controls">
+                    <button id="startBtn" class="btn-primary" onclick="startCamera()">
+                        <i class="fas fa-play"></i> Démarrer
+                    </button>
+                    <button id="captureBtn" class="btn-secondary" style="display:none;" onclick="captureFrame()">
+                        <i class="fas fa-camera"></i> Capturer
+                    </button>
+                    <button id="stopBtn" class="btn-primary" style="display:none;" onclick="stopCamera()" style="background: #e74c3c;">
+                        <i class="fas fa-stop"></i> Arrêter
+                    </button>
+                </div>
+
+                <div id="detectionResults" class="card" style="display: none;">
+                    <h3 style="font-size: 14px; margin-bottom: 8px;">Cartes détectées</h3>
+                    <div class="detected-cards" id="detectedCards"></div>
+                    <button class="btn-primary" style="width: 100%; margin-top: 8px;" onclick="confirmDetection()">
+                        <i class="fas fa-check"></i> Valider
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAYERS TAB -->
+        <div id="players" class="tab-content">
+            <div class="content">
+                <button class="btn-primary" style="width: 100%; margin-bottom: 12px;" onclick="openAddPlayerModal()">
+                    <i class="fas fa-user-plus"></i> Nouveau joueur
+                </button>
+
+                <div id="playersList">
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p style="font-size: 12px;">Pas de joueurs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HANDS TAB -->
+        <div id="hands" class="tab-content">
+            <div class="content">
+                <button class="btn-secondary" style="width: 100%; margin-bottom: 12px;" onclick="openNewHandModal()">
+                    <i class="fas fa-plus"></i> Nouvelle main
+                </button>
+
+                <div id="handsList">
+                    <div class="empty-state">
+                        <i class="fas fa-cards-dealt"></i>
+                        <p style="font-size: 12px;">Pas de mains</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="addPlayerModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('addPlayerModal')">×</button>
+            <div class="modal-header">Ajouter un joueur</div>
+            <div class="form-group">
+                <label>Nom</label>
+                <input type="text" id="playerName" placeholder="Alice">
+            </div>
+            <div class="form-group">
+                <label>Stack initial</label>
+                <input type="number" id="playerStack" placeholder="5000">
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="addPlayer()">Ajouter</button>
+        </div>
+    </div>
+
+    <div id="newHandModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('newHandModal')">×</button>
+            <div class="modal-header">Nouvelle main</div>
+            <div class="form-group">
+                <label>Numéro</label>
+                <input type="number" id="handNumber" placeholder="1">
+            </div>
+            <div class="form-group">
+                <label>Gagnant</label>
+                <select id="handWinner"></select>
+            </div>
+            <div class="form-group">
+                <label>Pot (chips)</label>
+                <input type="number" id="handPot" placeholder="0">
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="addHand()">Enregistrer</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== DATABASE ==========
+        const DB = {
+            tournament: {
+                name: 'Tournoi',
+                startTime: Date.now(),
+                startingStack: 5000
+            },
+            players: [],
+            hands: [],
+            detectedCards: []
+        };
+
+        function loadDB() {
+            const stored = localStorage.getItem('pokerTrackerPro');
+            if (stored) Object.assign(DB, JSON.parse(stored));
+        }
+
+        function saveDB() {
+            localStorage.setItem('pokerTrackerPro', JSON.stringify(DB));
+        }
+
+        // ========== CAMERA & DETECTION ==========
+        let videoStream = null;
+        let detectionRunning = false;
+
+        async function startCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                });
+
+                document.getElementById('videoFeed').srcObject = videoStream;
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('captureBtn').style.display = 'inline-block';
+                document.getElementById('stopBtn').style.display = 'inline-block';
+                document.getElementById('statusBadge').textContent = 'CAMÉRA ACTIVE';
+                document.getElementById('statusBadge').className = 'status-badge recording';
+                
+                detectionRunning = true;
+                startDetection();
+            } catch (err) {
+                alert('Erreur: ' + err.message);
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(t => t.stop());
+                videoStream = null;
+            }
+            detectionRunning = false;
+            document.getElementById('videoFeed').srcObject = null;
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('captureBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('statusBadge').textContent = 'PRÊT';
+            document.getElementById('statusBadge').className = 'status-badge ready';
+        }
+
+        function captureFrame() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const video = document.getElementById('videoFeed');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            // Simulate card detection
+            detectCards(canvas);
+        }
+
+        function detectCards(canvas) {
+            // Simulated card detection (in production, use TensorFlow model)
+            const suits = ['♠', '♥', '♦', '♣'];
+            const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            
+            const detectedCards = [];
+            const numCards = Math.floor(Math.random() * 3) + 2; // 2-4 cards
+            
+            for (let i = 0; i < numCards; i++) {
+                const suit = suits[Math.floor(Math.random() * suits.length)];
+                const rank = ranks[Math.floor(Math.random() * ranks.length)];
+                const confidence = (85 + Math.random() * 15).toFixed(1);
+                detectedCards.push({ suit, rank, confidence });
+            }
+
+            DB.detectedCards = detectedCards;
+            displayDetectedCards();
+            document.getElementById('detectionResults').style.display = 'block';
+        }
+
+        function displayDetectedCards() {
+            const html = DB.detectedCards.map((card, idx) => `
+                <div class="card-badge">
+                    ${card.rank}${card.suit}
+                    <div class="confidence">${card.confidence}%</div>
+                </div>
+            `).join('');
+            document.getElementById('detectedCards').innerHTML = html;
+        }
+
+        function confirmDetection() {
+            alert('Cartes confirmées: ' + DB.detectedCards.map(c => c.rank + c.suit).join(', '));
+            document.getElementById('detectionResults').style.display = 'none';
+            stopCamera();
+        }
+
+        async function startDetection() {
+            if (!detectionRunning) return;
+            
+            // Simulate continuous detection at 2 FPS
+            setTimeout(startDetection, 500);
+        }
+
+        // ========== PLAYERS ==========
+        function addPlayer() {
+            const name = document.getElementById('playerName').value.trim();
+            const stack = parseInt(document.getElementById('playerStack').value) || DB.tournament.startingStack;
+
+            if (!name) { alert('Nom requis'); return; }
+
+            DB.players.push({
+                id: Date.now(),
+                name,
+                stack,
+                initialStack: stack,
+                eliminated: false,
+                handsPlayed: 0,
+                handsWon: 0
+            });
+
+            saveDB();
+            renderPlayers();
+            updateDashboard();
+            closeModal('addPlayerModal');
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerStack').value = '';
+        }
+
+        function renderPlayers() {
+            const active = DB.players.filter(p => !p.eliminated).sort((a, b) => b.stack - a.stack);
+            
+            if (active.length === 0) {
+                document.getElementById('playersList').innerHTML = `<div class="empty-state"><i class="fas fa-users"></i><p style="font-size: 12px;">Pas de joueurs</p></div>`;
+                return;
+            }
+
+            document.getElementById('playersList').innerHTML = active.map(p => `
+                <div class="player-card">
+                    <div>
+                        <div class="player-name">${p.name}</div>
+                        <div style="font-size: 11px; color: var(--text-light);">Mains: ${p.handsPlayed}</div>
+                    </div>
+                    <div class="player-stack">
+                        <div class="stack-value">${p.stack.toLocaleString()}</div>
+                    </div>
+                    <button class="btn-small" style="margin-left: 8px;" onclick="eliminatePlayer(${p.id})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function eliminatePlayer(id) {
+            if (confirm('Éliminer ce joueur?')) {
+                const p = DB.players.find(x => x.id == id);
+                if (p) p.eliminated = true;
+                saveDB();
+                renderPlayers();
+                updateDashboard();
+            }
+        }
+
+        // ========== HANDS ==========
+        function addHand() {
+            const number = parseInt(document.getElementById('handNumber').value);
+            const winner = document.getElementById('handWinner').value;
+            const pot = parseInt(document.getElementById('handPot').value) || 0;
+
+            if (!number || !winner) { alert('Remplissez tous les champs'); return; }
+
+            DB.hands.push({
+                id: Date.now(),
+                number,
+                winner,
+                pot,
+                timestamp: Date.now()
+            });
+
+            const p = DB.players.find(x => x.name === winner);
+            if (p) {
+                p.handsWon++;
+                p.handsPlayed++;
+                p.stack += pot;
+            }
+
+            saveDB();
+            renderHands();
+            updateDashboard();
+            closeModal('newHandModal');
+            document.getElementById('handNumber').value = '';
+        }
+
+        function renderHands() {
+            const sorted = [...DB.hands].sort((a, b) => b.number - a.number);
+            
+            if (sorted.length === 0) {
+                document.getElementById('handsList').innerHTML = `<div class="empty-state"><i class="fas fa-cards-dealt"></i><p style="font-size: 12px;">Pas de mains</p></div>`;
+                return;
+            }
+
+            document.getElementById('handsList').innerHTML = sorted.map(h => `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                        <span><strong>Main #${h.number}</strong></span>
+                        <span>${h.pot.toLocaleString()} 💰</span>
+                    </div>
+                    <div style="margin-top: 4px; font-size: 12px; color: var(--text-light);">Gagnant: <strong>${h.winner}</strong></div>
+                </div>
+            `).join('');
+        }
+
+        function openNewHandModal() {
+            const players = DB.players.filter(p => !p.eliminated).map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+            document.getElementById('handWinner').innerHTML = `<option value="">Sélectionner...</option>${players}`;
+            openModal('newHandModal');
+        }
+
+        // ========== UI ==========
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
+            document.querySelector(`[data-tab="${name}"]`).classList.add('active');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function openAddPlayerModal() {
+            openModal('addPlayerModal');
+        }
+
+        function updateDashboard() {
+            const active = DB.players.filter(p => !p.eliminated);
+            const top = [...active].sort((a, b) => b.stack - a.stack).slice(0, 3);
+
+            document.getElementById('playersCount').textContent = active.length;
+            document.getElementById('handsCount').textContent = DB.hands.length;
+
+            const elapsed = Math.floor((Date.now() - DB.tournament.startTime) / 60000);
+            document.getElementById('timeElapsed').textContent = `${elapsed}m`;
+
+            if (top.length > 0) {
+                document.getElementById('topPlayers').innerHTML = top.map((p, i) => `
+                    <div class="ranking">
+                        <div class="rank-num">${i + 1}</div>
+                        <div class="rank-info">
+                            <div class="rank-name">${p.name}</div>
+                            <div class="rank-stack">${p.stack.toLocaleString()} chips</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const total = active.reduce((s, p) => s + p.stack, 0);
+            const avg = active.length ? Math.floor(total / active.length) : 0;
+            document.getElementById('totalChips').textContent = total.toLocaleString();
+            document.getElementById('avgStack').textContent = avg.toLocaleString();
+        }
+
+        // ========== INIT ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDB();
+            renderPlayers();
+            renderHands();
+            updateDashboard();
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', e => {
+                    if (e.target === modal) closeModal(modal.id);
+                });
+            });
+
+            setInterval(() => {
+                const elapsed = Math.floor((Date.now() - DB.tournament.startTime) / 60000);
+                document.getElementById('timeElapsed').textContent = `${elapsed}m`;
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
