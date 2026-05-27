@@ -2893,7 +2893,7 @@ let _pendingShowdown = [];
 
 function buildHandForm(h, t, isEdit){
   const bb = getBB(t);
-  const unit = h.unit || h.stackUnit || (bb ? "bb" : "chips");
+  const unit = h.unit || h.stackUnit || "chips";
   const positions = getPositionsForHand();
   const hPos = h.position || (positions.includes("BTN") ? "BTN" : positions[positions.length-3]);
   return `
@@ -2958,7 +2958,7 @@ function buildHandForm(h, t, isEdit){
 
 function initHandForm(h, t){
   const bb = getBB(t);
-  _handUnit = h.unit || h.stackUnit || (bb ? "bb" : "chips");
+  _handUnit = h.unit || h.stackUnit || "chips";
   _heroPos = h.position || "BTN";
   pkrResetAll();
   pkrEnsure("pkrHero",  2, h.cards || "");
@@ -4425,12 +4425,12 @@ function peBuildLiveSnapshot(curStreet){
   // Action menu choices per street
   let menuActions = null;
   if(curStreet !== "showdown" && activePos){
-    menuActions = (curStreet === "preflop") ? ["fold","limp","call","raise","jam"] : ["fold","check","call","bet","raise"];
+    menuActions = (curStreet === "preflop") ? ["fold","limp","call","raise"] : ["fold","check","call","bet","raise"];
   }
   return {
     positions, heroPos, dealerPos: "BTN", activePos,
     folded, bets: lastBets, stacks: null,
-    heroCards: pkrValue("pkrHero"), oppCards: {}, showOppBacks: true,
+    heroCards: pkrValue("pkrHero"), oppCards: {}, showOppBacks: false,
     board, pot, unit: _handUnit,
     street: curStreet,
     actionBubble: bubble,
@@ -4842,7 +4842,7 @@ function peRenderActionPanel(st){
   }
   const isHero = cur === _heroPos;
   const raisePending = _pendingRaise[st];
-  const acts = (st === "preflop") ? ["fold","limp","call","raise","jam"] : ["fold","check","call","bet","raise"];
+  const acts = (st === "preflop") ? ["fold","limp","call","raise"] : ["fold","check","call","bet","raise"];
   const unitSuf = _handUnit === "chips" ? "" : "bb";
   const ph = _handUnit === "bb" ? "2.5" : "5000";
   // History summary (chips at top)
@@ -4855,7 +4855,7 @@ function peRenderActionPanel(st){
   const btns = acts.map(a => {
     if(raisePending && (a === "raise" || a === "bet")){
       return `<div class="pe-act-inline-raise">
-        <input id="peAmtInput_${st}" type="number" inputmode="decimal" step="any" placeholder="${ph}" oninput="peAmtChange('${st}')" autofocus>
+        <input id="peAmtInput_${st}" type="number" inputmode="decimal" step="any" placeholder="${ph}" oninput="peAmtChange('${st}')" onblur="setTimeout(()=>{const inp=document.getElementById('peAmtInput_${st}');if(inp&&inp.value)peConfirmRaise('${st}');},180)" autofocus>
         <button type="button" class="pe-act-confirm" onclick="peConfirmRaise('${st}')">OK</button>
       </div>`;
     }
@@ -4866,7 +4866,7 @@ function peRenderActionPanel(st){
   let quickRow = "";
   if(raisePending){
     const bb = getBB(state.tournaments.find(x=>x.id===state.liveId));
-    const quick = (_handUnit==="bb") ? [["2.5x","2.5"],["3x","3"],["4x","4"],["Jam","jam"]] : (bb ? [["2.5bb",String(bb*2.5)],["3bb",String(bb*3)],["Jam","jam"]] : [["Jam","jam"]]);
+    const quick = (_handUnit==="bb") ? [["2.5x","2.5"],["3x","3"],["4x","4"]] : (bb ? [["2.5bb",String(bb*2.5)],["3bb",String(bb*3)]] : []);
     quickRow = `<div class="pe-quick-row">${quick.map(([l,v])=>`<button type="button" class="pe-quick" onclick="peQuickAmt('${st}','${v}')">${l}</button>`).join("")}</div>`;
   }
   return `${summary}
@@ -4967,8 +4967,10 @@ function peAmtChange(st){
   }
 }
 function peConfirmRaise(st){
+  if(!_pendingRaise[st]) return;
   const inp = document.getElementById("peAmtInput_"+st);
   const amt = inp ? inp.value : "";
+  if(!amt) return;
   const action = (st === "preflop" || (_pendingActions[st]||[]).some(a=>["raise","bet","3-bet","4-bet"].includes(a.action))) ? "raise" : "bet";
   _pendingActions[st].push({position: _curActionPos[st], action, amt});
   _pendingRaise[st] = false;
