@@ -2975,8 +2975,6 @@ function initHandForm(h, t){
   _pendingShowdown = h.showdown || [];
   _peCurStreet = "preflop";
   _pePickerOpen = null;
-  // Auto-open picker if no hero cards yet (nudge user to fill them)
-  if(!(h.cards || "")) _pePickerOpen = "hero";
   _curActionPos = {preflop:"", flop:"", turn:"", river:""};
   peRefreshSaisie();
 }
