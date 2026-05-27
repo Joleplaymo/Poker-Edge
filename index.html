@@ -5361,43 +5361,82 @@ function camLoadScript(src){
     document.head.appendChild(s);
   });
 }
-function camEnsureOpenCV(){
+function camEnsureOpenCV(progress){
   if(_cam.cvReady) return _cam.cvReady;
   _cam.cvReady = new Promise((resolve, reject)=>{
     if(window.cv && window.cv.Mat) return resolve(window.cv);
-    window.Module = window.Module || {};
-    const prevReady = window.Module.onRuntimeInitialized;
-    window.Module.onRuntimeInitialized = ()=>{
-      if(prevReady) try{prevReady();}catch(e){}
-      resolve(window.cv);
+    const url = "https://docs.opencv.org/4.10.0/opencv.js";
+    const existing = document.querySelector(`script[src="${url}"]`);
+    let timer;
+    const finish = ()=>{
+      clearTimeout(timer);
+      if(window.cv && window.cv.Mat){ resolve(window.cv); return true; }
+      return false;
     };
-    camLoadScript("https://docs.opencv.org/4.10.0/opencv.js").then(()=>{
-      // Some builds expose cv synchronously
-      if(window.cv && window.cv.Mat) resolve(window.cv);
-      else if(window.cv && typeof window.cv.then === "function"){
-        window.cv.then(c=>{ window.cv = c; resolve(c); });
+    const hookReady = ()=>{
+      // OpenCV exposes cv as Promise OR object with onRuntimeInitialized
+      if(typeof window.cv === "undefined"){
+        // poll a bit — runtime not yet attached
+        let tries = 0;
+        const id = setInterval(()=>{
+          tries++;
+          if(typeof window.cv !== "undefined"){ clearInterval(id); hookReady(); }
+          else if(tries > 40){ clearInterval(id); reject(new Error("cv non défini après chargement script")); }
+        }, 100);
+        return;
       }
-      // else: wait for onRuntimeInitialized
-    }).catch(reject);
-    setTimeout(()=>{ if(window.cv && window.cv.Mat) resolve(window.cv); }, 8000);
+      if(window.cv && window.cv.Mat) return resolve(window.cv);
+      // Promise-style (modern build)
+      if(typeof window.cv.then === "function"){
+        if(progress) progress("Initialisation OpenCV...");
+        window.cv.then(c => { window.cv = c; finish(); }).catch(reject);
+        return;
+      }
+      // Callback-style (older build)
+      if(progress) progress("Initialisation OpenCV...");
+      window.cv.onRuntimeInitialized = ()=> finish();
+    };
+    if(existing){
+      if(window.cv && window.cv.Mat) return resolve(window.cv);
+      hookReady();
+    } else {
+      if(progress) progress("Téléchargement OpenCV.js (~9 MB)...");
+      const s = document.createElement("script");
+      s.src = url;
+      s.async = true;
+      s.onload = hookReady;
+      s.onerror = ()=> reject(new Error("Téléchargement OpenCV.js échoué (réseau ou CSP)"));
+      document.head.appendChild(s);
+    }
+    timer = setTimeout(()=>{ if(!(window.cv && window.cv.Mat)) reject(new Error("OpenCV.js timeout 45s")); }, 45000);
   });
+  _cam.cvReady.catch(()=>{ _cam.cvReady = null; });
   return _cam.cvReady;
 }
-function camEnsureTesseract(){
+function camEnsureTesseract(progress){
   if(_cam.ocrReady) return _cam.ocrReady;
-  _cam.ocrReady = camLoadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js")
+  if(progress) progress("Téléchargement Tesseract.js...");
+  _cam.ocrReady = camLoadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js")
     .then(async ()=>{
+      if(progress) progress("Téléchargement modèle OCR (~3 MB)...");
       const w = await Tesseract.createWorker("eng", 1, {
-        // keep silent
+        logger: m => {
+          if(progress && m.status){
+            const pct = m.progress != null ? Math.round(m.progress*100) : null;
+            progress(`Tesseract: ${m.status}${pct!=null?` ${pct}%`:""}`);
+          }
+        }
       });
+      if(progress) progress("Configuration OCR...");
       await w.setParameters({
         tessedit_char_whitelist: "AKQJT98765432",
-        tessedit_pageseg_mode: "10", // single char
+        tessedit_pageseg_mode: "10",
         classify_bln_numeric_mode: "0"
       });
       _cam.ocrWorker = w;
       return w;
-    });
+    })
+    .catch(e => { _cam.ocrReady = null; throw e; });
   return _cam.ocrReady;
 }
 
@@ -5457,17 +5496,22 @@ async function camScanCapture(){
   const btn = document.getElementById("camCaptureBtn");
   if(!video.videoWidth){ camToast("Vidéo pas prête"); return; }
   btn.disabled = true;
-  camStatus(`<div class="cam-spinner"></div>Chargement libs (première fois ~5s)...`);
+  const setProgress = (msg)=> camStatus(`<div class="cam-spinner"></div>${msg}`);
+  setProgress("Préparation...");
   // Snap frame
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
   try{
-    await Promise.all([camEnsureOpenCV(), camEnsureTesseract()]);
+    await Promise.all([
+      camEnsureOpenCV(setProgress),
+      camEnsureTesseract(setProgress)
+    ]);
   }catch(e){
+    console.error("cam libs load fail", e);
     camStatus("");
     btn.disabled = false;
-    alert("Échec chargement bibliothèques: " + e.message);
+    alert("Échec chargement bibliothèques: " + (e && e.message ? e.message : e) + "\n\nVérifie ta connexion internet puis réessaye.");
     return;
   }
   camStatus(`<div class="cam-spinner"></div>Détection cartes...`);
