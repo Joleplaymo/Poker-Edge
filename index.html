@@ -5335,9 +5335,18 @@ if(!window.navigator.standalone){
 const _cam = {
   active:false, stream:null, targetPickerId:null, detected:[],
   ocrReady:null, ocrWorker:null,
-  liveRaf:null, lastDetect:0, lastBoxes:[], stableCount:0, stableTarget:8,
-  freezeLive:false
+  liveRaf:null, lastDetect:0, lastBoxes:[], stableCount:0, stableTarget:5,
+  freezeLive:false,
+  // ML model state
+  ortReady:null, ortSession:null, ortLabels:null, ortInputName:null,
+  ortMode:null /* "ml" | "fallback" */
 };
+const CAM_MODEL_URL = "models/cards/yolov8m_synthetic.int8.onnx";
+const CAM_LABELS_URL = "models/cards/labels.json";
+const CAM_MODEL_INPUT_SIZE = 640;
+const CAM_CONF_THRESHOLD = 0.45;
+const CAM_NMS_IOU = 0.45;
+const CAM_INFERENCE_FPS = 2.5; /* throttle live inference */
 const CAM_RANKS = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
 const CAM_SUITS = ["s","h","d","c"];
 const CAM_SUIT_CHAR = {s:"♠",h:"♥",d:"♦",c:"♣"};
@@ -5373,6 +5382,34 @@ function camLoadScript(src){
     document.head.appendChild(s);
   });
 }
+async function camEnsureOnnx(progress){
+  if(_cam.ortReady) return _cam.ortReady;
+  _cam.ortReady = (async ()=>{
+    if(progress) progress("Chargement runtime ONNX...");
+    await camLoadScript("https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js");
+    if(!window.ort) throw new Error("onnxruntime-web non chargé");
+    // Configure wasm paths to CDN
+    window.ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+    window.ort.env.wasm.numThreads = 1; /* iOS Safari = single-thread (no SAB) */
+    if(progress) progress("Chargement modèle cartes (~26 MB)...");
+    const [labelsRes, session] = await Promise.all([
+      fetch(CAM_LABELS_URL).then(r => r.ok ? r.json() : Promise.reject(new Error("labels.json introuvable"))),
+      window.ort.InferenceSession.create(CAM_MODEL_URL, {
+        executionProviders: ["wasm"],
+        graphOptimizationLevel: "all"
+      })
+    ]);
+    _cam.ortSession = session;
+    _cam.ortLabels = labelsRes;
+    _cam.ortInputName = session.inputNames[0];
+    _cam.ortMode = "ml";
+    if(progress) progress("");
+    return session;
+  })();
+  _cam.ortReady.catch(()=>{ _cam.ortReady = null; _cam.ortMode = "fallback"; });
+  return _cam.ortReady;
+}
+
 function camEnsureTesseract(progress){
   if(_cam.ocrReady) return _cam.ocrReady;
   if(progress) progress("Téléchargement Tesseract.js...");
@@ -5421,9 +5458,17 @@ async function camScanOpen(pickerId){
   const freeSlots = p.slots.filter(s=>!s).length;
   document.getElementById("camTitle").textContent = `Scanner — ${freeSlots} emplacement${freeSlots>1?"s":""} libre${freeSlots>1?"s":""}`;
   document.getElementById("camGuideText").textContent = `Posez ${freeSlots>1?"les cartes côte à côte":"la carte"} sur fond sombre uni`;
-  camSetStability("Recherche cartes...", "");
-  // Preload Tesseract in background (doesn't block UI)
-  camEnsureTesseract(msg => camStatus(msg ? `<div class="cam-spinner"></div>${msg}` : "")).then(()=>camStatus("")).catch(()=>{});
+  camSetStability("Chargement modèle...", "");
+  // Preload ONNX model (blocking-ish — needed for ML detection)
+  camEnsureOnnx(msg => camStatus(msg ? `<div class="cam-spinner"></div>${msg}` : ""))
+    .then(()=>{ camStatus(""); camSetStability("Recherche cartes...", ""); })
+    .catch(err => {
+      console.warn("ONNX init failed, falling back to brightness detector", err);
+      _cam.ortMode = "fallback";
+      camStatus("");
+      camToast("Modèle ML indisponible — détection simple activée");
+      camSetStability("Recherche cartes (mode simple)...", "");
+    });
   try{
     const constraints = { video: { facingMode: { ideal: "environment" }, width:{ideal:1280}, height:{ideal:720} }, audio:false };
     _cam.stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -5474,11 +5519,13 @@ function camSetStability(text, cls){
   el.classList.toggle("locking", cls === "locking");
 }
 
-/* ---- Live detection loop (pure JS, no OpenCV) ---- */
-function camLiveLoop(){
+/* ---- Live detection loop ---- */
+let _camInferring = false;
+async function camLiveLoop(){
   if(!_cam.active || _cam.freezeLive){ _cam.liveRaf = null; return; }
   const now = performance.now();
-  if(now - _cam.lastDetect < 180){
+  const minInterval = _cam.ortMode === "ml" ? (1000 / CAM_INFERENCE_FPS) : 180;
+  if(now - _cam.lastDetect < minInterval || _camInferring){
     _cam.liveRaf = requestAnimationFrame(camLiveLoop);
     return;
   }
@@ -5489,7 +5536,15 @@ function camLiveLoop(){
     _cam.liveRaf = requestAnimationFrame(camLiveLoop);
     return;
   }
-  const boxes = camDetectCards(video, 240);
+  let boxes;
+  if(_cam.ortMode === "ml" && _cam.ortSession){
+    _camInferring = true;
+    try { boxes = await camDetectCardsML(video); }
+    catch(e){ console.warn("ML inference err", e); boxes = []; }
+    _camInferring = false;
+  } else {
+    boxes = camDetectCards(video, 240);
+  }
   camDrawOverlay(overlay, video, boxes);
   // Stability tracking
   const expected = camFreeSlotsCount();
@@ -5623,6 +5678,103 @@ function camDetectCards(video, downW){
   }));
 }
 
+/* ML-based YOLOv8 inference. Returns boxes with rank+suit already classified. */
+async function camDetectCardsML(video){
+  const ort = window.ort;
+  const sess = _cam.ortSession;
+  const S = CAM_MODEL_INPUT_SIZE;
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if(!vw) return [];
+  // Letterbox into S×S to preserve aspect
+  const scale = Math.min(S / vw, S / vh);
+  const newW = Math.round(vw * scale);
+  const newH = Math.round(vh * scale);
+  const offX = Math.floor((S - newW) / 2);
+  const offY = Math.floor((S - newH) / 2);
+  const buf = camDetectCardsML._buf || (camDetectCardsML._buf = document.createElement("canvas"));
+  buf.width = S; buf.height = S;
+  const ctx = buf.getContext("2d", { willReadFrequently: true });
+  ctx.fillStyle = "#727272"; /* gray padding (YOLO standard) */
+  ctx.fillRect(0, 0, S, S);
+  ctx.drawImage(video, 0, 0, vw, vh, offX, offY, newW, newH);
+  const imgData = ctx.getImageData(0, 0, S, S);
+  // Build NCHW Float32 tensor [1, 3, S, S], normalize 0..1
+  const tensor = new Float32Array(3 * S * S);
+  const px = imgData.data;
+  const plane = S * S;
+  for(let i = 0, p = 0; i < px.length; i += 4, p++){
+    tensor[p]             = px[i]     / 255.0;
+    tensor[p + plane]     = px[i + 1] / 255.0;
+    tensor[p + 2 * plane] = px[i + 2] / 255.0;
+  }
+  const input = new ort.Tensor("float32", tensor, [1, 3, S, S]);
+  const feeds = {}; feeds[_cam.ortInputName] = input;
+  const outputs = await sess.run(feeds);
+  const out = outputs[sess.outputNames[0]];
+  // YOLOv8 ONNX output: shape [1, 4+nc, 8400] (here nc=52 so 56 channels)
+  const [_, channels, numAnchors] = out.dims;
+  const data = out.data;
+  const numClasses = channels - 4;
+  const detections = [];
+  for(let i = 0; i < numAnchors; i++){
+    let bestScore = 0, bestCls = -1;
+    for(let c = 0; c < numClasses; c++){
+      const score = data[(4 + c) * numAnchors + i];
+      if(score > bestScore){ bestScore = score; bestCls = c; }
+    }
+    if(bestScore < CAM_CONF_THRESHOLD) continue;
+    const cx = data[0 * numAnchors + i];
+    const cy = data[1 * numAnchors + i];
+    const w  = data[2 * numAnchors + i];
+    const h  = data[3 * numAnchors + i];
+    // Convert from letterbox space back to video coords
+    const x0 = (cx - w/2 - offX) / scale;
+    const y0 = (cy - h/2 - offY) / scale;
+    const bw = w / scale, bh = h / scale;
+    detections.push({
+      x: Math.max(0, x0), y: Math.max(0, y0),
+      w: Math.min(vw, bw), h: Math.min(vh, bh),
+      score: bestScore, classId: bestCls,
+      label: _cam.ortLabels[String(bestCls)]
+    });
+  }
+  // NMS
+  detections.sort((a, b) => b.score - a.score);
+  const kept = [];
+  for(const det of detections){
+    let keep = true;
+    for(const k of kept){
+      const iou = camIoU(det, k);
+      if(iou > CAM_NMS_IOU){ keep = false; break; }
+    }
+    if(keep) kept.push(det);
+    if(kept.length > 10) break;
+  }
+  // Dedupe by class label (keep highest score per unique card)
+  const seen = new Set();
+  const uniq = [];
+  for(const k of kept){
+    if(seen.has(k.label)) continue;
+    seen.add(k.label);
+    uniq.push(k);
+  }
+  // Cap to free slots
+  const maxN = Math.max(1, Math.min(camFreeSlotsCount(), 5));
+  // Sort left-to-right
+  uniq.sort((a, b) => a.x - b.x);
+  return uniq.slice(0, maxN);
+}
+
+function camIoU(a, b){
+  const ax2 = a.x + a.w, ay2 = a.y + a.h;
+  const bx2 = b.x + b.w, by2 = b.y + b.h;
+  const ix = Math.max(0, Math.min(ax2, bx2) - Math.max(a.x, b.x));
+  const iy = Math.max(0, Math.min(ay2, by2) - Math.max(a.y, b.y));
+  const inter = ix * iy;
+  const uni = a.w * a.h + b.w * b.h - inter;
+  return uni > 0 ? inter / uni : 0;
+}
+
 function camDrawOverlay(overlay, video, boxes){
   const vw = video.videoWidth, vh = video.videoHeight;
   if(!vw) return;
@@ -5661,7 +5813,27 @@ function camDrawOverlay(overlay, video, boxes){
     ctx.moveTo(x+tick, y+h); ctx.lineTo(x, y+h); ctx.lineTo(x, y+h-tick);
     ctx.stroke();
     ctx.lineWidth = 3;
+    // Class label badge (ML mode)
+    if(b.label){
+      const lbl = camNormalizeLabel(b.label);
+      const isRed = lbl.endsWith("h") || lbl.endsWith("d");
+      const txt = `${lbl.slice(0,-1)}${({h:"♥",d:"♦",c:"♣",s:"♠"})[lbl.slice(-1)]||""}`;
+      ctx.font = "bold 16px system-ui, sans-serif";
+      const tw = ctx.measureText(txt).width + 12;
+      const th2 = 22;
+      ctx.fillStyle = "rgba(0,0,0,0.85)";
+      ctx.fillRect(x, Math.max(0, y - th2), tw, th2);
+      ctx.fillStyle = isRed ? "#ff6b6b" : "#fff";
+      ctx.fillText(txt, x + 6, Math.max(2, y - th2 + 4));
+    }
   });
+}
+
+/* Convert model label like "10s" → "Ts" (T for ten, matches app convention) */
+function camNormalizeLabel(lbl){
+  if(!lbl) return lbl;
+  if(lbl.startsWith("10")) return "T" + lbl.slice(2);
+  return lbl;
 }
 
 /* ---- Lock + capture pipeline ---- */
@@ -5672,22 +5844,57 @@ async function camLockAndProcess(boxes){
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-  // Ensure Tesseract loaded
-  try { await camEnsureTesseract(msg => camStatus(`<div class="cam-spinner"></div>${msg}`)); }
-  catch(e){
-    camStatus("");
-    alert("OCR indisponible: " + e.message + "\n\nTu pourras saisir les cartes manuellement.");
-    _cam.ocrWorker = null;
+  const useML = _cam.ortMode === "ml";
+  // Only load Tesseract for fallback (brightness) mode
+  if(!useML){
+    try { await camEnsureTesseract(msg => camStatus(`<div class="cam-spinner"></div>${msg}`)); }
+    catch(e){
+      camStatus("");
+      alert("OCR indisponible: " + e.message + "\n\nTu pourras saisir les cartes manuellement.");
+      _cam.ocrWorker = null;
+    }
   }
   const results = [];
   for(let i=0; i<boxes.length; i++){
     camStatus(`<div class="cam-spinner"></div>Carte ${i+1}/${boxes.length}...`);
-    const card = await camProcessCard(canvas, boxes[i]);
+    let card;
+    if(useML && boxes[i].label){
+      card = camProcessCardML(canvas, boxes[i]);
+    } else {
+      card = await camProcessCard(canvas, boxes[i]);
+    }
     results.push(card);
   }
   camStatus("");
   _cam.detected = results;
   camShowValidation();
+}
+
+/* ML-mode per-card: rank+suit already known from classifier, just generate preview */
+function camProcessCardML(srcCanvas, box){
+  const pad = Math.round(Math.min(box.w, box.h) * 0.02);
+  const x = Math.max(0, box.x + pad);
+  const y = Math.max(0, box.y + pad);
+  const w = Math.min(srcCanvas.width - x, box.w - pad*2);
+  const h = Math.min(srcCanvas.height - y, box.h - pad*2);
+  const thumb = document.createElement("canvas");
+  const targetH = 140;
+  const ratio = w / h;
+  let tw, th;
+  if(ratio < 1){ th = targetH; tw = Math.round(targetH * ratio); }
+  else { tw = 140; th = Math.round(140 / ratio); }
+  thumb.width = tw; thumb.height = th;
+  thumb.getContext("2d").drawImage(srcCanvas, x, y, w, h, 0, 0, tw, th);
+  const preview = thumb.toDataURL("image/jpeg", 0.7);
+  const lbl = camNormalizeLabel(box.label); /* e.g. "Ah", "Ts" */
+  const rank = lbl.slice(0, -1);
+  const suit = lbl.slice(-1);
+  const color = (suit === "h" || suit === "d") ? "red" : "black";
+  return {
+    rank, suit, color,
+    conf: Math.round((box.score || 0) * 100),
+    preview
+  };
 }
 
 /* Manual capture button — overrides auto-snap (uses current boxes or full frame) */
