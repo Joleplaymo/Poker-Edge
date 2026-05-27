@@ -267,7 +267,44 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .s-btn.red.active{color:var(--on-gold)}
 .r-btn:disabled,.s-btn:disabled{opacity:0.22;cursor:not-allowed}
 .picker-clear{background:none;border:none;color:var(--txt-mute);font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:inherit}
+.picker-scan{background:rgba(212,175,55,0.15);border:1px solid var(--gold-soft);color:var(--gold);padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;font-family:inherit;letter-spacing:0.02em}
+.picker-scan:active{transform:scale(0.96);background:rgba(212,175,55,0.28)}
 .picker-hint{font-size:11px;color:var(--txt-mute);text-align:center;margin-top:8px;font-style:italic}
+/* Camera scan modal */
+.cam-modal{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
+.cam-modal.open{display:flex}
+.cam-header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:rgba(0,0,0,0.7);color:#fff;font-size:14px;font-weight:600;letter-spacing:0.04em}
+.cam-header .cam-close{background:none;border:none;color:#fff;font-size:28px;cursor:pointer;font-family:inherit;line-height:1;padding:0 4px}
+.cam-stage{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
+#camVideo{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
+#camCanvas{display:none}
+.cam-guide{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.cam-guide-frame{width:80%;max-width:380px;aspect-ratio:1.6;border:2px dashed rgba(212,175,55,0.85);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.35)}
+.cam-guide-text{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;font-size:13px;letter-spacing:0.04em;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
+.cam-controls{flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:18px;padding:18px;background:rgba(0,0,0,0.8)}
+.cam-capture-btn{width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid var(--gold);cursor:pointer;font-size:30px;display:flex;align-items:center;justify-content:center;padding:0}
+.cam-capture-btn:active{transform:scale(0.93)}
+.cam-capture-btn:disabled{opacity:0.4;cursor:wait}
+.cam-status{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.85);color:#fff;padding:18px 26px;border-radius:14px;font-size:14px;text-align:center;max-width:280px;display:none;z-index:5}
+.cam-status.show{display:block}
+.cam-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:camspin 0.9s linear infinite;margin:0 auto 10px}
+@keyframes camspin{to{transform:rotate(360deg)}}
+/* Validation modal */
+.cam-valid{flex:1;overflow-y:auto;padding:16px;background:var(--bg);color:var(--txt);display:none}
+.cam-valid.open{display:block}
+.cam-valid h3{margin:0 0 14px;font-size:15px;color:var(--gold);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-align:center}
+.cam-valid-grid{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:18px}
+.cam-valid-card{background:var(--bg-3);border:1px solid var(--line-2);border-radius:10px;padding:10px;width:140px;text-align:center}
+.cam-valid-card img{width:100%;height:auto;border-radius:6px;display:block;margin-bottom:8px}
+.cam-valid-card .cvc-pick{display:flex;gap:4px;justify-content:center;margin-bottom:4px}
+.cam-valid-card select{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:5px;font-family:inherit;font-size:13px;font-weight:600}
+.cam-valid-card select.s-red{color:var(--red)}
+.cam-valid-card .conf{font-size:10px;color:var(--txt-mute);margin-top:4px}
+.cam-valid-actions{display:flex;gap:10px;justify-content:center;padding-top:8px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--bg);padding-bottom:8px}
+.cam-valid-actions button{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--line-2)}
+.cam-valid-actions .commit{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
+.cam-valid-actions .retry{background:var(--bg-3);color:var(--txt)}
+.cam-valid-empty{text-align:center;color:var(--txt-mute);padding:30px 10px;font-style:italic}
 /* Poker table viz */
 .table-wrap{position:relative;width:100%;max-width:640px;aspect-ratio:2.2;margin:14px auto 28px;padding:18px}
 .table-felt{position:absolute;inset:0;background:radial-gradient(ellipse at center,#235040 0%,#1a3a2e 60%,#0f261f 100%);border:7px solid #3d2814;border-radius:50%/35%;box-shadow:inset 0 0 40px rgba(0,0,0,0.4),0 6px 14px rgba(0,0,0,0.35)}
@@ -768,6 +805,34 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <div class="modal">
     <button class="close" onclick="closeModal()">×</button>
     <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- ============== CAMERA SCAN MODAL ============== -->
+<div class="cam-modal" id="camModal">
+  <div class="cam-header">
+    <span id="camTitle">Scanner cartes</span>
+    <button class="cam-close" onclick="camScanClose()" title="Fermer">×</button>
+  </div>
+  <div class="cam-stage" id="camStage">
+    <video id="camVideo" autoplay playsinline muted></video>
+    <canvas id="camCanvas"></canvas>
+    <div class="cam-guide">
+      <div class="cam-guide-frame"></div>
+    </div>
+    <div class="cam-guide-text" id="camGuideText">Cadrez les cartes dans le rectangle</div>
+    <div class="cam-status" id="camStatus"></div>
+  </div>
+  <div class="cam-valid" id="camValid">
+    <h3>Cartes détectées — Valider ou corriger</h3>
+    <div class="cam-valid-grid" id="camValidGrid"></div>
+    <div class="cam-valid-actions">
+      <button class="retry" onclick="camScanRetry()">↻ Re-scanner</button>
+      <button class="commit" onclick="camScanCommit()">✓ Valider</button>
+    </div>
+  </div>
+  <div class="cam-controls" id="camControls">
+    <button class="cam-capture-btn" id="camCaptureBtn" onclick="camScanCapture()" title="Capturer">📷</button>
   </div>
 </div>
 
@@ -2677,7 +2742,10 @@ function pkrHtml(id, label, count){
       <button type="button" class="s-btn red" data-s="d" onclick="pkrPickSuit('${id}','d')">♦</button>
       <button type="button" class="s-btn" data-s="c" onclick="pkrPickSuit('${id}','c')">♣</button>
     </div>
-    <div style="text-align:center"><button type="button" class="picker-clear" onclick="pkrClear('${id}')">Effacer</button></div>
+    <div style="text-align:center;display:flex;justify-content:center;gap:14px;align-items:center">
+      <button type="button" class="picker-clear" onclick="pkrClear('${id}')">Effacer</button>
+      <button type="button" class="picker-scan" onclick="camScanOpen('${id}')" title="Scanner via caméra">📷 Scanner</button>
+    </div>
     <input type="hidden" id="${id}_out" value="">
   </div>`;
 }
@@ -5213,6 +5281,441 @@ if(!window.navigator.standalone){
 
 // Service worker for offline (inline, no separate file needed for basic caching via App Cache fallback)
 // PWA install works via manifest in real deployment; for local file this is enough.
+
+/* =========================================================
+   CAMERA CARD SCANNER
+   Pipeline: getUserMedia -> capture -> OpenCV segmentation
+   -> per card: Tesseract rank OCR + HSV color + suit shape match
+   -> validation modal -> commit via pkrPickRank/pkrPickSuit
+   ========================================================= */
+const _cam = {
+  active:false, stream:null, targetPickerId:null, detected:[],
+  cvReady:null, ocrReady:null, ocrWorker:null
+};
+const CAM_RANKS = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
+const CAM_SUITS = ["s","h","d","c"];
+const CAM_SUIT_CHAR = {s:"♠",h:"♥",d:"♦",c:"♣"};
+
+function camToast(msg){
+  if(typeof toast === "function"){ toast(msg); return; }
+  const el = document.getElementById("toast");
+  if(!el) return;
+  el.textContent = msg; el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), 2500);
+}
+function camStatus(html){
+  const el = document.getElementById("camStatus");
+  if(!el) return;
+  if(!html){ el.classList.remove("show"); el.innerHTML = ""; return; }
+  el.innerHTML = html; el.classList.add("show");
+}
+
+/* ---- Lazy loaders ---- */
+function camLoadScript(src){
+  return new Promise((resolve, reject)=>{
+    const existing = document.querySelector(`script[src="${src}"]`);
+    if(existing){
+      if(existing.dataset.loaded === "1") return resolve();
+      existing.addEventListener("load", ()=>resolve());
+      existing.addEventListener("error", ()=>reject(new Error("load fail "+src)));
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = src; s.async = true;
+    s.onload = ()=>{ s.dataset.loaded = "1"; resolve(); };
+    s.onerror = ()=>reject(new Error("load fail "+src));
+    document.head.appendChild(s);
+  });
+}
+function camEnsureOpenCV(){
+  if(_cam.cvReady) return _cam.cvReady;
+  _cam.cvReady = new Promise((resolve, reject)=>{
+    if(window.cv && window.cv.Mat) return resolve(window.cv);
+    window.Module = window.Module || {};
+    const prevReady = window.Module.onRuntimeInitialized;
+    window.Module.onRuntimeInitialized = ()=>{
+      if(prevReady) try{prevReady();}catch(e){}
+      resolve(window.cv);
+    };
+    camLoadScript("https://docs.opencv.org/4.10.0/opencv.js").then(()=>{
+      // Some builds expose cv synchronously
+      if(window.cv && window.cv.Mat) resolve(window.cv);
+      else if(window.cv && typeof window.cv.then === "function"){
+        window.cv.then(c=>{ window.cv = c; resolve(c); });
+      }
+      // else: wait for onRuntimeInitialized
+    }).catch(reject);
+    setTimeout(()=>{ if(window.cv && window.cv.Mat) resolve(window.cv); }, 8000);
+  });
+  return _cam.cvReady;
+}
+function camEnsureTesseract(){
+  if(_cam.ocrReady) return _cam.ocrReady;
+  _cam.ocrReady = camLoadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js")
+    .then(async ()=>{
+      const w = await Tesseract.createWorker("eng", 1, {
+        // keep silent
+      });
+      await w.setParameters({
+        tessedit_char_whitelist: "AKQJT98765432",
+        tessedit_pageseg_mode: "10", // single char
+        classify_bln_numeric_mode: "0"
+      });
+      _cam.ocrWorker = w;
+      return w;
+    });
+  return _cam.ocrReady;
+}
+
+/* ---- Modal open/close + camera ---- */
+async function camScanOpen(pickerId){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert("Caméra non supportée par ce navigateur. Utilisez Chrome/Safari sur HTTPS.");
+    return;
+  }
+  const p = _pkrs[pickerId];
+  if(!p){ camToast("Picker introuvable"); return; }
+  _cam.targetPickerId = pickerId;
+  _cam.detected = [];
+  const modal = document.getElementById("camModal");
+  modal.classList.add("open");
+  document.getElementById("camValid").classList.remove("open");
+  document.getElementById("camControls").style.display = "flex";
+  document.getElementById("camStage").style.display = "flex";
+  const freeSlots = p.slots.filter(s=>!s).length;
+  document.getElementById("camTitle").textContent = `Scanner — ${freeSlots} emplacement${freeSlots>1?"s":""} libre${freeSlots>1?"s":""}`;
+  document.getElementById("camGuideText").textContent = `Posez ${freeSlots>1?"les cartes côte à côte":"la carte"} dans le cadre`;
+  try{
+    const constraints = { video: { facingMode: { ideal: "environment" }, width:{ideal:1920}, height:{ideal:1080} }, audio:false };
+    _cam.stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const video = document.getElementById("camVideo");
+    video.srcObject = _cam.stream;
+    await video.play().catch(()=>{});
+    _cam.active = true;
+  }catch(err){
+    camToast("Caméra refusée: " + (err.message || err.name));
+    camScanClose();
+  }
+}
+function camScanClose(){
+  _cam.active = false;
+  if(_cam.stream){
+    _cam.stream.getTracks().forEach(t=>t.stop());
+    _cam.stream = null;
+  }
+  const v = document.getElementById("camVideo");
+  if(v) v.srcObject = null;
+  document.getElementById("camModal").classList.remove("open");
+  camStatus("");
+}
+function camScanRetry(){
+  document.getElementById("camValid").classList.remove("open");
+  document.getElementById("camStage").style.display = "flex";
+  document.getElementById("camControls").style.display = "flex";
+  _cam.detected = [];
+}
+
+/* ---- Capture + pipeline ---- */
+async function camScanCapture(){
+  if(!_cam.active) return;
+  const video = document.getElementById("camVideo");
+  const canvas = document.getElementById("camCanvas");
+  const btn = document.getElementById("camCaptureBtn");
+  if(!video.videoWidth){ camToast("Vidéo pas prête"); return; }
+  btn.disabled = true;
+  camStatus(`<div class="cam-spinner"></div>Chargement libs (première fois ~5s)...`);
+  // Snap frame
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+  try{
+    await Promise.all([camEnsureOpenCV(), camEnsureTesseract()]);
+  }catch(e){
+    camStatus("");
+    btn.disabled = false;
+    alert("Échec chargement bibliothèques: " + e.message);
+    return;
+  }
+  camStatus(`<div class="cam-spinner"></div>Détection cartes...`);
+  let cards = [];
+  try{
+    cards = await camSegmentAndRecognize(canvas);
+  }catch(e){
+    console.error(e);
+    camStatus("");
+    btn.disabled = false;
+    alert("Erreur détection: " + e.message);
+    return;
+  }
+  camStatus("");
+  btn.disabled = false;
+  if(!cards.length){
+    alert("Aucune carte détectée. Améliorez l'éclairage, posez les cartes à plat sur un fond uni et réessayez.");
+    return;
+  }
+  _cam.detected = cards;
+  camShowValidation();
+}
+
+/* ---- Segmentation OpenCV ---- */
+async function camSegmentAndRecognize(srcCanvas){
+  const cv = window.cv;
+  const src = cv.imread(srcCanvas);
+  const gray = new cv.Mat();
+  cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+  const blurred = new cv.Mat();
+  cv.GaussianBlur(gray, blurred, new cv.Size(5,5), 0);
+  const thresh = new cv.Mat();
+  cv.adaptiveThreshold(blurred, thresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 25, 10);
+  // Edges as fallback
+  const edges = new cv.Mat();
+  cv.Canny(blurred, edges, 60, 180);
+  // Combine: dilate edges
+  const kernel = cv.Mat.ones(3,3,cv.CV_8U);
+  cv.dilate(edges, edges, kernel);
+  const contours = new cv.MatVector();
+  const hier = new cv.Mat();
+  cv.findContours(edges, contours, hier, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  const imgArea = src.rows * src.cols;
+  const candidates = [];
+  for(let i=0; i<contours.size(); i++){
+    const cnt = contours.get(i);
+    const area = cv.contourArea(cnt);
+    if(area < imgArea * 0.015 || area > imgArea * 0.6){ cnt.delete(); continue; }
+    const peri = cv.arcLength(cnt, true);
+    const approx = new cv.Mat();
+    cv.approxPolyDP(cnt, approx, 0.04 * peri, true);
+    if(approx.rows === 4){
+      const pts = [];
+      for(let j=0;j<4;j++) pts.push({ x:approx.intAt(j,0), y:approx.intAt(j,1) });
+      candidates.push({ pts, area });
+    }
+    approx.delete();
+    cnt.delete();
+  }
+  // Sort left-to-right by centroid x
+  candidates.forEach(c=>{
+    c.cx = c.pts.reduce((s,p)=>s+p.x,0)/4;
+    c.cy = c.pts.reduce((s,p)=>s+p.y,0)/4;
+  });
+  candidates.sort((a,b)=>a.cx-b.cx);
+  // De-dup overlapping
+  const filtered = [];
+  for(const c of candidates){
+    const dup = filtered.find(f => Math.hypot(f.cx-c.cx, f.cy-c.cy) < Math.sqrt(c.area)*0.4);
+    if(!dup) filtered.push(c);
+  }
+  // Cap by free slots in target picker
+  const p = _pkrs[_cam.targetPickerId];
+  const freeSlots = p ? p.slots.filter(s=>!s).length : 5;
+  const maxCards = Math.max(1, Math.min(freeSlots, 5));
+  const chosen = filtered.slice(0, maxCards);
+  const results = [];
+  for(const cand of chosen){
+    const warped = camWarpCard(cv, src, cand.pts);
+    const r = await camRecognizeCard(cv, warped);
+    r.preview = camMatToDataUrl(cv, warped);
+    results.push(r);
+    warped.delete();
+  }
+  src.delete(); gray.delete(); blurred.delete(); thresh.delete();
+  edges.delete(); kernel.delete(); contours.delete(); hier.delete();
+  return results;
+}
+
+function camWarpCard(cv, src, pts){
+  // Order points: tl, tr, br, bl
+  const sorted = pts.slice().sort((a,b)=>a.y-b.y);
+  const top = sorted.slice(0,2).sort((a,b)=>a.x-b.x);
+  const bot = sorted.slice(2,4).sort((a,b)=>a.x-b.x);
+  const tl = top[0], tr = top[1], bl = bot[0], br = bot[1];
+  const widthA = Math.hypot(br.x-bl.x, br.y-bl.y);
+  const widthB = Math.hypot(tr.x-tl.x, tr.y-tl.y);
+  const heightA = Math.hypot(tr.x-br.x, tr.y-br.y);
+  const heightB = Math.hypot(tl.x-bl.x, tl.y-bl.y);
+  // Force portrait
+  let w = Math.max(widthA, widthB);
+  let h = Math.max(heightA, heightB);
+  let srcPts = [tl.x,tl.y,tr.x,tr.y,br.x,br.y,bl.x,bl.y];
+  if(w > h){
+    // rotate 90: tl <- bl, tr <- tl, br <- tr, bl <- br
+    srcPts = [bl.x,bl.y,tl.x,tl.y,tr.x,tr.y,br.x,br.y];
+    [w,h] = [h,w];
+  }
+  const targetW = 200, targetH = 280;
+  const srcMat = cv.matFromArray(4,1,cv.CV_32FC2, srcPts);
+  const dstMat = cv.matFromArray(4,1,cv.CV_32FC2, [0,0,targetW,0,targetW,targetH,0,targetH]);
+  const M = cv.getPerspectiveTransform(srcMat, dstMat);
+  const dst = new cv.Mat();
+  cv.warpPerspective(src, dst, M, new cv.Size(targetW, targetH), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
+  srcMat.delete(); dstMat.delete(); M.delete();
+  return dst;
+}
+
+function camMatToDataUrl(cv, mat){
+  const tmp = document.createElement("canvas");
+  cv.imshow(tmp, mat);
+  return tmp.toDataURL("image/jpeg", 0.7);
+}
+
+/* ---- Per-card recognition ---- */
+async function camRecognizeCard(cv, cardMat){
+  // Corner region (top-left): rank above, suit below
+  const W = cardMat.cols, H = cardMat.rows;
+  const cornerW = Math.floor(W * 0.28);
+  const cornerH = Math.floor(H * 0.32);
+  const cornerRect = new cv.Rect(4, 4, cornerW, cornerH);
+  const corner = cardMat.roi(cornerRect);
+  // Rank region = top half of corner
+  const rankRect = new cv.Rect(0, 0, cornerW, Math.floor(cornerH*0.55));
+  const suitRect = new cv.Rect(0, Math.floor(cornerH*0.50), cornerW, cornerH - Math.floor(cornerH*0.50));
+  const rankMat = corner.roi(rankRect);
+  const suitMat = corner.roi(suitRect);
+  // Upscale + threshold rank for OCR
+  const rankBig = new cv.Mat();
+  cv.resize(rankMat, rankBig, new cv.Size(rankMat.cols*4, rankMat.rows*4), 0, 0, cv.INTER_CUBIC);
+  const rankGray = new cv.Mat();
+  cv.cvtColor(rankBig, rankGray, cv.COLOR_RGBA2GRAY);
+  const rankTh = new cv.Mat();
+  cv.threshold(rankGray, rankTh, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU);
+  // Make sure rank is dark on white. Invert if mean low (a lot of black = card likely inverted)
+  const mean = cv.mean(rankTh)[0];
+  if(mean < 110){ cv.bitwise_not(rankTh, rankTh); }
+  // Run OCR
+  let rank = "?", rankConf = 0;
+  try{
+    const canvas = document.createElement("canvas");
+    cv.imshow(canvas, rankTh);
+    const { data } = await _cam.ocrWorker.recognize(canvas);
+    const raw = (data.text || "").replace(/\s/g,"").toUpperCase();
+    rankConf = data.confidence || 0;
+    // Pick first valid char; tolerate common confusions
+    const conf = { "0":"Q", "O":"Q", "I":"A", "1":"A", "L":"A" };
+    for(const ch of raw){
+      const m = conf[ch] || ch;
+      if(CAM_RANKS.includes(m)){ rank = m; break; }
+    }
+  }catch(e){ /* ignore */ }
+  // Suit: HSV color + shape
+  const suitData = camAnalyzeSuit(cv, suitMat);
+  rankBig.delete(); rankGray.delete(); rankTh.delete();
+  rankMat.delete(); suitMat.delete(); corner.delete();
+  return { rank, suit: suitData.suit, color: suitData.color, conf: Math.round((rankConf + suitData.conf)/2) };
+}
+
+function camAnalyzeSuit(cv, suitMat){
+  // Convert to HSV, classify dominant non-white pixels as red or black
+  const rgb = new cv.Mat();
+  cv.cvtColor(suitMat, rgb, cv.COLOR_RGBA2RGB);
+  const hsv = new cv.Mat();
+  cv.cvtColor(rgb, hsv, cv.COLOR_RGB2HSV);
+  let redCount = 0, blackCount = 0, total = 0;
+  for(let y=0; y<hsv.rows; y++){
+    for(let x=0; x<hsv.cols; x++){
+      const px = hsv.ucharPtr(y, x);
+      const h = px[0], s = px[1], v = px[2];
+      if(v > 200 && s < 60) continue; // white card bg
+      total++;
+      if(v < 90 && s < 90) blackCount++;
+      else if(s > 80 && (h < 12 || h > 168)) redCount++;
+    }
+  }
+  const color = redCount > blackCount ? "red" : "black";
+  rgb.delete(); hsv.delete();
+  // Shape disambiguation: count solidity to split heart/diamond and spade/club
+  // Diamond: high solidity (~0.95), Heart: lower (~0.7)
+  // Spade: solid + stem (lower convexity), Club: 3 lobes (low solidity)
+  const gray = new cv.Mat();
+  cv.cvtColor(suitMat, gray, cv.COLOR_RGBA2GRAY);
+  const th = new cv.Mat();
+  cv.threshold(gray, th, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
+  const contours = new cv.MatVector();
+  const hier = new cv.Mat();
+  cv.findContours(th, contours, hier, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  let bestCnt = null, bestArea = 0;
+  for(let i=0;i<contours.size();i++){
+    const c = contours.get(i);
+    const a = cv.contourArea(c);
+    if(a > bestArea){ if(bestCnt) bestCnt.delete(); bestCnt = c; bestArea = a; }
+    else c.delete();
+  }
+  let suit, conf = 60;
+  if(!bestCnt || bestArea < 20){
+    suit = color === "red" ? "h" : "s";
+  } else {
+    const hull = new cv.Mat();
+    cv.convexHull(bestCnt, hull);
+    const hullArea = cv.contourArea(hull);
+    const solidity = hullArea > 0 ? bestArea / hullArea : 0;
+    hull.delete();
+    if(color === "red"){
+      suit = solidity > 0.88 ? "d" : "h";
+    } else {
+      suit = solidity > 0.78 ? "s" : "c";
+    }
+    conf = 70 + Math.round(Math.abs(solidity - 0.83) * 60);
+    if(conf > 95) conf = 95;
+    bestCnt.delete();
+  }
+  th.delete(); gray.delete(); contours.delete(); hier.delete();
+  return { suit, color, conf };
+}
+
+/* ---- Validation UI ---- */
+function camShowValidation(){
+  const grid = document.getElementById("camValidGrid");
+  if(!_cam.detected.length){
+    grid.innerHTML = `<div class="cam-valid-empty">Aucune carte détectée</div>`;
+  } else {
+    grid.innerHTML = _cam.detected.map((c,i)=>{
+      const ranksOpts = ["?"].concat(CAM_RANKS).map(r=>`<option value="${r}" ${r===c.rank?"selected":""}>${r}</option>`).join("");
+      const suitsOpts = CAM_SUITS.map(s=>`<option value="${s}" ${s===c.suit?"selected":""}>${CAM_SUIT_CHAR[s]}</option>`).join("");
+      const redCls = (c.suit==="h"||c.suit==="d") ? "s-red" : "";
+      return `<div class="cam-valid-card">
+        <img src="${c.preview}" alt="card ${i}">
+        <div class="cvc-pick">
+          <select onchange="camValidEdit(${i},'rank',this.value)">${ranksOpts}</select>
+          <select class="${redCls}" onchange="camValidEdit(${i},'suit',this.value);this.className=(this.value==='h'||this.value==='d')?'s-red':''">${suitsOpts}</select>
+        </div>
+        <div class="conf">confiance ${c.conf}%</div>
+      </div>`;
+    }).join("");
+  }
+  document.getElementById("camStage").style.display = "none";
+  document.getElementById("camControls").style.display = "none";
+  document.getElementById("camValid").classList.add("open");
+}
+function camValidEdit(idx, field, val){
+  if(!_cam.detected[idx]) return;
+  _cam.detected[idx][field] = val;
+}
+function camScanCommit(){
+  const p = _pkrs[_cam.targetPickerId];
+  if(!p){ camScanClose(); return; }
+  const valid = _cam.detected.filter(c => CAM_RANKS.includes(c.rank) && CAM_SUITS.includes(c.suit));
+  if(!valid.length){
+    alert("Aucune carte valide (rank=?). Corrige avant de valider.");
+    return;
+  }
+  // Avoid dupes with existing slots/other pickers
+  const existing = getExcludedCards(_cam.targetPickerId, -1);
+  let written = 0, skipped = 0;
+  for(const card of valid){
+    // Find first empty slot
+    const slotIdx = p.slots.findIndex(s=>!s);
+    if(slotIdx === -1) break;
+    const key = card.rank + card.suit;
+    if(existing.has(key)){ skipped++; continue; }
+    existing.add(key);
+    p.activeSlot = slotIdx;
+    p.pickRank = card.rank;
+    pkrPickSuit(_cam.targetPickerId, card.suit);
+    written++;
+  }
+  camScanClose();
+  if(written) camToast(`${written} carte${written>1?"s":""} ajoutée${written>1?"s":""}${skipped?` (${skipped} doublon${skipped>1?"s":""} ignoré${skipped>1?"s":""})`:""}`);
+  else camToast("Aucune carte ajoutée");
+}
 
 </script>
 </body>
