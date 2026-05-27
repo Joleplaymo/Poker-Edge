@@ -282,9 +282,13 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .cam-stage{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
 #camVideo{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
 #camCanvas{display:none}
-.cam-guide{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
-.cam-guide-frame{width:86%;max-width:380px;aspect-ratio:1.6;border:2px dashed rgba(212,175,55,0.85);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.35)}
-.cam-guide-text{position:absolute;bottom:14px;left:12px;right:12px;text-align:center;color:#fff;font-size:13px;letter-spacing:0.04em;text-shadow:0 1px 4px rgba(0,0,0,0.85);line-height:1.3}
+.cam-overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.cam-guide-text{position:absolute;bottom:14px;left:12px;right:12px;text-align:center;color:#fff;font-size:13px;letter-spacing:0.04em;text-shadow:0 1px 4px rgba(0,0,0,0.85);line-height:1.3;z-index:4}
+.cam-stability{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:18px;letter-spacing:0.04em;z-index:4;display:none}
+.cam-stability.show{display:block}
+.cam-stability.stable{background:rgba(95,199,232,0.85);color:#0e2638}
+.cam-stability.locking{background:rgba(212,175,55,0.92);color:#1a1208;animation:camPulse 0.6s ease-in-out infinite alternate}
+@keyframes camPulse{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.08)}}
 .cam-controls{flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:18px;padding:14px 16px max(14px,env(safe-area-inset-bottom));background:rgba(0,0,0,0.85)}
 .cam-capture-btn{width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid var(--gold);cursor:pointer;font-size:30px;display:flex;align-items:center;justify-content:center;padding:0;-webkit-tap-highlight-color:transparent}
 .cam-capture-btn:active{transform:scale(0.93)}
@@ -300,9 +304,16 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .cam-valid-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px}
 .cam-valid-card{background:var(--bg-3);border:1px solid var(--line-2);border-radius:10px;padding:8px;text-align:center}
 .cam-valid-card img{width:100%;height:auto;max-height:140px;object-fit:contain;border-radius:6px;display:block;margin:0 auto 8px;background:#000}
-.cam-valid-card .cvc-pick{display:flex;gap:4px;justify-content:center;margin-bottom:4px}
-.cam-valid-card select{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:6px 4px;font-family:inherit;font-size:13px;font-weight:700;min-height:36px}
-.cam-valid-card select.s-red{color:var(--red)}
+.cam-valid-card .cvc-pick-row{margin-bottom:8px;text-align:left}
+.cam-valid-card .cvc-lbl{display:block;font-size:10px;color:var(--txt-mute);text-transform:uppercase;letter-spacing:0.04em;font-weight:600;margin-bottom:3px}
+.cam-valid-card select{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:6px 4px;font-family:inherit;font-size:14px;font-weight:700;min-height:40px;width:100%}
+.cam-valid-card .cvc-suits{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.cam-valid-card .cvc-suit{background:var(--bg-2);border:1px solid var(--line);color:var(--txt-dim);border-radius:6px;padding:8px 0;font-size:18px;cursor:pointer;font-family:inherit;font-weight:700;min-height:42px;transition:background .1s,border-color .1s,color .1s}
+.cam-valid-card .cvc-suit.red{color:var(--red)}
+.cam-valid-card .cvc-suit.color-match{border-color:var(--gold-soft);background:rgba(212,175,55,0.08)}
+.cam-valid-card .cvc-suit.picked{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
+.cam-valid-card .cvc-suit.picked.red{color:var(--on-gold)}
+.cam-valid-card .cvc-suit:active{transform:scale(0.95)}
 .cam-valid-card .conf{font-size:10px;color:var(--txt-mute);margin-top:4px}
 .cam-valid-actions{display:flex;gap:10px;justify-content:center;padding:10px 0 max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--bg);margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
 .cam-valid-actions button{flex:1;max-width:200px;padding:12px 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid var(--line-2);min-height:48px}
@@ -850,10 +861,9 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <div class="cam-stage" id="camStage">
     <video id="camVideo" autoplay playsinline muted></video>
     <canvas id="camCanvas"></canvas>
-    <div class="cam-guide">
-      <div class="cam-guide-frame"></div>
-    </div>
-    <div class="cam-guide-text" id="camGuideText">Cadrez les cartes dans le rectangle</div>
+    <canvas id="camOverlay" class="cam-overlay"></canvas>
+    <div class="cam-guide-text" id="camGuideText">Posez les cartes sur fond uni</div>
+    <div class="cam-stability" id="camStability"></div>
     <div class="cam-status" id="camStatus"></div>
   </div>
   <div class="cam-valid" id="camValid">
@@ -5324,7 +5334,9 @@ if(!window.navigator.standalone){
    ========================================================= */
 const _cam = {
   active:false, stream:null, targetPickerId:null, detected:[],
-  cvReady:null, ocrReady:null, ocrWorker:null
+  ocrReady:null, ocrWorker:null,
+  liveRaf:null, lastDetect:0, lastBoxes:[], stableCount:0, stableTarget:8,
+  freezeLive:false
 };
 const CAM_RANKS = ["A","K","Q","J","T","9","8","7","6","5","4","3","2"];
 const CAM_SUITS = ["s","h","d","c"];
@@ -5360,58 +5372,6 @@ function camLoadScript(src){
     s.onerror = ()=>reject(new Error("load fail "+src));
     document.head.appendChild(s);
   });
-}
-function camEnsureOpenCV(progress){
-  if(_cam.cvReady) return _cam.cvReady;
-  _cam.cvReady = new Promise((resolve, reject)=>{
-    if(window.cv && window.cv.Mat) return resolve(window.cv);
-    const url = "https://docs.opencv.org/4.10.0/opencv.js";
-    const existing = document.querySelector(`script[src="${url}"]`);
-    let timer;
-    const finish = ()=>{
-      clearTimeout(timer);
-      if(window.cv && window.cv.Mat){ resolve(window.cv); return true; }
-      return false;
-    };
-    const hookReady = ()=>{
-      // OpenCV exposes cv as Promise OR object with onRuntimeInitialized
-      if(typeof window.cv === "undefined"){
-        // poll a bit — runtime not yet attached
-        let tries = 0;
-        const id = setInterval(()=>{
-          tries++;
-          if(typeof window.cv !== "undefined"){ clearInterval(id); hookReady(); }
-          else if(tries > 40){ clearInterval(id); reject(new Error("cv non défini après chargement script")); }
-        }, 100);
-        return;
-      }
-      if(window.cv && window.cv.Mat) return resolve(window.cv);
-      // Promise-style (modern build)
-      if(typeof window.cv.then === "function"){
-        if(progress) progress("Initialisation OpenCV...");
-        window.cv.then(c => { window.cv = c; finish(); }).catch(reject);
-        return;
-      }
-      // Callback-style (older build)
-      if(progress) progress("Initialisation OpenCV...");
-      window.cv.onRuntimeInitialized = ()=> finish();
-    };
-    if(existing){
-      if(window.cv && window.cv.Mat) return resolve(window.cv);
-      hookReady();
-    } else {
-      if(progress) progress("Téléchargement OpenCV.js (~9 MB)...");
-      const s = document.createElement("script");
-      s.src = url;
-      s.async = true;
-      s.onload = hookReady;
-      s.onerror = ()=> reject(new Error("Téléchargement OpenCV.js échoué (réseau ou CSP)"));
-      document.head.appendChild(s);
-    }
-    timer = setTimeout(()=>{ if(!(window.cv && window.cv.Mat)) reject(new Error("OpenCV.js timeout 45s")); }, 45000);
-  });
-  _cam.cvReady.catch(()=>{ _cam.cvReady = null; });
-  return _cam.cvReady;
 }
 function camEnsureTesseract(progress){
   if(_cam.ocrReady) return _cam.ocrReady;
@@ -5450,6 +5410,9 @@ async function camScanOpen(pickerId){
   if(!p){ camToast("Picker introuvable"); return; }
   _cam.targetPickerId = pickerId;
   _cam.detected = [];
+  _cam.lastBoxes = [];
+  _cam.stableCount = 0;
+  _cam.freezeLive = false;
   const modal = document.getElementById("camModal");
   modal.classList.add("open");
   document.getElementById("camValid").classList.remove("open");
@@ -5457,14 +5420,18 @@ async function camScanOpen(pickerId){
   document.getElementById("camStage").style.display = "flex";
   const freeSlots = p.slots.filter(s=>!s).length;
   document.getElementById("camTitle").textContent = `Scanner — ${freeSlots} emplacement${freeSlots>1?"s":""} libre${freeSlots>1?"s":""}`;
-  document.getElementById("camGuideText").textContent = `Posez ${freeSlots>1?"les cartes côte à côte":"la carte"} dans le cadre`;
+  document.getElementById("camGuideText").textContent = `Posez ${freeSlots>1?"les cartes côte à côte":"la carte"} sur fond sombre uni`;
+  camSetStability("Recherche cartes...", "");
+  // Preload Tesseract in background (doesn't block UI)
+  camEnsureTesseract(msg => camStatus(msg ? `<div class="cam-spinner"></div>${msg}` : "")).then(()=>camStatus("")).catch(()=>{});
   try{
-    const constraints = { video: { facingMode: { ideal: "environment" }, width:{ideal:1920}, height:{ideal:1080} }, audio:false };
+    const constraints = { video: { facingMode: { ideal: "environment" }, width:{ideal:1280}, height:{ideal:720} }, audio:false };
     _cam.stream = await navigator.mediaDevices.getUserMedia(constraints);
     const video = document.getElementById("camVideo");
     video.srcObject = _cam.stream;
     await video.play().catch(()=>{});
     _cam.active = true;
+    camLiveLoop();
   }catch(err){
     camToast("Caméra refusée: " + (err.message || err.name));
     camScanClose();
@@ -5472,271 +5439,354 @@ async function camScanOpen(pickerId){
 }
 function camScanClose(){
   _cam.active = false;
+  _cam.freezeLive = false;
+  if(_cam.liveRaf){ cancelAnimationFrame(_cam.liveRaf); _cam.liveRaf = null; }
   if(_cam.stream){
     _cam.stream.getTracks().forEach(t=>t.stop());
     _cam.stream = null;
   }
   const v = document.getElementById("camVideo");
   if(v) v.srcObject = null;
+  const ov = document.getElementById("camOverlay");
+  if(ov){ const ctx = ov.getContext("2d"); ctx.clearRect(0,0,ov.width,ov.height); }
   document.getElementById("camModal").classList.remove("open");
   camStatus("");
+  camSetStability("", "");
 }
 function camScanRetry(){
   document.getElementById("camValid").classList.remove("open");
   document.getElementById("camStage").style.display = "flex";
   document.getElementById("camControls").style.display = "flex";
   _cam.detected = [];
+  _cam.lastBoxes = [];
+  _cam.stableCount = 0;
+  _cam.freezeLive = false;
+  camSetStability("Recherche cartes...", "");
+  camLiveLoop();
+}
+function camSetStability(text, cls){
+  const el = document.getElementById("camStability");
+  if(!el) return;
+  if(!text){ el.classList.remove("show","stable","locking"); el.textContent=""; return; }
+  el.textContent = text;
+  el.classList.add("show");
+  el.classList.toggle("stable", cls === "stable");
+  el.classList.toggle("locking", cls === "locking");
 }
 
-/* ---- Capture + pipeline ---- */
-async function camScanCapture(){
-  if(!_cam.active) return;
+/* ---- Live detection loop (pure JS, no OpenCV) ---- */
+function camLiveLoop(){
+  if(!_cam.active || _cam.freezeLive){ _cam.liveRaf = null; return; }
+  const now = performance.now();
+  if(now - _cam.lastDetect < 180){
+    _cam.liveRaf = requestAnimationFrame(camLiveLoop);
+    return;
+  }
+  _cam.lastDetect = now;
+  const video = document.getElementById("camVideo");
+  const overlay = document.getElementById("camOverlay");
+  if(!video || !overlay || !video.videoWidth){
+    _cam.liveRaf = requestAnimationFrame(camLiveLoop);
+    return;
+  }
+  const boxes = camDetectCards(video, 240);
+  camDrawOverlay(overlay, video, boxes);
+  // Stability tracking
+  const expected = camFreeSlotsCount();
+  const stable = boxes.length > 0 && boxes.length <= expected && camBoxesSimilar(_cam.lastBoxes, boxes);
+  if(stable){
+    _cam.stableCount++;
+    if(_cam.stableCount >= _cam.stableTarget){
+      // Auto-snap
+      _cam.freezeLive = true;
+      camSetStability("Capture...", "locking");
+      camLockAndProcess(boxes);
+      return;
+    } else if(_cam.stableCount >= Math.max(3, _cam.stableTarget-3)){
+      camSetStability(`${boxes.length} carte${boxes.length>1?"s":""} — verrouillage...`, "locking");
+    } else {
+      camSetStability(`${boxes.length} carte${boxes.length>1?"s":""} détectée${boxes.length>1?"s":""}`, "stable");
+    }
+  } else {
+    _cam.stableCount = 0;
+    if(boxes.length === 0) camSetStability("Recherche cartes...", "");
+    else if(boxes.length > expected) camSetStability(`Trop de cartes (${boxes.length}, max ${expected})`, "");
+    else camSetStability(`${boxes.length} carte${boxes.length>1?"s":""}`, "stable");
+  }
+  _cam.lastBoxes = boxes;
+  _cam.liveRaf = requestAnimationFrame(camLiveLoop);
+}
+
+function camFreeSlotsCount(){
+  const p = _pkrs[_cam.targetPickerId];
+  return p ? p.slots.filter(s=>!s).length : 5;
+}
+
+function camBoxesSimilar(a, b){
+  if(!a || !b || a.length !== b.length) return false;
+  for(let i=0;i<a.length;i++){
+    const ax = (a[i].x + a[i].w/2), ay = (a[i].y + a[i].h/2);
+    const bx = (b[i].x + b[i].w/2), by = (b[i].y + b[i].h/2);
+    const tol = Math.max(8, a[i].w * 0.08);
+    if(Math.abs(ax-bx) > tol || Math.abs(ay-by) > tol) return false;
+    if(Math.abs(a[i].w - b[i].w) > a[i].w*0.15) return false;
+  }
+  return true;
+}
+
+/* Pure-JS card detection via brightness threshold + connected components.
+   Assumes cards are brighter than background (white/light cards on darker surface).
+   Returns boxes in VIDEO coordinates (videoWidth × videoHeight). */
+function camDetectCards(video, downW){
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if(!vw) return [];
+  const dw = downW, dh = Math.round(vh * (dw/vw));
+  const c = camDetectCards._buf || (camDetectCards._buf = document.createElement("canvas"));
+  c.width = dw; c.height = dh;
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(video, 0, 0, dw, dh);
+  const img = ctx.getImageData(0, 0, dw, dh);
+  const data = img.data;
+  // Compute mean brightness for adaptive threshold
+  let sum = 0, n = 0;
+  for(let i=0;i<data.length;i+=16){ // sample every 4 pixels
+    const lum = (data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114);
+    sum += lum; n++;
+  }
+  const meanLum = sum / n;
+  // Threshold: pixels significantly brighter than mean = candidate card
+  // Higher offset = stricter; cards must be quite bright
+  const thresh = Math.max(120, meanLum + 35);
+  const mask = new Uint8Array(dw * dh);
+  for(let y=0; y<dh; y++){
+    for(let x=0; x<dw; x++){
+      const i = (y*dw + x) * 4;
+      const lum = data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114;
+      mask[y*dw + x] = lum >= thresh ? 1 : 0;
+    }
+  }
+  // Connected components (4-connect, stack-based flood fill)
+  const labels = new Int32Array(dw * dh);
+  const blobs = []; // {minX,minY,maxX,maxY,area}
+  let nextLabel = 1;
+  const stack = [];
+  for(let y=0; y<dh; y++){
+    for(let x=0; x<dw; x++){
+      const idx = y*dw + x;
+      if(mask[idx] !== 1 || labels[idx] !== 0) continue;
+      let minX=x,minY=y,maxX=x,maxY=y,area=0;
+      stack.length = 0; stack.push(x, y);
+      while(stack.length){
+        const py = stack.pop(), px = stack.pop();
+        if(px<0||py<0||px>=dw||py>=dh) continue;
+        const pi = py*dw+px;
+        if(mask[pi]!==1 || labels[pi]!==0) continue;
+        labels[pi] = nextLabel;
+        area++;
+        if(px<minX) minX=px; if(py<minY) minY=py;
+        if(px>maxX) maxX=px; if(py>maxY) maxY=py;
+        stack.push(px+1, py); stack.push(px-1, py);
+        stack.push(px, py+1); stack.push(px, py-1);
+      }
+      blobs.push({minX, minY, maxX, maxY, area, label: nextLabel});
+      nextLabel++;
+    }
+  }
+  // Filter blobs by aspect ratio + area + fill density
+  const imgArea = dw * dh;
+  const candidates = [];
+  for(const b of blobs){
+    const bw = b.maxX - b.minX + 1;
+    const bh = b.maxY - b.minY + 1;
+    const a = bw * bh;
+    if(a < imgArea * 0.015 || a > imgArea * 0.55) continue;
+    if(bw < 20 || bh < 28) continue;
+    const ratio = bw / bh; // card portrait ratio ≈ 0.62-0.78
+    const inversed = bh / bw;
+    const portraitOk = ratio >= 0.45 && ratio <= 0.95;
+    const landscapeOk = inversed >= 0.45 && inversed <= 0.95;
+    if(!portraitOk && !landscapeOk) continue;
+    const fill = b.area / a; // bounding box fill density — cards should fill bbox densely
+    if(fill < 0.55) continue;
+    candidates.push({ x:b.minX, y:b.minY, w:bw, h:bh, fill });
+  }
+  // Sort left-to-right (top-to-bottom if mostly vertical layout)
+  candidates.sort((a,b)=> (a.x === b.x ? a.y - b.y : a.x - b.x));
+  // Cap to free slots
+  const maxN = Math.max(1, Math.min(camFreeSlotsCount(), 5));
+  const chosen = candidates.slice(0, maxN);
+  // Scale back to video coords
+  const sx = vw / dw, sy = vh / dh;
+  return chosen.map(b => ({
+    x: Math.round(b.x * sx), y: Math.round(b.y * sy),
+    w: Math.round(b.w * sx), h: Math.round(b.h * sy)
+  }));
+}
+
+function camDrawOverlay(overlay, video, boxes){
+  const vw = video.videoWidth, vh = video.videoHeight;
+  if(!vw) return;
+  // Match overlay to video display size
+  const rect = video.getBoundingClientRect();
+  overlay.width = rect.width;
+  overlay.height = rect.height;
+  const ctx = overlay.getContext("2d");
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+  // Compute video display rect within overlay (object-fit:contain behavior)
+  const sx = overlay.width / vw, sy = overlay.height / vh;
+  const scale = Math.min(sx, sy);
+  const dispW = vw * scale, dispH = vh * scale;
+  const ox = (overlay.width - dispW) / 2;
+  const oy = (overlay.height - dispH) / 2;
+  ctx.lineWidth = 3;
+  ctx.font = "bold 14px system-ui, sans-serif";
+  ctx.textBaseline = "top";
+  boxes.forEach((b, i) => {
+    const x = ox + b.x * scale;
+    const y = oy + b.y * scale;
+    const w = b.w * scale;
+    const h = b.h * scale;
+    ctx.strokeStyle = "rgba(95,199,232,0.95)";
+    ctx.fillStyle = "rgba(95,199,232,0.12)";
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeRect(x, y, w, h);
+    // Corner ticks
+    const tick = 14;
+    ctx.strokeStyle = "rgba(212,175,55,0.95)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(x, y+tick); ctx.lineTo(x, y); ctx.lineTo(x+tick, y);
+    ctx.moveTo(x+w-tick, y); ctx.lineTo(x+w, y); ctx.lineTo(x+w, y+tick);
+    ctx.moveTo(x+w, y+h-tick); ctx.lineTo(x+w, y+h); ctx.lineTo(x+w-tick, y+h);
+    ctx.moveTo(x+tick, y+h); ctx.lineTo(x, y+h); ctx.lineTo(x, y+h-tick);
+    ctx.stroke();
+    ctx.lineWidth = 3;
+  });
+}
+
+/* ---- Lock + capture pipeline ---- */
+async function camLockAndProcess(boxes){
+  camStatus(`<div class="cam-spinner"></div>Lecture des cartes...`);
   const video = document.getElementById("camVideo");
   const canvas = document.getElementById("camCanvas");
-  const btn = document.getElementById("camCaptureBtn");
-  if(!video.videoWidth){ camToast("Vidéo pas prête"); return; }
-  btn.disabled = true;
-  const setProgress = (msg)=> camStatus(`<div class="cam-spinner"></div>${msg}`);
-  setProgress("Préparation...");
-  // Snap frame
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-  try{
-    await Promise.all([
-      camEnsureOpenCV(setProgress),
-      camEnsureTesseract(setProgress)
-    ]);
-  }catch(e){
-    console.error("cam libs load fail", e);
+  // Ensure Tesseract loaded
+  try { await camEnsureTesseract(msg => camStatus(`<div class="cam-spinner"></div>${msg}`)); }
+  catch(e){
     camStatus("");
-    btn.disabled = false;
-    alert("Échec chargement bibliothèques: " + (e && e.message ? e.message : e) + "\n\nVérifie ta connexion internet puis réessaye.");
-    return;
+    alert("OCR indisponible: " + e.message + "\n\nTu pourras saisir les cartes manuellement.");
+    _cam.ocrWorker = null;
   }
-  camStatus(`<div class="cam-spinner"></div>Détection cartes...`);
-  let cards = [];
-  try{
-    cards = await camSegmentAndRecognize(canvas);
-  }catch(e){
-    console.error(e);
-    camStatus("");
-    btn.disabled = false;
-    alert("Erreur détection: " + e.message);
-    return;
+  const results = [];
+  for(let i=0; i<boxes.length; i++){
+    camStatus(`<div class="cam-spinner"></div>Carte ${i+1}/${boxes.length}...`);
+    const card = await camProcessCard(canvas, boxes[i]);
+    results.push(card);
   }
   camStatus("");
-  btn.disabled = false;
-  if(!cards.length){
-    alert("Aucune carte détectée. Améliorez l'éclairage, posez les cartes à plat sur un fond uni et réessayez.");
-    return;
-  }
-  _cam.detected = cards;
+  _cam.detected = results;
   camShowValidation();
 }
 
-/* ---- Segmentation OpenCV ---- */
-async function camSegmentAndRecognize(srcCanvas){
-  const cv = window.cv;
-  const src = cv.imread(srcCanvas);
-  const gray = new cv.Mat();
-  cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-  const blurred = new cv.Mat();
-  cv.GaussianBlur(gray, blurred, new cv.Size(5,5), 0);
-  const thresh = new cv.Mat();
-  cv.adaptiveThreshold(blurred, thresh, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 25, 10);
-  // Edges as fallback
-  const edges = new cv.Mat();
-  cv.Canny(blurred, edges, 60, 180);
-  // Combine: dilate edges
-  const kernel = cv.Mat.ones(3,3,cv.CV_8U);
-  cv.dilate(edges, edges, kernel);
-  const contours = new cv.MatVector();
-  const hier = new cv.Mat();
-  cv.findContours(edges, contours, hier, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-  const imgArea = src.rows * src.cols;
-  const candidates = [];
-  for(let i=0; i<contours.size(); i++){
-    const cnt = contours.get(i);
-    const area = cv.contourArea(cnt);
-    if(area < imgArea * 0.015 || area > imgArea * 0.6){ cnt.delete(); continue; }
-    const peri = cv.arcLength(cnt, true);
-    const approx = new cv.Mat();
-    cv.approxPolyDP(cnt, approx, 0.04 * peri, true);
-    if(approx.rows === 4){
-      const pts = [];
-      for(let j=0;j<4;j++) pts.push({ x:approx.intAt(j,0), y:approx.intAt(j,1) });
-      candidates.push({ pts, area });
-    }
-    approx.delete();
-    cnt.delete();
+/* Manual capture button — overrides auto-snap (uses current boxes or full frame) */
+async function camScanCapture(){
+  if(!_cam.active) return;
+  _cam.freezeLive = true;
+  if(_cam.liveRaf){ cancelAnimationFrame(_cam.liveRaf); _cam.liveRaf = null; }
+  const boxes = _cam.lastBoxes && _cam.lastBoxes.length ? _cam.lastBoxes : null;
+  if(!boxes){
+    camStatus("");
+    alert("Aucune carte détectée à l'image. Pose les cartes dans le cadre puis réessaie.");
+    _cam.freezeLive = false;
+    camLiveLoop();
+    return;
   }
-  // Sort left-to-right by centroid x
-  candidates.forEach(c=>{
-    c.cx = c.pts.reduce((s,p)=>s+p.x,0)/4;
-    c.cy = c.pts.reduce((s,p)=>s+p.y,0)/4;
-  });
-  candidates.sort((a,b)=>a.cx-b.cx);
-  // De-dup overlapping
-  const filtered = [];
-  for(const c of candidates){
-    const dup = filtered.find(f => Math.hypot(f.cx-c.cx, f.cy-c.cy) < Math.sqrt(c.area)*0.4);
-    if(!dup) filtered.push(c);
-  }
-  // Cap by free slots in target picker
-  const p = _pkrs[_cam.targetPickerId];
-  const freeSlots = p ? p.slots.filter(s=>!s).length : 5;
-  const maxCards = Math.max(1, Math.min(freeSlots, 5));
-  const chosen = filtered.slice(0, maxCards);
-  const results = [];
-  for(const cand of chosen){
-    const warped = camWarpCard(cv, src, cand.pts);
-    const r = await camRecognizeCard(cv, warped);
-    r.preview = camMatToDataUrl(cv, warped);
-    results.push(r);
-    warped.delete();
-  }
-  src.delete(); gray.delete(); blurred.delete(); thresh.delete();
-  edges.delete(); kernel.delete(); contours.delete(); hier.delete();
-  return results;
+  await camLockAndProcess(boxes);
 }
 
-function camWarpCard(cv, src, pts){
-  // Order points: tl, tr, br, bl
-  const sorted = pts.slice().sort((a,b)=>a.y-b.y);
-  const top = sorted.slice(0,2).sort((a,b)=>a.x-b.x);
-  const bot = sorted.slice(2,4).sort((a,b)=>a.x-b.x);
-  const tl = top[0], tr = top[1], bl = bot[0], br = bot[1];
-  const widthA = Math.hypot(br.x-bl.x, br.y-bl.y);
-  const widthB = Math.hypot(tr.x-tl.x, tr.y-tl.y);
-  const heightA = Math.hypot(tr.x-br.x, tr.y-br.y);
-  const heightB = Math.hypot(tl.x-bl.x, tl.y-bl.y);
-  // Force portrait
-  let w = Math.max(widthA, widthB);
-  let h = Math.max(heightA, heightB);
-  let srcPts = [tl.x,tl.y,tr.x,tr.y,br.x,br.y,bl.x,bl.y];
+/* ---- Per-card processing: crop + OCR rank + suit color ---- */
+async function camProcessCard(srcCanvas, box){
+  // Add small inner margin to crop
+  const pad = Math.round(Math.min(box.w, box.h) * 0.02);
+  const x = Math.max(0, box.x + pad);
+  const y = Math.max(0, box.y + pad);
+  const w = Math.min(srcCanvas.width - x, box.w - pad*2);
+  const h = Math.min(srcCanvas.height - y, box.h - pad*2);
+  // Crop card to its own canvas
+  const cardCanvas = document.createElement("canvas");
+  cardCanvas.width = w; cardCanvas.height = h;
+  const cctx = cardCanvas.getContext("2d");
+  cctx.drawImage(srcCanvas, x, y, w, h, 0, 0, w, h);
+  // If landscape, rotate 90 to portrait
+  let portrait = cardCanvas;
   if(w > h){
-    // rotate 90: tl <- bl, tr <- tl, br <- tr, bl <- br
-    srcPts = [bl.x,bl.y,tl.x,tl.y,tr.x,tr.y,br.x,br.y];
-    [w,h] = [h,w];
+    portrait = document.createElement("canvas");
+    portrait.width = h; portrait.height = w;
+    const pctx = portrait.getContext("2d");
+    pctx.translate(h, 0);
+    pctx.rotate(Math.PI/2);
+    pctx.drawImage(cardCanvas, 0, 0);
   }
-  const targetW = 200, targetH = 280;
-  const srcMat = cv.matFromArray(4,1,cv.CV_32FC2, srcPts);
-  const dstMat = cv.matFromArray(4,1,cv.CV_32FC2, [0,0,targetW,0,targetW,targetH,0,targetH]);
-  const M = cv.getPerspectiveTransform(srcMat, dstMat);
-  const dst = new cv.Mat();
-  cv.warpPerspective(src, dst, M, new cv.Size(targetW, targetH), cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
-  srcMat.delete(); dstMat.delete(); M.delete();
-  return dst;
-}
-
-function camMatToDataUrl(cv, mat){
-  const tmp = document.createElement("canvas");
-  cv.imshow(tmp, mat);
-  return tmp.toDataURL("image/jpeg", 0.7);
-}
-
-/* ---- Per-card recognition ---- */
-async function camRecognizeCard(cv, cardMat){
-  // Corner region (top-left): rank above, suit below
-  const W = cardMat.cols, H = cardMat.rows;
-  const cornerW = Math.floor(W * 0.28);
-  const cornerH = Math.floor(H * 0.32);
-  const cornerRect = new cv.Rect(4, 4, cornerW, cornerH);
-  const corner = cardMat.roi(cornerRect);
-  // Rank region = top half of corner
-  const rankRect = new cv.Rect(0, 0, cornerW, Math.floor(cornerH*0.55));
-  const suitRect = new cv.Rect(0, Math.floor(cornerH*0.50), cornerW, cornerH - Math.floor(cornerH*0.50));
-  const rankMat = corner.roi(rankRect);
-  const suitMat = corner.roi(suitRect);
-  // Upscale + threshold rank for OCR
-  const rankBig = new cv.Mat();
-  cv.resize(rankMat, rankBig, new cv.Size(rankMat.cols*4, rankMat.rows*4), 0, 0, cv.INTER_CUBIC);
-  const rankGray = new cv.Mat();
-  cv.cvtColor(rankBig, rankGray, cv.COLOR_RGBA2GRAY);
-  const rankTh = new cv.Mat();
-  cv.threshold(rankGray, rankTh, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU);
-  // Make sure rank is dark on white. Invert if mean low (a lot of black = card likely inverted)
-  const mean = cv.mean(rankTh)[0];
-  if(mean < 110){ cv.bitwise_not(rankTh, rankTh); }
+  const pw = portrait.width, ph = portrait.height;
+  // Rank corner = top-left ~28% × 22%
+  const rW = Math.round(pw * 0.32);
+  const rH = Math.round(ph * 0.22);
+  const rankCanvas = document.createElement("canvas");
+  rankCanvas.width = rW * 3; rankCanvas.height = rH * 3;
+  const rctx = rankCanvas.getContext("2d");
+  rctx.imageSmoothingEnabled = true;
+  rctx.imageSmoothingQuality = "high";
+  rctx.drawImage(portrait, 0, 0, rW, rH, 0, 0, rankCanvas.width, rankCanvas.height);
+  // Binarize for OCR
+  const rimg = rctx.getImageData(0,0,rankCanvas.width, rankCanvas.height);
+  let sum=0; for(let i=0;i<rimg.data.length;i+=4) sum += rimg.data[i]*0.299 + rimg.data[i+1]*0.587 + rimg.data[i+2]*0.114;
+  const mean = sum / (rimg.data.length/4);
+  for(let i=0;i<rimg.data.length;i+=4){
+    const lum = rimg.data[i]*0.299 + rimg.data[i+1]*0.587 + rimg.data[i+2]*0.114;
+    const v = lum < mean - 10 ? 0 : 255;
+    rimg.data[i] = rimg.data[i+1] = rimg.data[i+2] = v;
+  }
+  rctx.putImageData(rimg, 0, 0);
   // Run OCR
   let rank = "?", rankConf = 0;
-  try{
-    const canvas = document.createElement("canvas");
-    cv.imshow(canvas, rankTh);
-    const { data } = await _cam.ocrWorker.recognize(canvas);
-    const raw = (data.text || "").replace(/\s/g,"").toUpperCase();
-    rankConf = data.confidence || 0;
-    // Pick first valid char; tolerate common confusions
-    const conf = { "0":"Q", "O":"Q", "I":"A", "1":"A", "L":"A" };
-    for(const ch of raw){
-      const m = conf[ch] || ch;
-      if(CAM_RANKS.includes(m)){ rank = m; break; }
-    }
-  }catch(e){ /* ignore */ }
-  // Suit: HSV color + shape
-  const suitData = camAnalyzeSuit(cv, suitMat);
-  rankBig.delete(); rankGray.delete(); rankTh.delete();
-  rankMat.delete(); suitMat.delete(); corner.delete();
-  return { rank, suit: suitData.suit, color: suitData.color, conf: Math.round((rankConf + suitData.conf)/2) };
-}
-
-function camAnalyzeSuit(cv, suitMat){
-  // Convert to HSV, classify dominant non-white pixels as red or black
-  const rgb = new cv.Mat();
-  cv.cvtColor(suitMat, rgb, cv.COLOR_RGBA2RGB);
-  const hsv = new cv.Mat();
-  cv.cvtColor(rgb, hsv, cv.COLOR_RGB2HSV);
-  let redCount = 0, blackCount = 0, total = 0;
-  for(let y=0; y<hsv.rows; y++){
-    for(let x=0; x<hsv.cols; x++){
-      const px = hsv.ucharPtr(y, x);
-      const h = px[0], s = px[1], v = px[2];
-      if(v > 200 && s < 60) continue; // white card bg
-      total++;
-      if(v < 90 && s < 90) blackCount++;
-      else if(s > 80 && (h < 12 || h > 168)) redCount++;
-    }
+  if(_cam.ocrWorker){
+    try{
+      const { data } = await _cam.ocrWorker.recognize(rankCanvas);
+      const raw = (data.text || "").replace(/\s/g,"").toUpperCase();
+      rankConf = data.confidence || 0;
+      const conf = { "0":"Q", "O":"Q", "I":"A", "1":"A", "L":"A", "S":"5", "Z":"2", "B":"8", "G":"6" };
+      for(const ch of raw){
+        const m = conf[ch] || ch;
+        if(CAM_RANKS.includes(m)){ rank = m; break; }
+      }
+    }catch(e){ console.warn("OCR err", e); }
   }
-  const color = redCount > blackCount ? "red" : "black";
-  rgb.delete(); hsv.delete();
-  // Shape disambiguation: count solidity to split heart/diamond and spade/club
-  // Diamond: high solidity (~0.95), Heart: lower (~0.7)
-  // Spade: solid + stem (lower convexity), Club: 3 lobes (low solidity)
-  const gray = new cv.Mat();
-  cv.cvtColor(suitMat, gray, cv.COLOR_RGBA2GRAY);
-  const th = new cv.Mat();
-  cv.threshold(gray, th, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
-  const contours = new cv.MatVector();
-  const hier = new cv.Mat();
-  cv.findContours(th, contours, hier, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-  let bestCnt = null, bestArea = 0;
-  for(let i=0;i<contours.size();i++){
-    const c = contours.get(i);
-    const a = cv.contourArea(c);
-    if(a > bestArea){ if(bestCnt) bestCnt.delete(); bestCnt = c; bestArea = a; }
-    else c.delete();
+  // Suit color = sample full card pixels, count red vs black significant pixels
+  const sctx = portrait.getContext("2d");
+  const sd = sctx.getImageData(0, 0, pw, ph).data;
+  let redN = 0, blackN = 0;
+  for(let i=0;i<sd.length;i+=16){ // every 4th pixel
+    const r = sd[i], g = sd[i+1], b = sd[i+2];
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    const lum = (r+g+b)/3;
+    if(lum > 200 && (max-min) < 30) continue; // white card background
+    if(lum < 80 && (max-min) < 40) blackN++;
+    else if(r > 110 && r > g*1.4 && r > b*1.4) redN++;
   }
-  let suit, conf = 60;
-  if(!bestCnt || bestArea < 20){
-    suit = color === "red" ? "h" : "s";
-  } else {
-    const hull = new cv.Mat();
-    cv.convexHull(bestCnt, hull);
-    const hullArea = cv.contourArea(hull);
-    const solidity = hullArea > 0 ? bestArea / hullArea : 0;
-    hull.delete();
-    if(color === "red"){
-      suit = solidity > 0.88 ? "d" : "h";
-    } else {
-      suit = solidity > 0.78 ? "s" : "c";
-    }
-    conf = 70 + Math.round(Math.abs(solidity - 0.83) * 60);
-    if(conf > 95) conf = 95;
-    bestCnt.delete();
-  }
-  th.delete(); gray.delete(); contours.delete(); hier.delete();
-  return { suit, color, conf };
+  const color = redN > blackN ? "red" : "black";
+  // Preview thumb
+  const thumb = document.createElement("canvas");
+  const th = 140, tw = Math.round(pw * (th/ph));
+  thumb.width = tw; thumb.height = th;
+  thumb.getContext("2d").drawImage(portrait, 0, 0, tw, th);
+  const preview = thumb.toDataURL("image/jpeg", 0.7);
+  return {
+    rank, suit: null, color,
+    conf: rankConf ? Math.round(rankConf) : 0,
+    preview
+  };
 }
 
 /* ---- Validation UI ---- */
@@ -5747,15 +5797,26 @@ function camShowValidation(){
   } else {
     grid.innerHTML = _cam.detected.map((c,i)=>{
       const ranksOpts = ["?"].concat(CAM_RANKS).map(r=>`<option value="${r}" ${r===c.rank?"selected":""}>${r}</option>`).join("");
-      const suitsOpts = CAM_SUITS.map(s=>`<option value="${s}" ${s===c.suit?"selected":""}>${CAM_SUIT_CHAR[s]}</option>`).join("");
-      const redCls = (c.suit==="h"||c.suit==="d") ? "s-red" : "";
+      // Suit buttons: 4 separate, highlight detected color suits, picked one if any
+      const suitBtns = CAM_SUITS.map(s=>{
+        const isRed = (s==="h"||s==="d");
+        const colorMatch = (c.color === "red" && isRed) || (c.color === "black" && !isRed);
+        const picked = c.suit === s;
+        const cls = `cvc-suit ${isRed?'red':''} ${colorMatch?'color-match':''} ${picked?'picked':''}`;
+        return `<button type="button" class="${cls}" onclick="camValidPickSuit(${i},'${s}')">${CAM_SUIT_CHAR[s]}</button>`;
+      }).join("");
+      const confText = c.conf ? `conf. rank ${c.conf}%` : "rank non lu";
       return `<div class="cam-valid-card">
         <img src="${c.preview}" alt="card ${i}">
-        <div class="cvc-pick">
+        <div class="cvc-pick-row">
+          <label class="cvc-lbl">Rang</label>
           <select onchange="camValidEdit(${i},'rank',this.value)">${ranksOpts}</select>
-          <select class="${redCls}" onchange="camValidEdit(${i},'suit',this.value);this.className=(this.value==='h'||this.value==='d')?'s-red':''">${suitsOpts}</select>
         </div>
-        <div class="conf">confiance ${c.conf}%</div>
+        <div class="cvc-pick-row">
+          <label class="cvc-lbl">Couleur (${c.color === "red" ? "rouge" : "noir"} détecté)</label>
+          <div class="cvc-suits">${suitBtns}</div>
+        </div>
+        <div class="conf">${confText}</div>
       </div>`;
     }).join("");
   }
@@ -5766,6 +5827,12 @@ function camShowValidation(){
 function camValidEdit(idx, field, val){
   if(!_cam.detected[idx]) return;
   _cam.detected[idx][field] = val;
+}
+function camValidPickSuit(idx, suit){
+  if(!_cam.detected[idx]) return;
+  _cam.detected[idx].suit = suit;
+  // Re-render just to update picked highlights
+  camShowValidation();
 }
 function camScanCommit(){
   const p = _pkrs[_cam.targetPickerId];
