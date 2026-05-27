@@ -218,7 +218,11 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 /* Modal */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center}
 .modal-bg.open{display:flex;animation:fadeIn .2s}
-.modal{background:var(--bg-2);width:100%;max-width:720px;max-height:96vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease}
+.modal{background:var(--bg-2);width:100%;max-width:720px;max-height:96vh;max-height:96dvh;overflow-y:auto;border-radius:18px 18px 0 0;padding:22px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--line-2);animation:slideUp .25s ease;-webkit-overflow-scrolling:touch}
+@media (max-width:480px){
+  .modal{padding:18px 14px calc(18px + env(safe-area-inset-bottom));max-height:100dvh;border-radius:14px 14px 0 0}
+  .modal-bg{align-items:stretch}
+}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 .modal h2{margin:0 0 16px;font-size:20px;font-weight:600}
 .modal .close{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--txt-mute);font-size:24px;cursor:pointer}
@@ -271,40 +275,46 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .picker-scan:active{transform:scale(0.96);background:rgba(212,175,55,0.28)}
 .picker-hint{font-size:11px;color:var(--txt-mute);text-align:center;margin-top:8px;font-style:italic}
 /* Camera scan modal */
-.cam-modal{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
+.cam-modal{position:fixed;top:0;left:0;right:0;bottom:0;height:100vh;height:100dvh;width:100vw;background:#000;z-index:9999;display:none;flex-direction:column;overscroll-behavior:contain}
 .cam-modal.open{display:flex}
-.cam-header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:rgba(0,0,0,0.7);color:#fff;font-size:14px;font-weight:600;letter-spacing:0.04em}
-.cam-header .cam-close{background:none;border:none;color:#fff;font-size:28px;cursor:pointer;font-family:inherit;line-height:1;padding:0 4px}
-.cam-stage{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
+.cam-header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 14px max(16px,env(safe-area-inset-left));background:rgba(0,0,0,0.7);color:#fff;font-size:14px;font-weight:600;letter-spacing:0.04em;min-height:54px}
+.cam-header .cam-close{background:none;border:none;color:#fff;font-size:32px;cursor:pointer;font-family:inherit;line-height:1;padding:6px 10px;min-width:44px;min-height:44px}
+.cam-stage{flex:1;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:0}
 #camVideo{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
 #camCanvas{display:none}
 .cam-guide{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
-.cam-guide-frame{width:80%;max-width:380px;aspect-ratio:1.6;border:2px dashed rgba(212,175,55,0.85);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.35)}
-.cam-guide-text{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#fff;font-size:13px;letter-spacing:0.04em;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
-.cam-controls{flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:18px;padding:18px;background:rgba(0,0,0,0.8)}
-.cam-capture-btn{width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid var(--gold);cursor:pointer;font-size:30px;display:flex;align-items:center;justify-content:center;padding:0}
+.cam-guide-frame{width:86%;max-width:380px;aspect-ratio:1.6;border:2px dashed rgba(212,175,55,0.85);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.35)}
+.cam-guide-text{position:absolute;bottom:14px;left:12px;right:12px;text-align:center;color:#fff;font-size:13px;letter-spacing:0.04em;text-shadow:0 1px 4px rgba(0,0,0,0.85);line-height:1.3}
+.cam-controls{flex-shrink:0;display:flex;justify-content:center;align-items:center;gap:18px;padding:14px 16px max(14px,env(safe-area-inset-bottom));background:rgba(0,0,0,0.85)}
+.cam-capture-btn{width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid var(--gold);cursor:pointer;font-size:30px;display:flex;align-items:center;justify-content:center;padding:0;-webkit-tap-highlight-color:transparent}
 .cam-capture-btn:active{transform:scale(0.93)}
 .cam-capture-btn:disabled{opacity:0.4;cursor:wait}
-.cam-status{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.85);color:#fff;padding:18px 26px;border-radius:14px;font-size:14px;text-align:center;max-width:280px;display:none;z-index:5}
+.cam-status{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.88);color:#fff;padding:18px 24px;border-radius:14px;font-size:14px;text-align:center;max-width:80%;width:280px;display:none;z-index:5}
 .cam-status.show{display:block}
 .cam-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:var(--gold);border-radius:50%;animation:camspin 0.9s linear infinite;margin:0 auto 10px}
 @keyframes camspin{to{transform:rotate(360deg)}}
 /* Validation modal */
-.cam-valid{flex:1;overflow-y:auto;padding:16px;background:var(--bg);color:var(--txt);display:none}
+.cam-valid{flex:1;overflow-y:auto;padding:14px 14px 0;background:var(--bg);color:var(--txt);display:none;-webkit-overflow-scrolling:touch}
 .cam-valid.open{display:block}
-.cam-valid h3{margin:0 0 14px;font-size:15px;color:var(--gold);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-align:center}
-.cam-valid-grid{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:18px}
-.cam-valid-card{background:var(--bg-3);border:1px solid var(--line-2);border-radius:10px;padding:10px;width:140px;text-align:center}
-.cam-valid-card img{width:100%;height:auto;border-radius:6px;display:block;margin-bottom:8px}
+.cam-valid h3{margin:0 0 12px;font-size:14px;color:var(--gold);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-align:center}
+.cam-valid-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.cam-valid-card{background:var(--bg-3);border:1px solid var(--line-2);border-radius:10px;padding:8px;text-align:center}
+.cam-valid-card img{width:100%;height:auto;max-height:140px;object-fit:contain;border-radius:6px;display:block;margin:0 auto 8px;background:#000}
 .cam-valid-card .cvc-pick{display:flex;gap:4px;justify-content:center;margin-bottom:4px}
-.cam-valid-card select{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:5px;font-family:inherit;font-size:13px;font-weight:600}
+.cam-valid-card select{background:var(--bg-2);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:6px 4px;font-family:inherit;font-size:13px;font-weight:700;min-height:36px}
 .cam-valid-card select.s-red{color:var(--red)}
 .cam-valid-card .conf{font-size:10px;color:var(--txt-mute);margin-top:4px}
-.cam-valid-actions{display:flex;gap:10px;justify-content:center;padding-top:8px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--bg);padding-bottom:8px}
-.cam-valid-actions button{padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--line-2)}
+.cam-valid-actions{display:flex;gap:10px;justify-content:center;padding:10px 0 max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--bg);margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
+.cam-valid-actions button{flex:1;max-width:200px;padding:12px 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid var(--line-2);min-height:48px}
 .cam-valid-actions .commit{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
 .cam-valid-actions .retry{background:var(--bg-3);color:var(--txt)}
-.cam-valid-empty{text-align:center;color:var(--txt-mute);padding:30px 10px;font-style:italic}
+.cam-valid-empty{text-align:center;color:var(--txt-mute);padding:30px 10px;font-style:italic;grid-column:1/-1}
+@media (max-width:430px){
+  .cam-guide-frame{width:92%}
+  .cam-valid-grid{grid-template-columns:repeat(2,1fr)}
+  .cam-valid-card img{max-height:110px}
+  .cam-capture-btn{width:64px;height:64px;border-width:4px;font-size:26px}
+}
 /* Poker table viz */
 .table-wrap{position:relative;width:100%;max-width:640px;aspect-ratio:2.2;margin:14px auto 28px;padding:18px}
 .table-felt{position:absolute;inset:0;background:radial-gradient(ellipse at center,#235040 0%,#1a3a2e 60%,#0f261f 100%);border:7px solid #3d2814;border-radius:50%/35%;box-shadow:inset 0 0 40px rgba(0,0,0,0.4),0 6px 14px rgba(0,0,0,0.35)}
@@ -531,6 +541,8 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .pe-sd-opp-cards{display:flex;gap:4px}
 
 /* Blinds/Ante info bar */
+.pe-save-row{display:flex;gap:8px;flex-wrap:wrap}
+.pe-save-row .btn{flex:1;min-width:160px}
 .pe-blinds-info{background:var(--bg-3);border:1px solid var(--line-2);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--txt-dim);text-align:center;margin:4px 0 8px;letter-spacing:0.02em}
 .pe-blinds-info b{color:var(--gold);font-weight:700;font-family:Georgia,serif}
 .pe-blinds-info .pe-ante-mode{display:inline-block;background:rgba(212,175,55,0.18);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;border-radius:8px;margin-left:4px}
@@ -604,9 +616,17 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .pe-cgrid-actions .pe-cg-scan{background:rgba(212,175,55,0.18);border:1px solid var(--gold-soft);color:var(--gold);font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:0.04em}
 .pe-cgrid-actions .pe-cg-scan:active{transform:scale(0.96);background:rgba(212,175,55,0.32)}
 @media (max-width:480px){
-  .pe-cgrid .pe-cg-cell{font-size:10px}
+  .pe-cgrid-modal{padding:10px 6px env(safe-area-inset-bottom)}
+  .pe-cgrid-wrap{padding:12px 8px;border-radius:10px}
+  .pe-cgrid{gap:2px}
+  .pe-cgrid .pe-cg-cell{font-size:10px;aspect-ratio:0.68;border-radius:2px}
   .pe-cgrid .pe-cg-cell .pe-cg-r{font-size:11px}
   .pe-cgrid .pe-cg-cell .pe-cg-s{font-size:9px}
+  .pe-cgrid-target{min-width:60px;font-size:10px;padding:8px 4px;min-height:42px}
+  .pe-cgrid-target .pe-tg-count{font-size:9px}
+  .pe-cgrid-actions{flex-wrap:wrap;gap:6px}
+  .pe-cgrid-actions .pe-cg-clear,.pe-cgrid-actions .pe-cg-scan,.pe-cgrid-actions .pe-cg-done{flex:1;min-height:44px;padding:10px 8px;font-size:12px}
+  .pe-cgrid-actions .pe-cg-done{flex:1.4}
 }
 
 /* Hero position picker — row buttons */
@@ -633,10 +653,21 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
 .pe-table-wrap{padding-bottom:60px}
 
 @media (max-width:480px){
-  .pe-table-wrap{aspect-ratio:1.25;max-width:100%}
-  .pe-seat-body{width:46px;height:46px;font-size:10px}
+  .pe-table-wrap{aspect-ratio:1.35;max-width:100%;padding:24px 4px 22px;border-radius:14px}
+  .pe-seat-body{width:42px;height:42px;font-size:10px}
   .pe-seat-body .pe-pos{font-size:10px}
   .pe-seat-body .pe-stk{font-size:8px}
+  .pe-hand-nav{gap:4px}
+  .pe-hand-nav-btn{min-width:30px;padding:0 4px;font-size:14px}
+  .pe-hand-nav-btn .pe-nav-lbl{display:none}
+  .pe-hand-nav-btn .pe-nav-ico{font-size:18px}
+  .pe-hero-pos-row{gap:2px}
+  .pe-hp-btn{min-width:0;padding:8px 2px;font-size:11px;letter-spacing:0;flex:1 1 auto}
+  .pe-blinds-info{font-size:11px;padding:5px 8px}
+  .pe-action-panel{padding:8px}
+  .pe-street-tabs{gap:3px}
+  .pe-save-row{display:flex;flex-direction:column;gap:8px}
+  .pe-save-row .btn{width:100%}
   .pe-card-face,.pe-card-back,.pe-card-empty{width:26px;height:38px}
   .pe-card-face .r{font-size:12px}
   .pe-card-face .s{font-size:10px}
@@ -2908,9 +2939,9 @@ function buildHandForm(h, t, isEdit){
       ? `<button class="btn" onclick="updateHand(${h._idx})">Enregistrer</button>
          <div style="height:8px"></div>
          <button class="btn danger small" onclick="deleteHand(${h._idx})">Supprimer la main</button>`
-      : `<div style="display:flex;gap:8px;flex-wrap:wrap">
-           <button class="btn" style="flex:1;min-width:160px" onclick="saveHand()">Enregistrer</button>
-           <button class="btn secondary" style="flex:1;min-width:160px" onclick="saveHandAndNext()">Enregistrer + suivante ▶</button>
+      : `<div class="pe-save-row">
+           <button class="btn" onclick="saveHand()">Enregistrer</button>
+           <button class="btn secondary" onclick="saveHandAndNext()">Enregistrer + suivante ▶</button>
          </div>`}
   `;
 }
@@ -5330,43 +5361,82 @@ function camLoadScript(src){
     document.head.appendChild(s);
   });
 }
-function camEnsureOpenCV(){
+function camEnsureOpenCV(progress){
   if(_cam.cvReady) return _cam.cvReady;
   _cam.cvReady = new Promise((resolve, reject)=>{
     if(window.cv && window.cv.Mat) return resolve(window.cv);
-    window.Module = window.Module || {};
-    const prevReady = window.Module.onRuntimeInitialized;
-    window.Module.onRuntimeInitialized = ()=>{
-      if(prevReady) try{prevReady();}catch(e){}
-      resolve(window.cv);
+    const url = "https://docs.opencv.org/4.10.0/opencv.js";
+    const existing = document.querySelector(`script[src="${url}"]`);
+    let timer;
+    const finish = ()=>{
+      clearTimeout(timer);
+      if(window.cv && window.cv.Mat){ resolve(window.cv); return true; }
+      return false;
     };
-    camLoadScript("https://docs.opencv.org/4.10.0/opencv.js").then(()=>{
-      // Some builds expose cv synchronously
-      if(window.cv && window.cv.Mat) resolve(window.cv);
-      else if(window.cv && typeof window.cv.then === "function"){
-        window.cv.then(c=>{ window.cv = c; resolve(c); });
+    const hookReady = ()=>{
+      // OpenCV exposes cv as Promise OR object with onRuntimeInitialized
+      if(typeof window.cv === "undefined"){
+        // poll a bit — runtime not yet attached
+        let tries = 0;
+        const id = setInterval(()=>{
+          tries++;
+          if(typeof window.cv !== "undefined"){ clearInterval(id); hookReady(); }
+          else if(tries > 40){ clearInterval(id); reject(new Error("cv non défini après chargement script")); }
+        }, 100);
+        return;
       }
-      // else: wait for onRuntimeInitialized
-    }).catch(reject);
-    setTimeout(()=>{ if(window.cv && window.cv.Mat) resolve(window.cv); }, 8000);
+      if(window.cv && window.cv.Mat) return resolve(window.cv);
+      // Promise-style (modern build)
+      if(typeof window.cv.then === "function"){
+        if(progress) progress("Initialisation OpenCV...");
+        window.cv.then(c => { window.cv = c; finish(); }).catch(reject);
+        return;
+      }
+      // Callback-style (older build)
+      if(progress) progress("Initialisation OpenCV...");
+      window.cv.onRuntimeInitialized = ()=> finish();
+    };
+    if(existing){
+      if(window.cv && window.cv.Mat) return resolve(window.cv);
+      hookReady();
+    } else {
+      if(progress) progress("Téléchargement OpenCV.js (~9 MB)...");
+      const s = document.createElement("script");
+      s.src = url;
+      s.async = true;
+      s.onload = hookReady;
+      s.onerror = ()=> reject(new Error("Téléchargement OpenCV.js échoué (réseau ou CSP)"));
+      document.head.appendChild(s);
+    }
+    timer = setTimeout(()=>{ if(!(window.cv && window.cv.Mat)) reject(new Error("OpenCV.js timeout 45s")); }, 45000);
   });
+  _cam.cvReady.catch(()=>{ _cam.cvReady = null; });
   return _cam.cvReady;
 }
-function camEnsureTesseract(){
+function camEnsureTesseract(progress){
   if(_cam.ocrReady) return _cam.ocrReady;
-  _cam.ocrReady = camLoadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js")
+  if(progress) progress("Téléchargement Tesseract.js...");
+  _cam.ocrReady = camLoadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js")
     .then(async ()=>{
+      if(progress) progress("Téléchargement modèle OCR (~3 MB)...");
       const w = await Tesseract.createWorker("eng", 1, {
-        // keep silent
+        logger: m => {
+          if(progress && m.status){
+            const pct = m.progress != null ? Math.round(m.progress*100) : null;
+            progress(`Tesseract: ${m.status}${pct!=null?` ${pct}%`:""}`);
+          }
+        }
       });
+      if(progress) progress("Configuration OCR...");
       await w.setParameters({
         tessedit_char_whitelist: "AKQJT98765432",
-        tessedit_pageseg_mode: "10", // single char
+        tessedit_pageseg_mode: "10",
         classify_bln_numeric_mode: "0"
       });
       _cam.ocrWorker = w;
       return w;
-    });
+    })
+    .catch(e => { _cam.ocrReady = null; throw e; });
   return _cam.ocrReady;
 }
 
@@ -5426,17 +5496,22 @@ async function camScanCapture(){
   const btn = document.getElementById("camCaptureBtn");
   if(!video.videoWidth){ camToast("Vidéo pas prête"); return; }
   btn.disabled = true;
-  camStatus(`<div class="cam-spinner"></div>Chargement libs (première fois ~5s)...`);
+  const setProgress = (msg)=> camStatus(`<div class="cam-spinner"></div>${msg}`);
+  setProgress("Préparation...");
   // Snap frame
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
   try{
-    await Promise.all([camEnsureOpenCV(), camEnsureTesseract()]);
+    await Promise.all([
+      camEnsureOpenCV(setProgress),
+      camEnsureTesseract(setProgress)
+    ]);
   }catch(e){
+    console.error("cam libs load fail", e);
     camStatus("");
     btn.disabled = false;
-    alert("Échec chargement bibliothèques: " + e.message);
+    alert("Échec chargement bibliothèques: " + (e && e.message ? e.message : e) + "\n\nVérifie ta connexion internet puis réessaye.");
     return;
   }
   camStatus(`<div class="cam-spinner"></div>Détection cartes...`);
