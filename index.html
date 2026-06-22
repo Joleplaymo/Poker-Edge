@@ -683,6 +683,13 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   .pe-card-face .r{font-size:12px}
   .pe-card-face .s{font-size:10px}
 }
+.br-chips{display:flex;gap:6px;flex-wrap:wrap}
+.br-chips button{flex:0 0 auto;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--txt-dim);font-size:12px;cursor:pointer}
+.br-chips button.active{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
+.br-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.br-row .br-meta{font-size:12px;color:var(--txt-mute)}
+.br-row .br-amt{font-weight:700}
+.br-del{background:none;border:none;color:var(--txt-mute);cursor:pointer;font-size:16px;padding:0 4px}
 </style>
 </head>
 <body>
@@ -833,6 +840,24 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <div id="resContainer"></div>
 </section>
 
+<!-- ============== BANKROLL ============== -->
+<section class="view" id="view-bankroll">
+  <h2 style="margin:0 0 4px;font-size:24px">Gestion de bankroll</h2>
+  <p style="color:var(--txt-mute);font-size:13px;margin:0 0 14px">Suivi de gains, sessions &amp; transactions</p>
+
+  <div id="brPeriodChips" class="br-chips"></div>
+
+  <div class="row" style="margin:12px 0">
+    <button class="btn compact" onclick="brOpenSessionForm()">+ Nouvelle session</button>
+    <button class="btn secondary compact" onclick="brOpenTxForm()">+ Nouvelle transaction</button>
+  </div>
+
+  <div id="brKpiGrid" class="stat-grid"></div>
+  <div id="brChart"></div>
+  <div id="brSummary" class="stat-grid" style="margin-top:14px"></div>
+  <div id="brRecent"></div>
+</section>
+
 </main>
 
 <!-- ============== BOTTOM NAV ============== -->
@@ -842,6 +867,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <button data-view="drills" onclick="switchView('drills')"><span class="ico">◇</span>Drills</button>
   <button data-view="tracker" onclick="switchView('tracker')"><span class="ico">◉</span>Tracker</button>
   <button data-view="res" onclick="switchView('res')"><span class="ico">☰</span>Ressources</button>
+  <button data-view="bankroll" onclick="switchView('bankroll')"><span class="ico">€</span>Bankroll</button>
 </nav>
 
 <!-- ============== MODALS ============== -->
@@ -1113,6 +1139,8 @@ let state = {
   drillSession: {score:0, total:0},
   tournaments: [],
   liveId: null,
+  bankrollTx: [],        // [{id,type:"deposit"|"withdraw",amount,date,room,note}]
+  bankrollSessions: [],  // [{id,date,durationH,result,room,note}]
   stackUnit: "bb", // "bb" | "chips"
   theme: "dark",   // "dark" | "light"
   accent: "gold"   // gold | red | blue | green | purple | teal
@@ -1419,6 +1447,21 @@ function switchView(name){
   if(name==="res") renderResources();
   if(name==="home") renderHome();
   if(name==="drills") resetDrillArea();
+  if(name==="bankroll") renderBankroll();
+}
+
+/* =========================================================
+   BANKROLL
+   ========================================================= */
+let brPeriod = "all"; // "all" | "year" | "month" | "week"
+
+function renderBankroll(){
+  document.getElementById("brKpiGrid").innerHTML =
+    '<div class="stat"><div class="v">—</div><div class="l">Bankroll</div></div>';
+  document.getElementById("brChart").innerHTML = "";
+  document.getElementById("brSummary").innerHTML = "";
+  document.getElementById("brRecent").innerHTML = "";
+  document.getElementById("brPeriodChips").innerHTML = "";
 }
 
 /* =========================================================
@@ -3999,7 +4042,7 @@ function confirmReset(){
   if(!confirm("Tout effacer ? Cette action est définitive.")) return;
   if(!confirm("Vraiment ? Tous tournois, mains, et progression seront perdus.")) return;
   localStorage.removeItem("pokerEdge_v1");
-  state = {tasks:{},drillScore:0,drillTotal:0,drillSession:{score:0,total:0},tournaments:[],liveId:null};
+  state = {tasks:{},drillScore:0,drillTotal:0,drillSession:{score:0, total:0},tournaments:[],liveId:null,bankrollTx:[],bankrollSessions:[]};
   renderHome(); renderTracker();
   toast("Données effacées");
 }
