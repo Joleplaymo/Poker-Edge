@@ -1455,13 +1455,79 @@ function switchView(name){
    ========================================================= */
 let brPeriod = "all"; // "all" | "year" | "month" | "week"
 
+function brFmt(n){ return (n>=0?"":"-") + Math.abs(n).toFixed(2) + "€"; }
+function brToMs(dateStr){ const d = new Date(dateStr + "T00:00:00"); return d.getTime(); }
+
+function brStartOf(period){
+  const now = new Date();
+  if(period==="week"){ const d=new Date(now); const day=(d.getDay()+6)%7; d.setHours(0,0,0,0); d.setDate(d.getDate()-day); return d.getTime(); }
+  if(period==="month"){ return new Date(now.getFullYear(), now.getMonth(), 1).getTime(); }
+  if(period==="year"){ return new Date(now.getFullYear(), 0, 1).getTime(); }
+  return 0; // "all"
+}
+function brInPeriod(dateMs, period){ return dateMs >= brStartOf(period); }
+
+function brTournProfit(t){ return (parseFloat(t.result.payout)||0) - (parseFloat(t.buyin)||0); }
+
+function brCompute(period){
+  const txArr = state.bankrollTx.filter(x=>brInPeriod(brToMs(x.date), period));
+  const sessionsArr = state.bankrollSessions.filter(s=>brInPeriod(brToMs(s.date), period));
+  const tournArr = state.tournaments.filter(t=>t.result && brInPeriod(t.result.end||0, period));
+
+  // bankroll is ALWAYS all-time (real current balance)
+  const allTx = state.bankrollTx.reduce((s,x)=> s + (x.type==="deposit" ? +x.amount : -(+x.amount)), 0);
+  const allSess = state.bankrollSessions.reduce((s,x)=> s + (+x.result||0), 0);
+  const allTourn = state.tournaments.filter(t=>t.result).reduce((s,t)=> s + brTournProfit(t), 0);
+  const bankroll = allTx + allSess + allTourn;
+
+  const sessProfit = sessionsArr.reduce((s,x)=> s + (+x.result||0), 0);
+  const tournProfit = tournArr.reduce((s,t)=> s + brTournProfit(t), 0);
+  const profit = sessProfit + tournProfit;
+
+  const buyins = tournArr.reduce((s,t)=> s + (parseFloat(t.buyin)||0), 0);
+  const roi = buyins>0 ? (tournProfit/buyins*100) : 0;
+
+  const hours = sessionsArr.reduce((s,x)=> s + (+x.durationH||0), 0);
+  const hourly = hours>0 ? (sessProfit/hours) : 0;
+
+  const abi = tournArr.length>0 ? (buyins/tournArr.length) : 0;
+
+  return { bankroll, profit, roi, hourly, abi, sessions: sessionsArr.length, tournois: tournArr.length, sessionsArr, txArr, tournArr };
+}
+
+function brSetPeriod(p){ brPeriod = p; renderBankroll(); }
+
+function renderBrChips(){
+  const opts = [["all","Tout"],["year","Année"],["month","Mois"],["week","Semaine"]];
+  document.getElementById("brPeriodChips").innerHTML = opts.map(([k,label])=>
+    `<button class="${brPeriod===k?"active":""}" onclick="brSetPeriod('${k}')">${label}</button>`
+  ).join("");
+}
+
+function brColor(n){ return n>=0 ? "var(--green)" : "var(--red)"; }
+
+function renderBrKpis(){
+  const c = brCompute(brPeriod);
+  const cards = [
+    {v: brFmt(c.bankroll), l:"Bankroll actuelle", color: brColor(c.bankroll)},
+    {v: brFmt(c.profit),   l:"Profit (période)",  color: brColor(c.profit)},
+    {v: c.roi.toFixed(1)+"%", l:"ROI", color: brColor(c.roi)},
+    {v: brFmt(c.hourly)+"/h", l:"Taux horaire", color: brColor(c.hourly)},
+    {v: c.abi.toFixed(2)+"€", l:"ABI", color:"var(--txt)"},
+    {v: String(c.sessions), l:"Sessions", color:"var(--txt)"},
+    {v: String(c.tournois), l:"Tournois", color:"var(--txt)"},
+  ];
+  document.getElementById("brKpiGrid").innerHTML = cards.map(k=>
+    `<div class="stat"><div class="v" style="color:${k.color}">${k.v}</div><div class="l">${k.l}</div></div>`
+  ).join("");
+}
+
 function renderBankroll(){
-  document.getElementById("brKpiGrid").innerHTML =
-    '<div class="stat"><div class="v">—</div><div class="l">Bankroll</div></div>';
-  document.getElementById("brChart").innerHTML = "";
-  document.getElementById("brSummary").innerHTML = "";
-  document.getElementById("brRecent").innerHTML = "";
-  document.getElementById("brPeriodChips").innerHTML = "";
+  renderBrChips();
+  renderBrKpis();
+  document.getElementById("brChart").innerHTML = "";    // Task 5
+  document.getElementById("brSummary").innerHTML = "";  // Task 5
+  document.getElementById("brRecent").innerHTML = "";   // Task 3
 }
 
 /* =========================================================
