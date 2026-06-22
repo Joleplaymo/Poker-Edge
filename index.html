@@ -1572,6 +1572,45 @@ function brDeleteTx(id){
   renderBankroll();
 }
 
+function brOpenSessionForm(){
+  openModal(`
+    <h3 style="margin:0 0 12px">Nouvelle session</h3>
+    <label class="fld"><span>Date</span><input id="brSeDate" type="date" value="${brTodayStr()}"></label>
+    <label class="fld"><span>Durée (h)</span><input id="brSeDur" type="number" min="0" step="0.25" placeholder="0"></label>
+    <label class="fld"><span>Résultat (€, peut être négatif)</span><input id="brSeResult" type="number" step="0.01" placeholder="0.00"></label>
+    <label class="fld"><span>Room</span><input id="brSeRoom" type="text" placeholder="Optionnel"></label>
+    <label class="fld"><span>Note</span><input id="brSeNote" type="text" placeholder="Optionnel"></label>
+    <div class="row" style="margin-top:14px">
+      <button class="btn compact" onclick="brSaveSession()">Enregistrer</button>
+      <button class="btn secondary compact" onclick="closeModal()">Annuler</button>
+    </div>
+  `);
+}
+
+function brSaveSession(){
+  const dur = parseFloat(document.getElementById("brSeDur").value);
+  const resultRaw = document.getElementById("brSeResult").value;
+  if(!(dur>=0) || resultRaw===""){ toast("Durée et résultat requis"); return; }
+  state.bankrollSessions.push({
+    id: brId(),
+    date: document.getElementById("brSeDate").value || brTodayStr(),
+    durationH: dur,
+    result: parseFloat(resultRaw)||0,
+    room: document.getElementById("brSeRoom").value.trim(),
+    note: document.getElementById("brSeNote").value.trim(),
+  });
+  saveState();
+  closeModal();
+  renderBankroll();
+  toast("Session ajoutée ✓");
+}
+
+function brDeleteSession(id){
+  state.bankrollSessions = state.bankrollSessions.filter(x=>x.id!==id);
+  saveState();
+  renderBankroll();
+}
+
 function renderBrRecent(){
   const rows = state.bankrollTx.map(x=>({
     id: x.id, kind: "tx", date: x.date,
@@ -1580,6 +1619,15 @@ function renderBrRecent(){
     amount: (x.type==="deposit"? +x.amount : -(+x.amount)),
     del: "brDeleteTx",
   }));
+  state.bankrollSessions.forEach(s=>{
+    rows.push({
+      id: s.id, kind: "session", date: s.date,
+      label: "Session" + (s.durationH? " · "+s.durationH+"h":"") + (s.room?" · "+s.room:""),
+      note: s.note,
+      amount: (+s.result||0),
+      del: "brDeleteSession",
+    });
+  });
   rows.sort((a,b)=> (b.date||"").localeCompare(a.date||""));
   if(!rows.length){
     document.getElementById("brRecent").innerHTML =
