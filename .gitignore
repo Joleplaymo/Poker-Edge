@@ -1,0 +1,8 @@
+# Personal data backups exported from the app
+poker-edge-export-*.json
+
+# Reference screenshots / scratch images
+poklab.jpeg
+
+# Superpowers SDD scratch
+.superpowers/
