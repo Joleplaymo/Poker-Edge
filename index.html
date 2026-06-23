@@ -96,6 +96,7 @@ nav.bottom button:active{transform:scale(0.95)}
 .fab-stack{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:90;display:flex;flex-direction:column;gap:10px}
 .fab{width:48px;height:48px;border-radius:50%;background:var(--gold);color:var(--on-gold);box-shadow:var(--shadow);border:none;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .fab:active{transform:scale(0.95)}
+.br-room-sel{padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--txt-dim);font-size:12px;cursor:pointer;font-family:inherit}
 /* Cards */
 .card{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;position:relative}
 .card h2{margin:0 0 8px;font-size:18px;font-weight:600;letter-spacing:-0.01em}
@@ -861,6 +862,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <div id="brKpiGrid" class="stat-grid"></div>
   <div id="brChart"></div>
   <div id="brSummary" class="stat-grid" style="margin-top:14px"></div>
+  <div id="brReco"></div>
   <div id="brRecent"></div>
 </section>
 
@@ -1154,6 +1156,8 @@ let state = {
   bankrollTx: [],        // [{id,type:"deposit"|"withdraw",amount,date,room,note}]
   bankrollSessions: [],  // [{id,date,durationH,result,room,note}]
   bankrollAdjust: 0,     // manual offset added to computed bankroll (reconciliation, no transaction)
+  brBuyinCash: 30,       // required number of cash buy-ins (bankroll management rule)
+  brBuyinTournoi: 100,   // required number of tournament buy-ins
   stackUnit: "bb", // "bb" | "chips"
   theme: "dark",   // "dark" | "light"
   accent: "gold"   // gold | red | blue | green | purple | teal
@@ -1468,6 +1472,7 @@ function switchView(name){
    ========================================================= */
 let brPeriod = "all"; // "all" | "year" | "month" | "week"
 let brType = "all";   // "all" | "cash" | "tournoi"
+let brRoom = "all";   // "all" | <room name> (transient view filter)
 
 function brFmt(n){ return (n>=0?"":"-") + Math.abs(n).toFixed(2) + "€"; }
 function brToMs(dateStr){ const d = new Date(dateStr + "T00:00:00"); return d.getTime(); }
@@ -1481,11 +1486,12 @@ function brStartOf(period){
 }
 function brInPeriod(dateMs, period){ return dateMs >= brStartOf(period); }
 
-function brCompute(period, type){
+function brCompute(period, type, room){
   type = type || "all";
+  room = room || "all";
   const txArr = state.bankrollTx.filter(x=>brInPeriod(brToMs(x.date), period));
-  // period-filtered sessions (all types), used for the Tournois/Tables count cards
-  const periodSess = state.bankrollSessions.filter(s=>brInPeriod(brToMs(s.date), period));
+  // period+room-filtered sessions (all types), used for the Tournois/Tables count cards
+  const periodSess = state.bankrollSessions.filter(s=>brInPeriod(brToMs(s.date), period) && (room==="all" || (s.room||"")===room));
   // type+period-filtered sessions, used for profit/hourly/sessions count
   const sessionsArr = periodSess.filter(s=> type==="all" || (s.type||"cash")===type);
 
@@ -1507,6 +1513,13 @@ function brCompute(period, type){
 
 function brSetPeriod(p){ brPeriod = p; renderBankroll(); }
 function brSetType(t){ brType = t; renderBankroll(); }
+function brSetRoom(r){ brRoom = r; renderBankroll(); }
+
+function brRooms(){
+  const set = new Set();
+  state.bankrollSessions.forEach(s=>{ const r=(s.room||"").trim(); if(r) set.add(r); });
+  return [...set].sort((a,b)=>a.localeCompare(b));
+}
 
 function renderBrChips(){
   const periodOpts = [["all","Tout"],["year","Année"],["month","Mois"],["week","Semaine"]];
@@ -1517,14 +1530,22 @@ function renderBrChips(){
   const typeRow = typeOpts.map(([k,label])=>
     `<button class="${brType===k?"active":""}" onclick="brSetType('${k}')">${label}</button>`
   ).join("");
+  const rooms = brRooms();
+  const roomOpts = `<option value="all"${brRoom==="all"?" selected":""}>Toutes les rooms</option>` +
+    rooms.map(r=>`<option value="${r}"${brRoom===r?" selected":""}>${r}</option>`).join("");
+  const roomRow = rooms.length
+    ? `<select class="br-room-sel" onchange="brSetRoom(this.value)">${roomOpts}</select>`
+    : "";
   document.getElementById("brPeriodChips").innerHTML =
-    `<div class="br-chips">${periodRow}</div><div class="br-chips" style="margin-top:8px">${typeRow}</div>`;
+    `<div class="br-chips">${periodRow}</div>` +
+    `<div class="br-chips" style="margin-top:8px">${typeRow}</div>` +
+    (roomRow ? `<div style="margin-top:8px">${roomRow}</div>` : "");
 }
 
 function brColor(n){ return n>=0 ? "var(--green)" : "var(--red)"; }
 
 function renderBrKpis(){
-  const c = brCompute(brPeriod, brType);
+  const c = brCompute(brPeriod, brType, brRoom);
   const cards = [
     {v: brFmt(c.bankroll), l:"Bankroll actuelle ✎", color: brColor(c.bankroll), click:"brOpenAdjustForm()"},
     {v: brFmt(c.profit),   l:"Profit (période)",  color: brColor(c.profit)},
@@ -1774,11 +1795,12 @@ function renderBrChart(){
     </svg></div>`;
 }
 
-function brPeriodProfit(period, type){
+function brPeriodProfit(period, type, room){
   type = type || "all";
+  room = room || "all";
   const start = brStartOf(period);
   return state.bankrollSessions
-    .filter(s=> brToMs(s.date)>=start && (type==="all" || (s.type||"cash")===type))
+    .filter(s=> brToMs(s.date)>=start && (type==="all" || (s.type||"cash")===type) && (room==="all" || (s.room||"")===room))
     .reduce((a,s)=>a+(+s.result||0),0);
 }
 
@@ -1787,8 +1809,32 @@ function renderBrSummary(){
     {p:"week",  l:"Cette semaine"},
     {p:"month", l:"Ce mois"},
     {p:"year",  l:"Cette année"},
-  ].map(c=>{ const v = brPeriodProfit(c.p, brType); return `<div class="stat"><div class="v" style="color:${v>=0?"var(--green)":"var(--red)"}">${brFmt(v)}</div><div class="l">${c.l}</div></div>`; });
+  ].map(c=>{ const v = brPeriodProfit(c.p, brType, brRoom); return `<div class="stat"><div class="v" style="color:${v>=0?"var(--green)":"var(--red)"}">${brFmt(v)}</div><div class="l">${c.l}</div></div>`; });
   document.getElementById("brSummary").innerHTML = cards.join("");
+}
+
+function brSaveReco(){
+  const nc = parseInt(document.getElementById("brNCash").value,10);
+  const nt = parseInt(document.getElementById("brNTournoi").value,10);
+  if(nc>=1) state.brBuyinCash = nc;
+  if(nt>=1) state.brBuyinTournoi = nt;
+  saveState();
+  renderBrReco();
+}
+
+function renderBrReco(){
+  const bankroll = brCompute("all").bankroll;
+  const nCash = state.brBuyinCash||0, nTournoi = state.brBuyinTournoi||0;
+  const maxCash = nCash>0 ? bankroll/nCash : 0;
+  const maxTournoi = nTournoi>0 ? bankroll/nTournoi : 0;
+  document.getElementById("brReco").innerHTML =
+    `<div class="section-title">Gestion de bankroll</div><div class="card">
+      <p style="font-size:13px;color:var(--txt-mute);margin:0 0 12px">Buy-in max conseillé selon ta bankroll actuelle (${brFmt(bankroll)}).</p>
+      <label class="fld"><span>Buy-ins requis (cash)</span><input id="brNCash" type="number" min="1" step="1" value="${nCash}" onchange="brSaveReco()"></label>
+      <label class="fld"><span>Buy-ins requis (tournoi)</span><input id="brNTournoi" type="number" min="1" step="1" value="${nTournoi}" onchange="brSaveReco()"></label>
+      <div class="br-row"><div>Buy-in max cash</div><span class="br-amt" style="color:var(--gold)">${brFmt(maxCash)}</span></div>
+      <div class="br-row" style="border-bottom:none"><div>Buy-in max tournoi</div><span class="br-amt" style="color:var(--gold)">${brFmt(maxTournoi)}</span></div>
+    </div>`;
 }
 
 function renderBankroll(){
@@ -1796,6 +1842,7 @@ function renderBankroll(){
   renderBrKpis();
   renderBrChart();
   renderBrSummary();
+  renderBrReco();
   renderBrRecent();
 }
 
@@ -4381,7 +4428,7 @@ function confirmReset(){
   if(!confirm("Tout effacer ? Cette action est définitive.")) return;
   if(!confirm("Vraiment ? Tous tournois, mains, et progression seront perdus.")) return;
   localStorage.removeItem("pokerEdge_v1");
-  state = {tasks:{},drillScore:0,drillTotal:0,drillSession:{score:0, total:0},tournaments:[],liveId:null,bankrollTx:[],bankrollSessions:[],bankrollAdjust:0};
+  state = {tasks:{},drillScore:0,drillTotal:0,drillSession:{score:0, total:0},tournaments:[],liveId:null,bankrollTx:[],bankrollSessions:[],bankrollAdjust:0,brBuyinCash:30,brBuyinTournoi:100};
   renderHome(); renderTracker();
   toast("Données effacées");
 }
