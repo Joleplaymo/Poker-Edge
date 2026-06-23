@@ -93,6 +93,9 @@ nav.bottom button{flex:1;background:none;border:none;color:var(--txt-mute);paddi
 nav.bottom button .ico{font-size:22px;line-height:1}
 nav.bottom button.active{color:var(--gold)}
 nav.bottom button:active{transform:scale(0.95)}
+.fab-stack{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:90;display:flex;flex-direction:column;gap:10px}
+.fab{width:48px;height:48px;border-radius:50%;background:var(--gold);color:var(--on-gold);box-shadow:var(--shadow);border:none;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.fab:active{transform:scale(0.95)}
 /* Cards */
 .card{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;position:relative}
 .card h2{margin:0 0 8px;font-size:18px;font-weight:600;letter-spacing:-0.01em}
@@ -872,6 +875,12 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <button data-view="res" onclick="switchView('res')"><span class="ico">☰</span>Ressources</button>
   <button data-view="bankroll" onclick="switchView('bankroll')"><span class="ico">€</span>Bankroll</button>
 </nav>
+
+<!-- ============== SAVE / LOAD FAB ============== -->
+<div class="fab-stack">
+  <button class="fab" onclick="exportData()" title="Sauvegarder (télécharger backup)" aria-label="Sauvegarder (télécharger backup)">💾</button>
+  <button class="fab" onclick="importDataPrompt()" title="Recharger les données (importer)" aria-label="Recharger les données (importer)">📂</button>
+</div>
 
 <!-- ============== MODALS ============== -->
 <div class="modal-bg" id="modal">
@@ -4290,6 +4299,10 @@ function importDataPrompt(){
         saveState();
         renderTracker();
         renderHome();
+        // refresh the currently-active view too (e.g. Bankroll) so restored data shows immediately
+        const activeView = document.querySelector(".view.active");
+        const activeName = activeView ? activeView.id.replace("view-","") : "home";
+        switchView(activeName);
         toast("Import réussi ✓");
       }catch(err){ alert("Fichier invalide."); }
     };
