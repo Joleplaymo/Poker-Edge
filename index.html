@@ -851,7 +851,7 @@ label{display:block;font-size:12px;color:var(--txt-dim);margin-bottom:4px;text-t
   <h2 style="margin:0 0 4px;font-size:24px">Gestion de bankroll</h2>
   <p style="color:var(--txt-mute);font-size:13px;margin:0 0 14px">Suivi de gains, sessions &amp; transactions</p>
 
-  <div id="brPeriodChips" class="br-chips"></div>
+  <div id="brPeriodChips"></div>
 
   <div class="row" style="margin:12px 0">
     <button class="btn compact" onclick="brOpenSessionForm()">+ Nouvelle session</button>
@@ -1467,6 +1467,7 @@ function switchView(name){
    BANKROLL
    ========================================================= */
 let brPeriod = "all"; // "all" | "year" | "month" | "week"
+let brType = "all";   // "all" | "cash" | "tournoi"
 
 function brFmt(n){ return (n>=0?"":"-") + Math.abs(n).toFixed(2) + "€"; }
 function brToMs(dateStr){ const d = new Date(dateStr + "T00:00:00"); return d.getTime(); }
@@ -1480,56 +1481,58 @@ function brStartOf(period){
 }
 function brInPeriod(dateMs, period){ return dateMs >= brStartOf(period); }
 
-function brTournProfit(t){ return (parseFloat(t.result.payout)||0) - (parseFloat(t.buyin)||0); }
-
-function brCompute(period){
+function brCompute(period, type){
+  type = type || "all";
   const txArr = state.bankrollTx.filter(x=>brInPeriod(brToMs(x.date), period));
-  const sessionsArr = state.bankrollSessions.filter(s=>brInPeriod(brToMs(s.date), period));
-  const tournArr = state.tournaments.filter(t=>t.result && brInPeriod(t.result.end||0, period));
+  // period-filtered sessions (all types), used for the Tournois/Tables count cards
+  const periodSess = state.bankrollSessions.filter(s=>brInPeriod(brToMs(s.date), period));
+  // type+period-filtered sessions, used for profit/hourly/sessions count
+  const sessionsArr = periodSess.filter(s=> type==="all" || (s.type||"cash")===type);
 
-  // bankroll is ALWAYS all-time (real current balance)
+  // bankroll is ALWAYS all-time, ALL types (real current balance) — sessions + tx + manual adjust
   const allTx = state.bankrollTx.reduce((s,x)=> s + (x.type==="deposit" ? +x.amount : -(+x.amount)), 0);
   const allSess = state.bankrollSessions.reduce((s,x)=> s + (+x.result||0), 0);
-  const allTourn = state.tournaments.filter(t=>t.result).reduce((s,t)=> s + brTournProfit(t), 0);
-  const bankroll = allTx + allSess + allTourn + (state.bankrollAdjust||0);
+  const bankroll = allTx + allSess + (state.bankrollAdjust||0);
 
-  const sessProfit = sessionsArr.reduce((s,x)=> s + (+x.result||0), 0);
-  const tournProfit = tournArr.reduce((s,t)=> s + brTournProfit(t), 0);
-  const profit = sessProfit + tournProfit;
-
-  const buyins = tournArr.reduce((s,t)=> s + (parseFloat(t.buyin)||0), 0);
-  const roi = buyins>0 ? (tournProfit/buyins*100) : 0;
+  const profit = sessionsArr.reduce((s,x)=> s + (+x.result||0), 0);
 
   const hours = sessionsArr.reduce((s,x)=> s + (+x.durationH||0), 0);
-  const hourly = hours>0 ? (sessProfit/hours) : 0;
+  const hourly = hours>0 ? (profit/hours) : 0;
 
-  const abi = tournArr.length>0 ? (buyins/tournArr.length) : 0;
+  const tournoiCount = periodSess.filter(s=>(s.type||"cash")==="tournoi").reduce((a,s)=> a + (+s.count||0), 0);
+  const tablesCount  = periodSess.filter(s=>(s.type||"cash")==="cash").reduce((a,s)=> a + (+s.count||0), 0);
 
-  return { bankroll, profit, roi, hourly, abi, sessions: sessionsArr.length, tournois: tournArr.length, sessionsArr, txArr, tournArr };
+  return { bankroll, profit, hourly, sessions: sessionsArr.length, tournoiCount, tablesCount, sessionsArr, txArr };
 }
 
 function brSetPeriod(p){ brPeriod = p; renderBankroll(); }
+function brSetType(t){ brType = t; renderBankroll(); }
 
 function renderBrChips(){
-  const opts = [["all","Tout"],["year","Année"],["month","Mois"],["week","Semaine"]];
-  document.getElementById("brPeriodChips").innerHTML = opts.map(([k,label])=>
+  const periodOpts = [["all","Tout"],["year","Année"],["month","Mois"],["week","Semaine"]];
+  const typeOpts = [["all","Tout"],["cash","Cash"],["tournoi","Tournoi"]];
+  const periodRow = periodOpts.map(([k,label])=>
     `<button class="${brPeriod===k?"active":""}" onclick="brSetPeriod('${k}')">${label}</button>`
   ).join("");
+  const typeRow = typeOpts.map(([k,label])=>
+    `<button class="${brType===k?"active":""}" onclick="brSetType('${k}')">${label}</button>`
+  ).join("");
+  document.getElementById("brPeriodChips").innerHTML =
+    `<div class="br-chips">${periodRow}</div><div class="br-chips" style="margin-top:8px">${typeRow}</div>`;
 }
 
 function brColor(n){ return n>=0 ? "var(--green)" : "var(--red)"; }
 
 function renderBrKpis(){
-  const c = brCompute(brPeriod);
+  const c = brCompute(brPeriod, brType);
   const cards = [
     {v: brFmt(c.bankroll), l:"Bankroll actuelle ✎", color: brColor(c.bankroll), click:"brOpenAdjustForm()"},
     {v: brFmt(c.profit),   l:"Profit (période)",  color: brColor(c.profit)},
-    {v: c.roi.toFixed(1)+"%", l:"ROI", color: brColor(c.roi)},
     {v: brFmt(c.hourly)+"/h", l:"Taux horaire", color: brColor(c.hourly)},
-    {v: c.abi.toFixed(2)+"€", l:"ABI", color:"var(--txt)"},
     {v: String(c.sessions), l:"Sessions", color:"var(--txt)"},
-    {v: String(c.tournois), l:"Tournois", color:"var(--txt)"},
   ];
+  if(brType!=="cash")   cards.push({v: String(c.tournoiCount), l:"Tournois", color:"var(--txt)"});
+  if(brType!=="tournoi") cards.push({v: String(c.tablesCount), l:"Tables", color:"var(--txt)"});
   document.getElementById("brKpiGrid").innerHTML = cards.map(k=>
     `<div class="stat"${k.click?` onclick="${k.click}" style="cursor:pointer"`:""}><div class="v" style="color:${k.color}">${k.v}</div><div class="l">${k.l}</div></div>`
   ).join("");
@@ -1617,6 +1620,13 @@ function brDeleteTx(id){
 function brOpenSessionForm(){
   openModal(`
     <h3 style="margin:0 0 12px">Nouvelle session</h3>
+    <label class="fld"><span>Type</span>
+      <select id="brSeType" onchange="brSessionTypeChange()">
+        <option value="cash">Cash</option>
+        <option value="tournoi">Tournoi</option>
+      </select>
+    </label>
+    <label class="fld"><span id="brSeCountLabel">Nombre de tables</span><input id="brSeCount" type="number" min="0" step="1" placeholder="0"></label>
     <label class="fld"><span>Date</span><input id="brSeDate" type="date" value="${brTodayStr()}"></label>
     <label class="fld"><span>Durée (h)</span><input id="brSeDur" type="number" min="0" step="0.25" placeholder="0"></label>
     <label class="fld"><span>Résultat (€, peut être négatif)</span><input id="brSeResult" type="number" step="0.01" placeholder="0.00"></label>
@@ -1629,12 +1639,19 @@ function brOpenSessionForm(){
   `);
 }
 
+function brSessionTypeChange(){
+  const t = document.getElementById("brSeType").value;
+  document.getElementById("brSeCountLabel").textContent = t==="tournoi" ? "Nombre de tournois" : "Nombre de tables";
+}
+
 function brSaveSession(){
   const dur = parseFloat(document.getElementById("brSeDur").value);
   const resultRaw = document.getElementById("brSeResult").value;
   if(!(dur>=0) || resultRaw===""){ toast("Durée et résultat requis"); return; }
   state.bankrollSessions.push({
     id: brId(),
+    type: document.getElementById("brSeType").value,
+    count: parseInt(document.getElementById("brSeCount").value,10)||0,
     date: document.getElementById("brSeDate").value || brTodayStr(),
     durationH: dur,
     result: parseFloat(resultRaw)||0,
@@ -1662,9 +1679,12 @@ function renderBrRecent(){
     del: "brDeleteTx",
   }));
   state.bankrollSessions.forEach(s=>{
+    const stype = s.type||"cash";
+    const cnt = +s.count||0;
+    const cntLabel = cnt ? " · "+cnt+(stype==="tournoi"?" tournois":" tables") : "";
     rows.push({
       id: s.id, kind: "session", date: s.date,
-      label: "Session" + (s.durationH? " · "+s.durationH+"h":"") + (s.room?" · "+s.room:""),
+      label: "Session "+(stype==="tournoi"?"tournoi":"cash") + cntLabel + (s.durationH? " · "+s.durationH+"h":"") + (s.room?" · "+s.room:""),
       note: s.note,
       amount: (+s.result||0),
       del: "brDeleteSession",
@@ -1710,7 +1730,6 @@ function brEvents(){
   const ev = [];
   state.bankrollTx.forEach(x=> ev.push({ms: brToMs(x.date), delta: x.type==="deposit"? +x.amount : -(+x.amount)}));
   state.bankrollSessions.forEach(s=> ev.push({ms: brToMs(s.date), delta: +s.result||0}));
-  state.tournaments.filter(t=>t.result).forEach(t=> ev.push({ms: t.result.end||0, delta: brTournProfit(t)}));
   ev.sort((a,b)=> a.ms - b.ms);
   return ev;
 }
@@ -1755,11 +1774,12 @@ function renderBrChart(){
     </svg></div>`;
 }
 
-function brPeriodProfit(period){
+function brPeriodProfit(period, type){
+  type = type || "all";
   const start = brStartOf(period);
-  const sess = state.bankrollSessions.filter(s=>brToMs(s.date)>=start).reduce((a,s)=>a+(+s.result||0),0);
-  const tourn = state.tournaments.filter(t=>t.result && (t.result.end||0)>=start).reduce((a,t)=>a+brTournProfit(t),0);
-  return sess + tourn;
+  return state.bankrollSessions
+    .filter(s=> brToMs(s.date)>=start && (type==="all" || (s.type||"cash")===type))
+    .reduce((a,s)=>a+(+s.result||0),0);
 }
 
 function renderBrSummary(){
@@ -1767,7 +1787,7 @@ function renderBrSummary(){
     {p:"week",  l:"Cette semaine"},
     {p:"month", l:"Ce mois"},
     {p:"year",  l:"Cette année"},
-  ].map(c=>{ const v = brPeriodProfit(c.p); return `<div class="stat"><div class="v" style="color:${v>=0?"var(--green)":"var(--red)"}">${brFmt(v)}</div><div class="l">${c.l}</div></div>`; });
+  ].map(c=>{ const v = brPeriodProfit(c.p, brType); return `<div class="stat"><div class="v" style="color:${v>=0?"var(--green)":"var(--red)"}">${brFmt(v)}</div><div class="l">${c.l}</div></div>`; });
   document.getElementById("brSummary").innerHTML = cards.join("");
 }
 
